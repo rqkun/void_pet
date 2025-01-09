@@ -7,6 +7,13 @@ def get_baro_data():
     raise_detailed_error(request_object)
     return request_object.json()
 
+def get_varzia_data():
+    request_ref = "https://api.warframestat.us/pc/vaultTrader"
+    request_object = requests.get(request_ref)
+    raise_detailed_error(request_object)
+    return request_object.json()
+
+
 
 def raise_detailed_error(request_object):
     """ Get details on http errors. """
