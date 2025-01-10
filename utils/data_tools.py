@@ -23,7 +23,10 @@ def get_relic_names(json_data):
         name_index_dict[name] = index
     return name_index_dict
 
-
+def get_correct_piece(piece_list,name):
+    for item in piece_list:
+        if item['en']['item_name'].lower().replace(" ","_") == name:
+            return item
  
 def get_average_plat_price(orders):
     avg_plat = 0

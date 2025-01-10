@@ -27,13 +27,13 @@ def relic_reward_check(option):
 def relic_reward_detail(option):
     single_item =api_services.get_market_item(option)
     left_top,right_top = st.columns([2,1])
-    item = single_item["payload"]["item"]["items_in_set"]
-    # icon = item["sub_icon"]
-    # left_top.container(border=True).markdown(f"""## {item["en"]["item_name"]}""")
-    st.json(item)
-    # response = requests.get(f"{st.secrets.market_api.static}/{icon}")
-    # img = Image.open(BytesIO(response.content)).resize((200, 200))
-    # right_top.container(border=True).image(img)
+    item = data_tools.get_correct_piece(single_item["payload"]["item"]["items_in_set"],name=option)
+                                        
+    icon = item["sub_icon"]
+    left_top.container(border=True).markdown(f"""## {item["en"]["item_name"]}""")
+    response = requests.get(f"{st.secrets.market_api.static}/{icon}")
+    img = Image.open(BytesIO(response.content)).resize((200, 200))
+    right_top.container(border=True).image(img)
     
 
 
