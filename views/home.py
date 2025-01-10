@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta
 import streamlit as st
-from utils import api_services
+from utils import api_services, structures
 from PIL import Image
-
+import pandas as pd
 from utils.icons import AppIcons
 
 def prep_image(route):
@@ -22,11 +22,7 @@ def format_timedelta(delta):
 
 def check_disable(data):
     return False if data["active"] else True
-
-@st.dialog("Browse Wares",width="large")
-def browse_ware(item_list):
-    with st.container(height=400):
-        st.write(item_list)
+        
 @st.fragment(run_every=timedelta(minutes=1))
 def baro_timer():
     baro_card = st.container(border=True)
@@ -52,9 +48,16 @@ def baro_timer():
                 st.write(f"Arrival: `{start_date}`")
             st.write(f"Place: `{location}`")
             if st.button("Reload",use_container_width=True,type="secondary",icon=AppIcons.SYNC.value,key="baro_reload"):
+                if 'browse_wares' in st.session_state:
+                    del st.session_state["browse_wares"]
+                if 'browse_wares_detail' in st.session_state:
+                    del st.session_state["browse_wares_detail"]
+                st.cache_data.clear()
                 st.rerun()
         if right.button("Browse",use_container_width=True,disabled=check_disable(data),help="This will unlock when he comes back to a relay.",key="baro_browse"):
-            browse_ware(data["inventory"])
+            st.session_state["browse_wares"] = structures.ware_object("baro",data["inventory"])
+            st.switch_page("views/browse.py")
+            pass
 
 @st.fragment(run_every=timedelta(minutes=1))
 def varzia_timer():
@@ -75,14 +78,23 @@ def varzia_timer():
             end_date = format_timedelta(datetime.strptime(data["expiry"],"%Y-%m-%dT%H:%M:%S.%fZ")-datetime.today())
             st.header("Varzia")
             if data["active"]:
-                st.write(f"Leaving: \n`{end_date}`")
+                st.write(f"Leaving: `{end_date}`")
             else:
-                st.write(f"Arrival: \n`{start_date}`")
+                st.write(f"Arrival: `{start_date}`")
             st.write(f"Place: `{location}`")
             if st.button("Reload",use_container_width=True,type="secondary",icon=AppIcons.SYNC.value,key="variza_reload"):
+                if 'browse_wares' in st.session_state:
+                    del st.session_state["browse_wares"]
+                if 'browse_wares_detail' in st.session_state:
+                    del st.session_state["browse_wares_detail"]
+                st.cache_data.clear()
                 st.rerun()
-        if right.button("Browse",use_container_width=True,disabled=check_disable(data),help="Click to browse wares",key="variza_browse"):
-            browse_ware(data["inventory"])
+        if right.button("Browse",use_container_width=True,disabled=check_disable(data),help="Click to browse wares.",key="variza_browse"):
+            #Aya Only!
+            filtered_data = [item for item in data["inventory"] if item['credits'] is not None]
+            
+            st.session_state["browse_wares"] = structures.ware_object("varzia",filtered_data)
+            st.switch_page("views/browse.py")
 
         
 
