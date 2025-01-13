@@ -48,15 +48,14 @@ def baro_timer():
                 st.write(f"Arrival: `{start_date}`")
             st.write(f"Place: `{location}`")
             if st.button("Reload",use_container_width=True,type="secondary",icon=AppIcons.SYNC.value,key="baro_reload"):
-                if 'browse_wares' in st.session_state:
-                    del st.session_state["browse_wares"]
-                if 'browse_wares_detail' in st.session_state:
-                    del st.session_state["browse_wares_detail"]
+                if 'baro_wares' in st.session_state:
+                    del st.session_state["baro_wares"]
+                if 'baro_wares_detail' in st.session_state:
+                    del st.session_state["baro_wares_detail"]
                 st.cache_data.clear()
                 st.rerun()
         if right.button("Browse",use_container_width=True,disabled=check_disable(data),help="This will unlock when he comes back to a relay.",key="baro_browse"):
-            st.session_state["browse_wares"] = structures.ware_object("baro",data["inventory"])
-            st.switch_page("views/browse.py")
+            st.switch_page("views/error.py")
             pass
 
 @st.fragment(run_every=timedelta(minutes=1))
@@ -83,25 +82,22 @@ def varzia_timer():
                 st.write(f"Arrival: `{start_date}`")
             st.write(f"Place: `{location}`")
             if st.button("Reload",use_container_width=True,type="secondary",icon=AppIcons.SYNC.value,key="variza_reload"):
-                if 'browse_wares' in st.session_state:
-                    del st.session_state["browse_wares"]
-                if 'browse_wares_detail' in st.session_state:
-                    del st.session_state["browse_wares_detail"]
+                if 'varzia_wares' in st.session_state:
+                    del st.session_state["varzia_wares"]
+                if 'varzia_wares_detail' in st.session_state:
+                    del st.session_state["varzia_wares_detail"]
                 st.cache_data.clear()
                 st.rerun()
         if right.button("Browse",use_container_width=True,disabled=check_disable(data),help="Click to browse wares.",key="variza_browse"):
             #Aya Only!
             filtered_data = [item for item in data["inventory"] if item['credits'] is not None]
-            
-            st.session_state["browse_wares"] = structures.ware_object("varzia",filtered_data)
-            st.switch_page("views/browse.py")
+            st.session_state["varzia_wares"] = structures.ware_object("varzia",filtered_data)
+            st.switch_page("views/varzia.py")
 
-        
 
 left_col,_,right_col = st.columns([20,1,20])
-
 with left_col:
-    baro_timer()
+        baro_timer()
     
 with right_col:
     varzia_timer()
