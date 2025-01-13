@@ -1,4 +1,6 @@
 from utils import structures
+import re 
+
 def market_filter(data, rep=0, offline=False,wtb=False):
     if wtb is False:
         data =[entry for entry in data if (entry['order_type'] == "sell")]
@@ -52,7 +54,7 @@ def get_relic_reward_list(relics):
 
 def get_relic_names(json_data):
     names = []
-    for index, obj in enumerate(json_data):
+    for _, obj in enumerate(json_data):
         names.append(obj["data"]["name"])
     return names
 
@@ -74,3 +76,12 @@ def clean_prime_names(frame_json,weap_json):
     for item in weap_json:
         result.append(item["name"]) 
     return result
+
+def extract_prime_substring(input_string):
+    pattern = r'(\w+\sPrime)'
+    match = re.search(pattern, input_string)
+    if match:
+        return match.group(1)
+    else:
+        return ""
+    
