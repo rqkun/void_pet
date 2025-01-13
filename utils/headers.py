@@ -4,12 +4,12 @@ from utils.icons import AppIcons
 def basic(logo=None):
     """ Add header function. """
     with st.header(""):
-        left, _,mid,_, right = st.columns([2,2,1,2,2],vertical_alignment="bottom")
+        left, _,mid,_, right = st.columns([1,2,1,2,1],vertical_alignment="bottom")
         with left:
-            if st.button("Home",use_container_width=True,icon=AppIcons.HOME.value):
+            if st.button(AppIcons.HOME.value,use_container_width=True):
                 st.switch_page("views/home.py")
         with right:
-            with st.popover("Menu",use_container_width=True, icon=AppIcons.MENU.value):
+            with st.popover(AppIcons.MENU.value,use_container_width=True,):
                 
                 st.page_link("views/varzia.py",
                              label="Varzia",
