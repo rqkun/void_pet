@@ -97,7 +97,7 @@ def varzia_timer():
 
 left_col,_,right_col = st.columns([20,1,20])
 with left_col:
-        baro_timer()
+    baro_timer()
     
 with right_col:
     varzia_timer()

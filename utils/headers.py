@@ -13,9 +13,13 @@ def basic(logo=None):
                 
                 st.page_link("views/varzia.py",
                              label="Varzia",
-                             icon=AppIcons.MENU.value,
+                             icon=AppIcons.VARZIA.value,
+                             use_container_width=True)
+                st.page_link("https://github.com/rqkun/void_pet/issues",
+                             label="Report",
+                             icon=AppIcons.ISSUES.value,
                              use_container_width=True)
         with mid:
             if logo is not None:
                 cont = st.container(border=False)
-                cont.html(f"""<img alt="logo" style="width:100%;" src="{logo}"/>""")
+                cont.html(f"""<img alt="logo" style="width:50%;display: block;margin-left: auto;margin-right: auto;width: 50px;" src="{logo}"/>""")

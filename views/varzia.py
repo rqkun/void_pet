@@ -19,13 +19,16 @@ def relic_reward_check(option):
     offline = st.toggle("Include offline orders ?")
     rep = left_top.number_input("Reputation threshold: ",0,step=1)
     limit = right_top.number_input("Number of Trades: ",1,step=1)
-    left_bot,right_bot = st.columns([2,3],vertical_alignment="center")
-    bottom_contain_r = right_bot.container(border=True)
-    if left_bot.button("GO",use_container_width=True):
+    left_bot,right_bot = st.columns([3,1],vertical_alignment="center")
+    bottom_contain_r = st.container(border=True)
+    right_bot.link_button(AppIcons.EXTERNAL.value,f"{st.secrets.market_api.web}/{relic_name_cleaned}",type="secondary",use_container_width=True)
+        
+    if left_bot.button("Inspect",use_container_width=True,icon=AppIcons.INSPECT.value,type="primary"):
         market_data =data_tools.market_filter(call_market(relic_name_cleaned),rep=rep, offline=offline,wtb=wtb)[:limit]
         avg_plat = data_tools.get_average_plat_price(market_data)
-        bottom_contain_r.markdown(f"""Average: <font color="#FF4B4B">**{avg_plat:.2f}** <img alt="plat" style="width:20px;height:20px;" src="{AppIcons.PLATINUM.value}"/> </font> Platinum(s)""",unsafe_allow_html=True)
-
+        bottom_contain_r.markdown(f"""<div> Average: <font color="#FF4B4B">{avg_plat:.2f} <img alt="plat" style="width:20px;height:20px;" src="{AppIcons.PLATINUM.value}"/> </font> Platinum(s) from <font color="#FF4B4B">{len(market_data)}</font> offer(s). </a> <br>""",unsafe_allow_html=True)
+        bottom_contain_r.write("")
+        
 @st.dialog("Item Details")
 def relic_reward_detail(option):
     with st.spinner("Retrieving data..."):
@@ -88,25 +91,25 @@ with mid:
         primes = st.multiselect(
             "Which Primes",
             prime_frame_options,
-            placeholder="Leave empty if check all of the relic currently available."
+            placeholder="Leave empty if check all of the relics currently available."
             
         )
         
         names = data_tools.search_rewards(primes,relics)
     if len(names)>0:
-        relic_index = st.selectbox("Choose reward from: ",
+        relic_index = st.selectbox("Choose a relic to inspect it's rewards: ",
                     options=names,
                     )
         option_map = data_tools.get_relic_reward_options(relics,relic_index)
         reward_option = st.radio(
-            "Choose reward: ",
+            "Choose a reward to inspect: ",
             options=option_map.keys(),
         )
         
-        bot_right, bot_left=st.columns(2)
-        if bot_right.button("Market",disabled=("Forma Blueprint" in reward_option),use_container_width=True):
+        bot_right, bot_left=st.columns([4,1])
+        if bot_right.button("Market",disabled=("Forma Blueprint" in reward_option),use_container_width=True,icon=AppIcons.MARKET.value,type="primary"):
             relic_reward_check(option_map[reward_option])
-        if bot_left.button("Detail",use_container_width=True):
+        if bot_left.button("Info",use_container_width=True,icon=AppIcons.DETAILS.value,type="secondary"):
             relic_reward_detail(option_map[reward_option])
     else:
         st.warning("Currently not on rotation.")
