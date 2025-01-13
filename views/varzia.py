@@ -112,5 +112,5 @@ with mid:
         wiki_url = data_tools.extract_prime_substring(reward_option).replace(" ","/")
         bot_left.link_button(AppIcons.DETAILS.value,url=f"https://warframe.fandom.com/wiki/{wiki_url}",use_container_width=True)
     else:
-        st.warning("Currently not on rotation.")
+        st.warning("Currently not on rotation.",icon=AppIcons.WARNING.value)
 
