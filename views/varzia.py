@@ -11,7 +11,7 @@ def call_market(option):
     with st.spinner("Loading market values..."):
         return api_services.get_market_orders(option)['payload']['orders']
 
-@st.dialog("Relic")
+@st.dialog("Market Details")
 def relic_reward_check(option):
     relic_name_cleaned = option["name"].lower().replace(" ","_")
     left_top,right_top = st.columns(2,vertical_alignment="bottom")
@@ -26,7 +26,7 @@ def relic_reward_check(option):
         avg_plat = data_tools.get_average_plat_price(market_data)
         bottom_contain_r.markdown(f"""Average: <font color="#FF4B4B">**{avg_plat:.2f}** <img alt="plat" style="width:20px;height:20px;" src="{AppIcons.PLATINUM.value}"/> </font> Platinum(s)""",unsafe_allow_html=True)
 
-@st.dialog("Details")
+@st.dialog("Item Details")
 def relic_reward_detail(option):
     with st.spinner("Retrieving data..."):
         relic_name_cleaned = option["name"].lower().replace(" ","_")

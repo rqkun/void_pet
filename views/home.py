@@ -54,7 +54,7 @@ def baro_timer():
                     del st.session_state["baro_wares_detail"]
                 st.cache_data.clear()
                 st.rerun()
-        if right.button("Browse",use_container_width=True,disabled=check_disable(data),help="This will unlock when he comes back to a relay.",key="baro_browse"):
+        if right.button("Browse",use_container_width=True,disabled=check_disable(data),help="This will unlock when he comes back to a relay.",key="baro_browse",type="primary"):
             st.switch_page("views/error.py")
             pass
 
@@ -88,7 +88,7 @@ def varzia_timer():
                     del st.session_state["varzia_wares_detail"]
                 st.cache_data.clear()
                 st.rerun()
-        if right.button("Browse",use_container_width=True,disabled=check_disable(data),help="Click to browse wares.",key="variza_browse"):
+        if right.button("Browse",use_container_width=True,disabled=check_disable(data),help="Click to browse wares.",key="variza_browse",type="primary"):
             #Aya Only!
             filtered_data = [item for item in data["inventory"] if item['credits'] is not None]
             st.session_state["varzia_wares"] = structures.ware_object("varzia",filtered_data)
