@@ -1,6 +1,8 @@
 import requests
 import streamlit as st
 
+from utils import data_tools
+
 
 
 def get_baro_data():
@@ -35,6 +37,18 @@ def get_market_item(url_path):
     raise_detailed_error(request_object)
     return request_object.json()
 
+def get_all_prime_names():
+    request_ref = f"{st.secrets.warframe_api.gateway}/warframes/search/prime?only=name,category"
+    request_object = requests.get(request_ref)
+    raise_detailed_error(request_object)
+    
+    weapon_request_ref = f"{st.secrets.warframe_api.gateway}/weapons/search/prime?only=name,category"
+    weapon_request_object = requests.get(weapon_request_ref)
+    raise_detailed_error(weapon_request_object)
+
+    return data_tools.clean_prime_names(request_object.json(),weapon_request_object.json())
+    
+    
 def raise_detailed_error(request_object):
     """ Get details on http errors. """
     try:

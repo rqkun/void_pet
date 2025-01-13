@@ -16,3 +16,9 @@ def relic_reward_object(chance=0, rarity="", name=""):
         "chance": chance,
         "rarity": rarity
     }
+
+def relic_reward_names(name, rewards):
+    return{
+        "name": name,
+        "rewards": rewards,
+    }
