@@ -93,26 +93,28 @@ with mid:
     with st.spinner("Loading relics..."):
         all_prime=  api_services.get_all_prime_names()
         prime_frame_options = data_tools.get_prime_resurgent(all_prime,relics)
-        
-        primes = st.multiselect(
-            "Which Primes",
-            prime_frame_options,
-            placeholder="Leave empty if check all of the relics currently available."
-            
+        bot_left, bot_right =st.columns([4,1],vertical_alignment="bottom")
+        prime = bot_left.selectbox(
+            "Choose a Prime.",
+            prime_frame_options
         )
         
-        names = data_tools.search_rewards(primes,relics)
+        wiki_url = prime.replace(" ","_")
+        bot_right.link_button("Wiki",url=f"https://warframe.fandom.com/wiki/{wiki_url}",use_container_width=True,icon=AppIcons.WIKI.value,help=f"Go to {prime} Wiki.")
+        names = data_tools.search_rewards([prime],relics)
+    
     relic_index = st.selectbox("Choose a relic to inspect it's rewards: ",
                 options=names,
                 )
+    
     option_map = data_tools.get_relic_reward_options(relics,relic_index)
-    reward_option = st.radio(
+    reward_form = st.form("reward_inspect_form",clear_on_submit=False,border=False)
+    reward_option = reward_form.radio(
         "Choose a reward to inspect: ",
         options=option_map.keys(),
     )
     
-    bot_right, bot_left=st.columns([4,1])
-    if bot_right.button("Market",disabled=("Forma Blueprint" in reward_option),use_container_width=True,icon=AppIcons.MARKET.value,type="primary"):
+    #
+    if reward_form.form_submit_button("Market",disabled=("Forma Blueprint" in reward_option),use_container_width=True,icon=AppIcons.MARKET.value,type="primary"):
         relic_reward_check(option_map[reward_option])
-    wiki_url = data_tools.extract_prime_substring(reward_option).replace(" ","/")
-    bot_left.link_button("Wiki",url=f"https://warframe.fandom.com/wiki/{wiki_url}",use_container_width=True,icon=AppIcons.WIKI.value)
+    # 

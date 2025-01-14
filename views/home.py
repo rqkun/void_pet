@@ -40,7 +40,7 @@ def baro_timer():
             start_date = format_timedelta(date)
             location = data["location"]
             end_date = format_timedelta(datetime.strptime(data["expiry"],"%Y-%m-%dT%H:%M:%S.%fZ")-datetime.today())
-            st.header(data["character"])
+            st.markdown(f"""### Baro Ki'Teer <br> """,unsafe_allow_html=True)
             if data["active"]:
                 st.write(f"Leaving: `{end_date}`")
             else:
@@ -74,7 +74,7 @@ def varzia_timer():
             start_date = format_timedelta(date)
             location = data["location"]
             end_date = format_timedelta(datetime.strptime(data["expiry"],"%Y-%m-%dT%H:%M:%S.%fZ")-datetime.today())
-            st.header("Varzia")
+            st.markdown(f"""### Varzia <br> """,unsafe_allow_html=True)
             if data["active"]:
                 st.write(f"Leaving: `{end_date}`")
             else:
