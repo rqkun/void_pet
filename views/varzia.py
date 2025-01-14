@@ -84,10 +84,11 @@ if 'varzia_wares' not in st.session_state:
 data = st.session_state.varzia_wares["data"]
 with mid:
     headers.basic(logo=AppIcons.AYA.value)
+    relics = store_varzia(data)
     with st.spinner("Loading relics..."):
-        relics = store_varzia(data)
-
-        prime_frame_options=  api_services.get_all_prime_names()
+        all_prime=  api_services.get_all_prime_names()
+        prime_frame_options = data_tools.get_prime_resurgent(all_prime,relics)
+        
         primes = st.multiselect(
             "Which Primes",
             prime_frame_options,
@@ -96,21 +97,17 @@ with mid:
         )
         
         names = data_tools.search_rewards(primes,relics)
-    if len(names)>0:
-        relic_index = st.selectbox("Choose a relic to inspect it's rewards: ",
-                    options=names,
-                    )
-        option_map = data_tools.get_relic_reward_options(relics,relic_index)
-        reward_option = st.radio(
-            "Choose a reward to inspect: ",
-            options=option_map.keys(),
-        )
-        
-        bot_right, bot_left=st.columns([5,1])
-        if bot_right.button("Market",disabled=("Forma Blueprint" in reward_option),use_container_width=True,icon=AppIcons.MARKET.value,type="primary"):
-            relic_reward_check(option_map[reward_option])
-        wiki_url = data_tools.extract_prime_substring(reward_option).replace(" ","/")
-        bot_left.link_button(AppIcons.DETAILS.value,url=f"https://warframe.fandom.com/wiki/{wiki_url}",use_container_width=True)
-    else:
-        st.warning("Currently not on rotation.",icon=AppIcons.WARNING.value)
-
+    relic_index = st.selectbox("Choose a relic to inspect it's rewards: ",
+                options=names,
+                )
+    option_map = data_tools.get_relic_reward_options(relics,relic_index)
+    reward_option = st.radio(
+        "Choose a reward to inspect: ",
+        options=option_map.keys(),
+    )
+    
+    bot_right, bot_left=st.columns([5,1])
+    if bot_right.button("Market",disabled=("Forma Blueprint" in reward_option),use_container_width=True,icon=AppIcons.MARKET.value,type="primary"):
+        relic_reward_check(option_map[reward_option])
+    wiki_url = data_tools.extract_prime_substring(reward_option).replace(" ","/")
+    bot_left.link_button(AppIcons.DETAILS.value,url=f"https://warframe.fandom.com/wiki/{wiki_url}",use_container_width=True)

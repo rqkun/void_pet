@@ -32,7 +32,7 @@ def search_rewards(search_keys,data):
         for dict_key, outer_dict in relics.items():
             if 'rewards' in outer_dict:
                 for key in outer_dict['rewards'].keys():
-                    if any(search_key.lower().replace(" ", "_") in key.lower() for search_key in search_keys):
+                    if any("_"+search_key.lower().replace(" ", "_") in "_"+key.lower() for search_key in search_keys):
                         result.append(dict_key)
                         break  # No need to check further rewards for this outer key
         return result
@@ -84,4 +84,12 @@ def extract_prime_substring(input_string):
         return match.group(1)
     else:
         return ""
+
+def get_prime_resurgent(primes,relics_list):
+    result = []
+    for prime in primes:
+        rewards = search_rewards([prime],relics_list)
+        if len(rewards)>0:
+            result.append(prime)
+    return result
     
