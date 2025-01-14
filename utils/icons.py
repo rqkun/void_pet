@@ -9,7 +9,7 @@ class AppIcons(Enum):
     HOME = ":material/home:"
     VARZIA = ":material/shopping_cart_checkout:"
     ISSUES = ":material/bug_report:"
-    DETAILS =":material/info:"
+    WIKI =":material/import_contacts:"
     EXTERNAL =":material/open_in_new:"
     MARKET = ":material/storefront:"
     INSPECT = ":material/search:"

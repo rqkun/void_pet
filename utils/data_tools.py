@@ -1,13 +1,14 @@
 from utils import structures
+from statistics import median
 import re 
 
-def market_filter(data, rep=0, offline=False,wtb=False):
-    if wtb is False:
-        data =[entry for entry in data if (entry['order_type'] == "sell")]
-    else: 
+def market_filter(data, rep=0, status="All",wtb=""):
+    if wtb == "WTB": 
         data =[entry for entry in data if (entry['order_type'] == "buy")]
-    if offline is False:
-        data =[entry for entry in data if (entry['user']['status'] == "online" or entry['user']['status'] == "ingame")]
+    else:
+        data =[entry for entry in data if (entry['order_type'] == "sell")]
+    if status != "All":
+        data =[entry for entry in data if (entry['user']['status'] == status.lower())]
     return [entry for entry in data if entry['user']['reputation'] >= rep]
 
 def get_relic_reward_options(relics,name):
@@ -64,10 +65,10 @@ def get_correct_piece(piece_list,name):
             return item
  
 def get_average_plat_price(orders):
-    avg_plat = 0
+    prices = []
     for order in orders:
-        avg_plat += order["platinum"]
-    return avg_plat/len(orders) if len(orders) > 0 else 0
+        prices.append(order["platinum"])
+    return median(prices) if len(orders) > 0 else 0
 
 def clean_prime_names(frame_json,weap_json):
     result = []
