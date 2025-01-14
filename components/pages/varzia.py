@@ -29,7 +29,7 @@ if len(query_params)>0:
     
 _, mid,_ = st.columns([1,4,1])
 with mid:
-    headers.basic(logo=AppIcons.AYA.value)
+    headers.basic(logo=Warframe.AYA.value)
     
 
 if 'varzia_wares' not in st.session_state:

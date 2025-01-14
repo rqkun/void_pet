@@ -5,11 +5,13 @@ from utils import api_services, data_tools
 
 @st.cache_data(show_spinner=False)
 def call_market(option):
+    """ All the market API. """
     with st.spinner(AppMessages.LOAD_DATA.value):
         return api_services.get_market_orders(option)['payload']['orders']
 
 @st.dialog(AppLabels.DETAIL_MARKET.value)
 def relic_reward_check(option):
+    """ Show item details with market lookup options. """
     relic_name_cleaned = option["name"].lower().replace(" ","_")
     with st.spinner(AppMessages.LOAD_DATA.value):
         single_item =api_services.get_market_item(relic_name_cleaned)
@@ -27,7 +29,7 @@ def relic_reward_check(option):
         
         st.markdown(f"""
                     Rarity: <font color="#FF4B4B">{option["rarity"]}</font> | Base chances: <font color="#FF4B4B">{option["chance"]}</font> %<br />
-                    Ducats: <font color="#FF4B4B">{item["ducats"]}</font> <img alt="ducat" style="width:20px;height:20px;" src="{AppIcons.DUCAT.value}"/> <br/>
+                    Ducats: <font color="#FF4B4B">{item["ducats"]}</font> <img alt="ducat" style="width:20px;height:20px;" src="{Warframe.DUCAT.value}"/> <br/>
                     MR: <font color="#FF4B4B">{item["mastery_level"]}</font> <br />
                     """,unsafe_allow_html=True)
     static_url = Warframe.MARKET.value["static"]
@@ -51,5 +53,5 @@ def relic_reward_check(option):
     if submit:
         market_data = data_tools.market_filter(call_market(relic_name_cleaned),rep=rep, status=status,wtb=wtb)[:limit]
         avg_plat = data_tools.get_average_plat_price(market_data)
-        bottom_contain_r.markdown(f"""<div> Average: <font color="#FF4B4B">{avg_plat:.2f} <img alt="plat" style="width:20px;height:20px;" src="{AppIcons.PLATINUM.value}"/> </font> Platinum(s) from <font color="#FF4B4B">{len(market_data)}</font> offer(s). </a> <br>""",unsafe_allow_html=True)
+        bottom_contain_r.markdown(f"""<div> Average: <font color="#FF4B4B">{avg_plat:.2f} <img alt="plat" style="width:20px;height:20px;" src="{Warframe.PLATINUM.value}"/> </font> Platinum(s) from <font color="#FF4B4B">{len(market_data)}</font> offer(s). </a> <br>""",unsafe_allow_html=True)
         bottom_contain_r.write("")

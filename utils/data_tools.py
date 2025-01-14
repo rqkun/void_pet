@@ -3,6 +3,7 @@ from statistics import median
 import re 
 
 def market_filter(data, rep=0, status="All",wtb=""):
+    """ Filter data with reputation threshold, online statuses, buy/sell orders. """
     if wtb == "WTB": 
         data =[entry for entry in data if (entry['order_type'] == "buy")]
     else:
@@ -12,6 +13,7 @@ def market_filter(data, rep=0, status="All",wtb=""):
     return [entry for entry in data if entry['user']['reputation'] >= rep]
 
 def get_relic_reward_options(relics,name):
+    """ Return relic's rewards dictionary. """
     relic = None
     relic_option={}
     for item in relics:
@@ -27,6 +29,7 @@ def get_relic_reward_options(relics,name):
     return relic_option
 
 def search_rewards(search_keys,data):
+    """ Return relic that have search_keys as reward(s). """
     relics = get_relic_reward_list(data)
     if len(search_keys) > 0 and len(relics) :
         result = []
@@ -40,6 +43,7 @@ def search_rewards(search_keys,data):
     return get_relic_names(data)
 
 def get_relic_rewards_string(relic):
+    """ Return dictionary with reward names with some formatting. """
     relic_option={}
     for item in relic["data"]["rewards"]:
         if 'Forma Blueprint' not in item["item"]["name"]:
@@ -47,6 +51,7 @@ def get_relic_rewards_string(relic):
     return relic_option
 
 def get_relic_reward_list(relics):
+    """ Return dictionary options for the select relic widget. """
     relic_option={}
     for item in relics:
         rewards = get_relic_rewards_string(item)
@@ -54,17 +59,23 @@ def get_relic_reward_list(relics):
     return relic_option
 
 def get_relic_names(json_data):
+    """ Return list of relic names from input. """
     names = []
     for _, obj in enumerate(json_data):
         names.append(obj["data"]["name"])
     return names
 
 def get_correct_piece(piece_list,name):
+    """ Return the correct Prime component from a set. """
     for item in piece_list:
         if item['en']['item_name'].lower().replace(" ","_") == name:
             return item
  
 def get_average_plat_price(orders):
+    """ 
+        Return median price of a list of orders.
+        By doing it this way, we can avoid large deviation between prices.
+    """
     prices = []
     for order in orders:
         prices.append(order["platinum"])
@@ -79,6 +90,7 @@ def clean_prime_names(frame_json,weap_json):
     return result
 
 def extract_prime_substring(input_string):
+    """ Return the Prime set name from a Prime component. """
     pattern = r'(\w+\sPrime)'
     match = re.search(pattern, input_string)
     if match:
@@ -87,6 +99,7 @@ def extract_prime_substring(input_string):
         return ""
 
 def get_prime_resurgent(primes,relics_list):
+    """ Return the list of prime resurgent that are in rotation. """
     result = []
     for prime in primes:
         rewards = search_rewards([prime],relics_list)

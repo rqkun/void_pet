@@ -5,22 +5,25 @@ from PIL import Image
 from config.constants import AppIcons, AppLabels, AppMessages, AppPages, Warframe
 
 def prep_image(route):
+    """ Crop images. """
     image = Image.open(route)
     return image.resize((200, 200))
 
 def format_timedelta(delta):
-    # Extract hours, minutes, and seconds from the time delta
+    """ Extract hours, minutes, and seconds from the time delta. """
     total_seconds = int(delta.total_seconds())
-    days, remainder = divmod(total_seconds, 86400)  # 86400 seconds in a day
+    days, remainder = divmod(total_seconds, 86400)
     hours, remainder = divmod(remainder, 3600)
     minutes, _ = divmod(remainder, 60)
     return AppMessages.delta_time_message(days,hours,minutes)
 
 def check_disable(data):
+    """ Revert active variable. """
     return False if data["active"] else True
         
 @st.fragment(run_every=timedelta(minutes=1))
 def baro_timer():
+    """ Show baro's cards that update every minute. """
     baro_card = st.container(border=True)
     with baro_card:
         with st.spinner(AppMessages.LOAD_DATA.value):
@@ -56,6 +59,7 @@ def baro_timer():
 
 @st.fragment(run_every=timedelta(minutes=1))
 def varzia_timer():
+    """ Show varzia's cards that update every minute. """
     varzia_card = st.container(border=True)
     with varzia_card:
         with st.spinner(AppMessages.LOAD_DATA.value):
