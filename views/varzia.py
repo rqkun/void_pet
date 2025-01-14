@@ -1,8 +1,5 @@
 import streamlit as st
 from utils import api_services, data_tools, headers, structures
-from PIL import Image
-import requests
-from io import BytesIO
 
 from utils.icons import AppIcons
 

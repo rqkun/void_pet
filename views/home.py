@@ -2,7 +2,6 @@ from datetime import datetime, timedelta
 import streamlit as st
 from utils import api_services, structures
 from PIL import Image
-import pandas as pd
 from utils.icons import AppIcons
 
 def prep_image(route):
