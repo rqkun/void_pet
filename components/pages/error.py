@@ -1,6 +1,6 @@
 import streamlit as st
 
-from utils import headers
+from components import headers
 
 _, mid,_ = st.columns([1,4,1])
 

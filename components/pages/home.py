@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 import streamlit as st
 from utils import api_services, structures
 from PIL import Image
-from utils.icons import AppIcons
+from config.constants import AppIcons, AppLabels, AppMessages, AppPages, Warframe
 
 def prep_image(route):
     image = Image.open(route)
@@ -14,10 +14,7 @@ def format_timedelta(delta):
     days, remainder = divmod(total_seconds, 86400)  # 86400 seconds in a day
     hours, remainder = divmod(remainder, 3600)
     minutes, _ = divmod(remainder, 60)
-
-    # Format the time delta
-    formatted_time_delta = f"{days} days, {hours} hours, {minutes} minutes"
-    return formatted_time_delta
+    return AppMessages.delta_time_message(days,hours,minutes)
 
 def check_disable(data):
     return False if data["active"] else True
@@ -26,72 +23,72 @@ def check_disable(data):
 def baro_timer():
     baro_card = st.container(border=True)
     with baro_card:
-        with st.spinner("Gather Data..."):
+        with st.spinner(AppMessages.LOAD_DATA.value):
             data=api_services.get_baro_data()
         
         left,right = st.columns([2,1])
         baro_info = left.container(border=True)
         baro_img = right.container(border=True)
         
-        baro_img.image(prep_image("static/image/baro.png"),use_container_width=True)
+        baro_img.image(prep_image(Warframe.BARO.value["image"]),use_container_width=True)
 
         with baro_info:
             date = datetime.strptime(data["activation"],"%Y-%m-%dT%H:%M:%S.%fZ")-datetime.today()
             start_date = format_timedelta(date)
             location = data["location"]
             end_date = format_timedelta(datetime.strptime(data["expiry"],"%Y-%m-%dT%H:%M:%S.%fZ")-datetime.today())
-            st.markdown(f"""### Baro Ki'Teer <br> """,unsafe_allow_html=True)
+            st.markdown(f"""### {Warframe.BARO.value["name"]} <br> """,unsafe_allow_html=True)
             if data["active"]:
-                st.write(f"Leaving: `{end_date}`")
+                st.write(AppMessages.end_time_message(end_date))
             else:
-                st.write(f"Arrival: `{start_date}`")
-            st.write(f"Place: `{location}`")
-            if st.button("Reload",use_container_width=True,type="secondary",icon=AppIcons.SYNC.value,key="baro_reload"):
+                st.write(AppMessages.start_time_message(start_date))
+            st.write(AppMessages.start_time_message(location))
+            if st.button(AppLabels.RELOAD.value,use_container_width=True,type="secondary",icon=AppIcons.SYNC.value,key="baro_reload"):
                 if 'baro_wares' in st.session_state:
                     del st.session_state["baro_wares"]
                 if 'baro_wares_detail' in st.session_state:
                     del st.session_state["baro_wares_detail"]
                 st.cache_data.clear()
                 st.rerun()
-        if right.button("Browse",use_container_width=True,disabled=check_disable(data),help="This will unlock when he comes back to a relay.",key="baro_browse",type="primary"):
-            st.switch_page("views/error.py")
+        if right.button(AppLabels.BROWSE.value,use_container_width=True,disabled=check_disable(data),help=AppMessages.BARO_LOCKED.value,key="baro_browse",type="primary"):
+            st.switch_page(AppPages.ERROR.value)
             pass
 
 @st.fragment(run_every=timedelta(minutes=1))
 def varzia_timer():
     varzia_card = st.container(border=True)
     with varzia_card:
-        with st.spinner("Gather Data..."):
+        with st.spinner(AppMessages.LOAD_DATA.value):
             data=api_services.get_varzia_data()
         
         left,right = st.columns([2,1])
         varzia_info = left.container(border=True)
         varzia_img = right.container(border=True)
-        varzia_img.image(prep_image("static/image/varzia.png"),use_container_width=True)
+        varzia_img.image(prep_image(Warframe.VARZIA.value["image"]),use_container_width=True)
 
         with varzia_info:
             date = datetime.strptime(data["activation"],"%Y-%m-%dT%H:%M:%S.%fZ")-datetime.today()
             start_date = format_timedelta(date)
             location = data["location"]
             end_date = format_timedelta(datetime.strptime(data["expiry"],"%Y-%m-%dT%H:%M:%S.%fZ")-datetime.today())
-            st.markdown(f"""### Varzia <br> """,unsafe_allow_html=True)
+            st.markdown(f"""### {Warframe.VARZIA.value["name"]} <br> """,unsafe_allow_html=True)
             if data["active"]:
-                st.write(f"Leaving: `{end_date}`")
+                st.write(AppMessages.end_time_message(end_date))
             else:
-                st.write(f"Arrival: `{start_date}`")
-            st.write(f"Place: `{location}`")
-            if st.button("Reload",use_container_width=True,type="secondary",icon=AppIcons.SYNC.value,key="variza_reload"):
+                st.write(AppMessages.start_time_message(start_date))
+            st.write(AppMessages.start_time_message(location))
+            if st.button(AppLabels.RELOAD.value,use_container_width=True,type="secondary",icon=AppIcons.SYNC.value,key="variza_reload"):
                 if 'varzia_wares' in st.session_state:
                     del st.session_state["varzia_wares"]
                 if 'varzia_wares_detail' in st.session_state:
                     del st.session_state["varzia_wares_detail"]
                 st.cache_data.clear()
                 st.rerun()
-        if right.button("Browse",use_container_width=True,disabled=check_disable(data),help="Click to browse wares.",key="variza_browse",type="primary"):
+        if right.button(AppLabels.BROWSE.value,use_container_width=True,disabled=check_disable(data),help=AppMessages.VARZIA_BROWSE.value,key="variza_browse",type="primary"):
             #Aya Only!
             filtered_data = [item for item in data["inventory"] if item['credits'] is not None]
             st.session_state["varzia_wares"] = structures.ware_object("varzia",filtered_data)
-            st.switch_page("views/varzia.py")
+            st.switch_page(AppPages.VARZIA.value)
 
 
 left_col,_,right_col = st.columns([20,1,20])
