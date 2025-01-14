@@ -2,6 +2,7 @@
 # Void Pet 
 
 A Python-based **Streamlit** application that utilizes the **Warframe Official API** and the **Warframe.market API** to provide up-to-date information on in-game events, vendor inventories, and market pricing.
+
 Checkout the website [here](https://rqkun-voidpet.streamlit.app/)
 
 ---
