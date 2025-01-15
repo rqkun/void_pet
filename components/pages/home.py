@@ -3,8 +3,6 @@ import streamlit as st
 from utils import api_services, structures
 from PIL import Image
 from config.constants import AppIcons, AppLabels, AppMessages, AppPages, Warframe
-from extra_streamlit_components import stepper_bar
-
 from utils.data_tools import get_invasions_rewards, get_sortie_missions
 
 def prep_image(route):
@@ -172,17 +170,17 @@ def sortie_state_timer():
         
         with st.container(border=True),st.spinner(AppMessages.LOAD_DATA.value):
             sortie_steps, sortie_step_names = get_sortie_missions(data)
-            left,right = st.columns([1,1],vertical_alignment= "center")
-            with left:
-                val = stepper_bar(steps=sortie_step_names,is_vertical=True)
-            with right:
-                sortie_node = sortie_steps[sortie_step_names[val]]
-                st.markdown(f"""Boss: `{data["boss"]}` - `{data["faction"]}` <br>
-                            {AppMessages.location_message(sortie_node["node"])}<br>
-                            Modifier: `{sortie_node["modifier"]}`
-                            """,unsafe_allow_html=True)
-                if st.button(AppLabels.RELOAD.value,use_container_width=True,type="secondary",icon=AppIcons.SYNC.value,key="sortie_state_reload"):
-                    st.rerun(scope="fragment")
+            tablist = st.tabs(sortie_step_names)
+            for i,tab in enumerate(tablist):
+                with tab:
+                    sortie_node = sortie_steps[sortie_step_names[i]]
+                    st.markdown(f"""Boss: `{data["boss"]}` - `{data["faction"]}` <br>
+                                {AppMessages.location_message(sortie_node["node"])}<br>
+                                Modifier: `{sortie_node["modifier"]}`
+                                """,unsafe_allow_html=True)
+            if st.button(AppLabels.RELOAD.value,use_container_width=True,type="secondary",icon=AppIcons.SYNC.value,key="sortie_state_reload"):
+                st.rerun(scope="fragment")
+           
 
 @st.fragment(run_every=timedelta(minutes=5))
 def invasion_state_timer():
