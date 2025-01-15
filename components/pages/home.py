@@ -10,7 +10,7 @@ from utils.data_tools import get_invasions_rewards, get_sortie_missions
 def prep_image(route):
     """ Crop images. """
     image = Image.open(route)
-    return image.resize((200, 200))
+    return image.resize((150, 150))
 
 def format_timedelta(delta,day=True):
     """ Extract hours, minutes, and seconds from the time delta. """
@@ -34,9 +34,11 @@ def baro_timer():
     with baro_card:
         with st.spinner(AppMessages.LOAD_DATA.value):
             data=api_services.get_baro_data()
+        st.markdown(f"""### {Warframe.BARO.value["name"]}""",unsafe_allow_html=True)
+        baro_info_card = st.container(border=True)
+        left,right = baro_info_card.columns([2,1])
         
-        left,right = st.columns([2,1])
-        baro_info = left.container(border=True)
+        baro_info = left.container(border=False)
         baro_img = right.container(border=True)
         
         baro_img.image(prep_image(Warframe.BARO.value["image"]),use_container_width=True)
@@ -45,19 +47,18 @@ def baro_timer():
             date = datetime.strptime(data["activation"],"%Y-%m-%dT%H:%M:%S.%fZ")-datetime.today()
             start_date = format_timedelta(date)
             end_date = format_timedelta(datetime.strptime(data["expiry"],"%Y-%m-%dT%H:%M:%S.%fZ")-datetime.today())
-            st.markdown(f"""### {Warframe.BARO.value["name"]} <br> """,unsafe_allow_html=True)
+            
             if data["active"]:
                 st.write(AppMessages.end_time_message(end_date))
             else:
                 st.write(AppMessages.start_time_message(start_date))
-            st.write("")
             if st.button(AppLabels.RELOAD.value,use_container_width=True,type="secondary",icon=AppIcons.SYNC.value,key="baro_reload"):
                 if 'baro_wares' in st.session_state:
                     del st.session_state["baro_wares"]
                 if 'baro_wares_detail' in st.session_state:
                     del st.session_state["baro_wares_detail"]
                 st.rerun(scope="fragment")
-        if right.button(AppLabels.BROWSE.value,use_container_width=True,disabled=check_disable(data),help=AppMessages.BARO_LOCKED.value,key="baro_browse",type="primary"):
+        if baro_info.button(AppLabels.BROWSE.value,use_container_width=True,disabled=check_disable(data),help=AppMessages.BARO_LOCKED.value,key="baro_browse",type="primary"):
             st.switch_page(AppPages.ERROR.value)
             pass
 
@@ -68,9 +69,10 @@ def varzia_timer():
     with varzia_card:
         with st.spinner(AppMessages.LOAD_DATA.value):
             data=api_services.get_varzia_data()
-        
-        left,right = st.columns([2,1])
-        varzia_info = left.container(border=True)
+        st.markdown(f"""### {Warframe.VARZIA.value["name"]}""",unsafe_allow_html=True)
+        varzia_info_card = st.container(border=True)
+        left,right = varzia_info_card.columns([2,1])
+        varzia_info = left.container(border=False)
         varzia_img = right.container(border=True)
         varzia_img.image(prep_image(Warframe.VARZIA.value["image"]),use_container_width=True)
 
@@ -78,7 +80,7 @@ def varzia_timer():
             date = datetime.strptime(data["activation"],"%Y-%m-%dT%H:%M:%S.%fZ")-datetime.today()
             start_date = format_timedelta(date)
             end_date = format_timedelta(datetime.strptime(data["expiry"],"%Y-%m-%dT%H:%M:%S.%fZ")-datetime.today())
-            st.markdown(f"""### {Warframe.VARZIA.value["name"]} <br> """,unsafe_allow_html=True)
+            
             if data["active"]:
                 st.write(AppMessages.end_time_message(end_date))
             else:
@@ -91,7 +93,7 @@ def varzia_timer():
                     del st.session_state["varzia_wares_detail"]
                 st.cache_data.clear()
                 st.rerun(scope="fragment")
-        if right.button(AppLabels.BROWSE.value,use_container_width=True,disabled=check_disable(data),help=AppMessages.VARZIA_BROWSE.value,key="variza_browse",type="primary"):
+        if varzia_info.button(AppLabels.BROWSE.value,use_container_width=True,disabled=check_disable(data),help=AppMessages.VARZIA_BROWSE.value,key="variza_browse",type="primary"):
             #Aya Only!
             filtered_data = [item for item in data["inventory"] if item['credits'] is not None]
             st.session_state["varzia_wares"] = structures.ware_object("varzia",filtered_data)
