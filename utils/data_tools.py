@@ -1,3 +1,4 @@
+from collections import defaultdict
 from utils import structures
 from statistics import median
 import re 
@@ -114,3 +115,26 @@ def get_sortie_missions(data):
         result[item["missionType"]] = item
         result_option.append(item["missionType"])
     return result, result_option
+
+def parse_item_string(item_string):
+    parts = item_string.split(" ", 1)  # Split into two parts: count and name
+    if parts[0].isdigit():  # Check if the first part is a number
+        count = int(parts[0])
+        name = parts[1]
+    else:  # If no number at the start, default count to 1
+        count = 1
+        name = item_string
+    return name, count
+
+def get_invasions_rewards(data):
+    result = defaultdict(int)
+    for invasion in data:
+        if invasion["attacker"]["faction"] != "Infested":
+            name, count = parse_item_string(invasion["attacker"]["reward"]["asString"]) 
+            result[name] += count
+
+        
+        name, count = parse_item_string(invasion["defender"]["reward"]["asString"]) 
+        result[name] += count
+    
+    return result

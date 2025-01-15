@@ -5,7 +5,7 @@ from PIL import Image
 from config.constants import AppIcons, AppLabels, AppMessages, AppPages, Warframe
 import extra_streamlit_components as stx
 
-from utils.data_tools import get_sortie_missions
+from utils.data_tools import get_invasions_rewards, get_sortie_missions
 
 def prep_image(route):
     """ Crop images. """
@@ -182,13 +182,27 @@ def sortie_state_timer():
                 if st.button(AppLabels.RELOAD.value,use_container_width=True,type="secondary",icon=AppIcons.SYNC.value,key="sortie_state_reload"):
                     st.rerun(scope="fragment")
 
-
+@st.fragment(run_every=timedelta(minutes=5))
+def invasion_state_timer():
+    """ Show Invasion rewards card. """
+    event_state_card = st.container(border=True)
+    with event_state_card:
+        with st.spinner(AppMessages.LOAD_DATA.value):
+            data=get_invasions_rewards(api_services.get_world_state()["invasions"])
+        st.markdown(f"""### Invasion Rewards""",unsafe_allow_html=True)
+        
+        
+        with st.container(border=True),st.spinner(AppMessages.LOAD_DATA.value):
+            st.json(data)
+            
+            if st.button(AppLabels.RELOAD.value,use_container_width=True,type="secondary",icon=AppIcons.SYNC.value,key="invasion_state_reload"):
+                st.rerun(scope="fragment")
 
 left_col,right_col = st.columns(2)
 with left_col:
     baro_timer()
     varzia_timer()
-    st.container(height=400).json(api_services.get_world_state()["invasions"])
+    invasion_state_timer()
 with right_col:
     event_state_timer()
     sortie_state_timer()
