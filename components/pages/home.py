@@ -45,14 +45,13 @@ def baro_timer():
                 st.write(AppMessages.end_time_message(end_date))
             else:
                 st.write(AppMessages.start_time_message(start_date))
-            st.write(AppMessages.start_time_message(location))
+            st.write(AppMessages.location_message(location))
             if st.button(AppLabels.RELOAD.value,use_container_width=True,type="secondary",icon=AppIcons.SYNC.value,key="baro_reload"):
                 if 'baro_wares' in st.session_state:
                     del st.session_state["baro_wares"]
                 if 'baro_wares_detail' in st.session_state:
                     del st.session_state["baro_wares_detail"]
-                st.cache_data.clear()
-                st.rerun()
+                st.rerun(scope="fragment")
         if right.button(AppLabels.BROWSE.value,use_container_width=True,disabled=check_disable(data),help=AppMessages.BARO_LOCKED.value,key="baro_browse",type="primary"):
             st.switch_page(AppPages.ERROR.value)
             pass
@@ -80,24 +79,46 @@ def varzia_timer():
                 st.write(AppMessages.end_time_message(end_date))
             else:
                 st.write(AppMessages.start_time_message(start_date))
-            st.write(AppMessages.start_time_message(location))
+            st.write(AppMessages.location_message(location))
             if st.button(AppLabels.RELOAD.value,use_container_width=True,type="secondary",icon=AppIcons.SYNC.value,key="variza_reload"):
                 if 'varzia_wares' in st.session_state:
                     del st.session_state["varzia_wares"]
                 if 'varzia_wares_detail' in st.session_state:
                     del st.session_state["varzia_wares_detail"]
                 st.cache_data.clear()
-                st.rerun()
+                st.rerun(scope="fragment")
         if right.button(AppLabels.BROWSE.value,use_container_width=True,disabled=check_disable(data),help=AppMessages.VARZIA_BROWSE.value,key="variza_browse",type="primary"):
             #Aya Only!
             filtered_data = [item for item in data["inventory"] if item['credits'] is not None]
             st.session_state["varzia_wares"] = structures.ware_object("varzia",filtered_data)
             st.switch_page(AppPages.VARZIA.value)
 
+@st.fragment(run_every=timedelta(minutes=1))
+def world_state_timer():
+    """ Show varzia's cards that update every minute. """
+    world_state_card = st.container(border=True)
+    with world_state_card:
+        with st.spinner(AppMessages.LOAD_DATA.value):
+            data=api_services.get_world_state()
+        st.markdown(f"""### Events """,unsafe_allow_html=True)
+        events_info = st.container(border=True)
+        # events_wiki = right.container(border=True)
+        if len(data["events"])>0:
+            for event in data["events"]:
+                left,right = events_info.columns([8,1],vertical_alignment="top")
+                right.link_button(AppIcons.EXTERNAL.value,url=Warframe.get_wiki_url(event["description"]),use_container_width=True,type="tertiary")
+                left.progress(event["currentScore"],f"""{event["description"]} | {event["node"]}""")
+        else:
+            events_info.info('There are currently no events', icon=AppIcons.INFO.value)
+        if st.button(AppLabels.RELOAD.value,use_container_width=True,type="secondary",icon=AppIcons.SYNC.value,key="world_state_reload"):
+            st.rerun(scope="fragment")
+
+
 
 left_col,_,right_col = st.columns([20,1,20])
 with left_col:
     baro_timer()
-    
-with right_col:
     varzia_timer()
+with right_col:
+    world_state_timer()
+    #st.json(api_services.get_world_state())

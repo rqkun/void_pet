@@ -5,6 +5,12 @@ from config.constants import Warframe
 from utils import data_tools
 
 
+def get_world_state():
+    """ API request to get current world state data. """
+    request_ref = Warframe.STATUS.value["api"]+"/pc"
+    request_object = requests.get(request_ref)
+    raise_detailed_error(request_object)
+    return request_object.json()
 
 def get_baro_data():
     """ API request to get Baro's data. """

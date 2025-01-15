@@ -15,6 +15,7 @@ class AppIcons(Enum):
     EXTERNAL =":material/open_in_new:"
     MARKET = ":material/storefront:"
     INSPECT = ":material/search:"
+    INFO = ":material/info:"
 
 class AppMessages(Enum):
     """ Default messages for the app. """
@@ -34,7 +35,7 @@ class AppMessages(Enum):
     @staticmethod
     def location_message(location):
         """ Return location formatted message. """
-        return f"Place: `{location}`"
+        return f"Node: `{location}`"
     
     @staticmethod
     def end_time_message(date):
