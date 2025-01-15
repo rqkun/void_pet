@@ -48,10 +48,14 @@ class AppMessages(Enum):
         return f"Arrive: `{date}`"
     
     @staticmethod
-    def delta_time_message(days,hours, minutes):
+    def delta_datetime_message(days,hours, minutes):
         """ Return delta time formatted message. """
         return f"{days} days, {hours} hours, {minutes} minutes"
-
+    @staticmethod
+    def delta_time_message(hours, minutes):
+        """ Return delta time formatted message. """
+        return f"{hours}h:{minutes}m"
+    
 class AppLabels(Enum):
     """ Default button, widget labels for the app. """
     BROWSE = "Browse"

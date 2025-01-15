@@ -4,7 +4,7 @@ import streamlit as st
 from config.constants import Warframe
 from utils import data_tools
 
-
+@st.cache_data(ttl="1m",show_spinner=False)
 def get_world_state():
     """ API request to get current world state data. """
     request_ref = Warframe.STATUS.value["api"]+"/pc"
@@ -12,6 +12,7 @@ def get_world_state():
     raise_detailed_error(request_object)
     return request_object.json()
 
+@st.cache_data(ttl="1m",show_spinner=False)
 def get_baro_data():
     """ API request to get Baro's data. """
     request_ref = Warframe.STATUS.value["api"]+"/pc/voidTrader"
@@ -19,6 +20,7 @@ def get_baro_data():
     raise_detailed_error(request_object)
     return request_object.json()
 
+@st.cache_data(ttl="1m",show_spinner=False)
 def get_varzia_data():
     """ API request to get Varzia's data. """
     request_ref = Warframe.STATUS.value["api"]+"/pc/vaultTrader"
@@ -49,6 +51,7 @@ def get_market_item(url_path):
     raise_detailed_error(request_object)
     return request_object.json()
 
+@st.cache_data(ttl="10m",show_spinner=False)
 def get_all_prime_names():
     """ API request to get all Primes data. """
     request_ref = Warframe.STATUS.value["api"]+"/warframes/search/prime?only=name,category"

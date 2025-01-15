@@ -106,4 +106,11 @@ def get_prime_resurgent(primes,relics_list):
         if len(rewards)>0:
             result.append(prime)
     return result
-    
+
+def get_sortie_missions(data):
+    result = {}
+    result_option = []
+    for item in data["variants"]:
+        result[item["missionType"]] = item
+        result_option.append(item["missionType"])
+    return result, result_option
