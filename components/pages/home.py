@@ -3,7 +3,7 @@ import streamlit as st
 from utils import api_services, structures
 from PIL import Image
 from config.constants import AppIcons, AppLabels, AppMessages, AppPages, Warframe
-import extra_streamlit_components as stx
+from extra_streamlit_components import stepper_bar
 
 from utils.data_tools import get_invasions_rewards, get_sortie_missions
 
@@ -174,7 +174,7 @@ def sortie_state_timer():
             sortie_steps, sortie_step_names = get_sortie_missions(data)
             left,right = st.columns([1,1],vertical_alignment= "center")
             with left:
-                val = stx.stepper_bar(steps=sortie_step_names,is_vertical=True)
+                val = stepper_bar(steps=sortie_step_names,is_vertical=True)
             with right:
                 sortie_node = sortie_steps[sortie_step_names[val]]
                 st.markdown(f"""Boss: `{data["boss"]}` - `{data["faction"]}` <br>
