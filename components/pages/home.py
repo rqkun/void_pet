@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 import streamlit as st
-from utils import api_services, structures
+from config import structures
+from utils import api_services
 from PIL import Image
 from config.constants import AppIcons, AppLabels, AppMessages, AppPages, Warframe
 from utils.data_tools import get_invasions_rewards, get_sortie_missions
@@ -31,7 +32,7 @@ def baro_timer():
     baro_card = st.container(border=True)
     with baro_card:
         with st.spinner(AppMessages.LOAD_DATA.value):
-            data=api_services.get_baro_data()
+            data=api_services.get_varzia_data()
         st.markdown(f"""### {Warframe.BARO.value["name"]}""",unsafe_allow_html=True)
         baro_info_card = st.container(border=True)
         left,right = baro_info_card.columns([2,1])
@@ -57,8 +58,8 @@ def baro_timer():
                     del st.session_state["baro_wares_detail"]
                 st.rerun(scope="fragment")
         if baro_info.button(AppLabels.BROWSE.value,use_container_width=True,disabled=check_disable(data),help=AppMessages.BARO_LOCKED.value,key="baro_browse",type="primary"):
-            st.switch_page(AppPages.ERROR.value)
-            pass
+            st.session_state["baro_wares"] = structures.ware_object("baro",data["inventory"])
+            st.switch_page(AppPages.BARO.value)
 
 @st.fragment(run_every=timedelta(minutes=1))
 def varzia_timer():

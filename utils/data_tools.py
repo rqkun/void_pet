@@ -1,7 +1,11 @@
 from collections import defaultdict
-from utils import structures
+from config import structures
 from statistics import median
-import re 
+import re
+import streamlit as st
+from config.constants import AppMessages, Warframe
+from utils import api_services
+from utils.api_services import get_public_image_export 
 
 def market_filter(data, rep=0, status="All",wtb=""):
     """ Filter data with reputation threshold, online statuses, buy/sell orders. """
@@ -82,14 +86,6 @@ def get_average_plat_price(orders):
         prices.append(order["platinum"])
     return median(prices) if len(orders) > 0 else 0
 
-def clean_prime_names(frame_json,weap_json):
-    result = []
-    for item in frame_json:
-        result.append(item["name"]) 
-    for item in weap_json:
-        result.append(item["name"]) 
-    return result
-
 def extract_prime_substring(input_string):
     """ Return the Prime set name from a Prime component. """
     pattern = r'(\w+\sPrime)'
@@ -138,3 +134,21 @@ def get_invasions_rewards(data):
         result[name] += count
     
     return result
+
+def get_item_name(uniqueName):
+    data = api_services.get_item_data(uniqueName)
+    if len(data)>0:
+        return data[0]["name"]
+    else:
+        return ""
+
+def get_item_image(uniqueName):
+    if 'image_manifest' not in st.session_state:
+        manifest_file = api_services.get_manifest()
+        st.session_state.image_manifest = api_services.get_public_image_export(manifest_file)["Manifest"]
+    identifier = uniqueName.split("/")
+    identifier = "/".join(identifier[len(identifier)-3:])
+    for item in st.session_state.image_manifest:
+        if identifier in item["uniqueName"]:
+            return Warframe.PUBLIC_EXPORT.value["api"] + item["textureLocation"]
+    return "https://static.wikia.nocookie.net/warframe/images/4/46/Void.png"

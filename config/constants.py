@@ -10,6 +10,7 @@ class AppIcons(Enum):
     MENU = ":material/menu:"
     HOME = ":material/home:"
     VARZIA = ":material/shopping_cart_checkout:"
+    BARO = ":material/currency_exchange:"
     ISSUES = ":material/bug_report:"
     WIKI =":material/import_contacts:"
     EXTERNAL =":material/open_in_new:"
@@ -90,6 +91,7 @@ class AppPages(Enum):
     HOME = "components/pages/home.py"
     ERROR = "components/pages/error.py"
     VARZIA = "components/pages/varzia.py"
+    BARO = "components/pages/baro.py"
     ISSUE = "https://github.com/rqkun/void_pet/issues"
 
 class Warframe(Enum):
@@ -114,7 +116,10 @@ class Warframe(Enum):
         "static" : "https://warframe.market/static/assets",
         "url" : "https://warframe.market/items"
     }
-    
+    PUBLIC_EXPORT ={
+        "api": "http://content.warframe.com/PublicExport",
+        "index": "https://origin.warframe.com/PublicExport/index_en.txt.lzma"
+    }
     @staticmethod
     def get_wiki_url(string):
         """ Return the wiki url of a certain item. """

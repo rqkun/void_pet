@@ -1,6 +1,7 @@
 import streamlit as st
 from components import dialogs, headers
-from utils import api_services, data_tools, structures
+from config import structures
+from utils import api_services, data_tools
 
 from config.constants import AppIcons, AppLabels, AppMessages, AppPages, Warframe
 
@@ -61,8 +62,6 @@ with mid:
         AppLabels.REWARD_SELECT.value,
         options=option_map.keys(),
     )
-    
-    #
+
     if reward_form.form_submit_button(AppLabels.MARKET.value,use_container_width=True,icon=AppIcons.MARKET.value,type="primary"):
         dialogs.relic_reward_check(option_map[reward_option])
-    # 

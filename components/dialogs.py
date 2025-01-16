@@ -17,7 +17,8 @@ def relic_reward_check(option):
         single_item =api_services.get_market_item(relic_name_cleaned)
         item = data_tools.get_correct_piece(single_item["payload"]["item"]["items_in_set"],name=relic_name_cleaned)   
         icon = item["sub_icon"]
-        
+    
+    st.json(item)    
     infor_container = st.container(border=True)
     left_top,right_top = infor_container.columns([5,1],vertical_alignment="top")
     left_top.markdown(f"""## {item["en"]["item_name"]}""")
@@ -55,3 +56,18 @@ def relic_reward_check(option):
         avg_plat = data_tools.get_average_plat_price(market_data)
         bottom_contain_r.markdown(f"""<div> Average: <font color="#FF4B4B">{avg_plat:.2f} <img alt="plat" style="width:20px;height:20px;" src="{Warframe.PLATINUM.value}"/> </font> Platinum(s) from <font color="#FF4B4B">{len(market_data)}</font> offer(s). </a> <br>""",unsafe_allow_html=True)
         bottom_contain_r.write("")
+
+
+
+@st.dialog(AppLabels.DETAIL_MARKET.value)
+def baro_item_check(uniqueName):
+    """ Show item details with market lookup options. """
+    with st.spinner(AppMessages.LOAD_DATA.value):
+        item = api_services.get_item_data(uniqueName)
+        image_url = data_tools.get_item_image(uniqueName)
+    left_bot,right_bot = st.container().columns([1,2],vertical_alignment="top")
+    image_container = left_bot.container(border=True)
+    image_container.markdown(f"""
+                    <img alt="ducat" style="display: block;height=100px;margin-left: auto;margin-right: auto;" src="{image_url}"/>""",unsafe_allow_html=True)
+    image_container.write("")
+    right_bot.json(item)
