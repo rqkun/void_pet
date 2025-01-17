@@ -1,5 +1,5 @@
 import streamlit as st
-from components import dialogs, headers
+from components import cards, dialogs, headers
 from config import structures
 from utils import api_services, data_tools
 
@@ -62,5 +62,7 @@ with mid:
                               options=items.keys(),
                               format_func= lambda option: items[option],
                               )
-    if st.button("go"):
-        dialogs.baro_item_check(uniqueName)
+    with st.spinner(AppMessages.LOAD_DATA.value):
+        item = api_services.get_item_data(uniqueName)
+        image_url = data_tools.get_item_image(uniqueName)
+        cards.info_card(item[0],image_url)

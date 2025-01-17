@@ -152,3 +152,15 @@ def get_item_image(uniqueName):
         if identifier in item["uniqueName"]:
             return Warframe.PUBLIC_EXPORT.value["api"] + item["textureLocation"]
     return "https://static.wikia.nocookie.net/warframe/images/4/46/Void.png"
+
+def get_frame_abilities_with_image(frame):
+    result = api_services.get_abilities(frame)
+    
+    if len(result) ==0:
+        return {}
+    else:
+        
+        for ability in result[0]["abilities"]:
+            ability["imageName"] = get_item_image(ability["uniqueName"])
+    return result
+    

@@ -109,6 +109,14 @@ def get_public_image_export(file):
     raise_detailed_error(request_object)
     return request_object.json()
 
+def get_abilities(frame_name):
+    """API request to get frame's abilities."""
+    encoded_name = urllib.parse.quote(frame_name, safe="")
+    request_ref = Warframe.STATUS.value["api"]+f"/warframes/search/{encoded_name}?by=name&only=abilities,uniqueName,passiveDescription"
+    request_object = requests.get(request_ref)
+    raise_detailed_error(request_object)
+    return request_object.json()
+
 def raise_detailed_error(request_object):
     """ Get details on http errors. """
     try:
