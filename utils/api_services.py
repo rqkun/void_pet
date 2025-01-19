@@ -87,7 +87,7 @@ def get_item_data(unique_name):
 def decompress_lzma(data):
     results = []
     while True:
-        decomp = lzma.LZMADecompressor(lzma.FORMAT_RAW, None, None)
+        decomp = lzma.LZMADecompressor(lzma.FORMAT_AUTO, None, None)
         try:
             res = decomp.decompress(data)
         except lzma.LZMAError:
