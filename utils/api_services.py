@@ -85,37 +85,62 @@ def get_item_data(unique_name):
 
     return request_object.json()
 def decompress_lzma(data):
-    results = []
-    while True:
-        decomp = lzma.LZMADecompressor(lzma.FORMAT_AUTO, None, None)
-        try:
-            res = decomp.decompress(data)
-        except lzma.LZMAError:
-            if results:
-                break  # Leftover data is not a valid LZMA/XZ stream; ignore it.
-            else:
-                raise  # Error on the first iteration; bail out.
-        results.append(res)
-        data = decomp.unused_data
-        if not data:
-            break
-        if not decomp.eof:
-            raise lzma.LZMAError("Compressed data ended before the end-of-stream marker was reached")
-    return b"".join(results)
+    try:
+
+        # Step 2: Decompress the .lzma content directly from the response
+        compressed_data = data  # Get the binary content of the response
+        decompressed_data = lzma.decompress(compressed_data)  # Decompress the data
+
+        # Step 3: Use the decompressed data
+        content = decompressed_data.decode("utf-8")  # Decode to string if it's text
+        print("Decompressed Content:")
+        print(content)
+
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching the data: {e}")
+    except lzma.LZMAError as e:
+        print(f"Error decompressing the data: {e}")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
 
 # @st.cache_data(ttl="1d",show_spinner=False)
+# def get_manifest():
+#     """API request to get export manifest."""
+#     request_ref = "https://origin.warframe.com/PublicExport/index_en.txt.lzma"
+#     request_object = requests.get(request_ref)
+#     raise_detailed_error(request_object)
+#     try:
+#         decompressed_data = lzma.decompress(request_object.content)
+#         manifest_list = decompressed_data.decode("utf-8")
+#         for item in manifest_list.split("\r\n"):
+#             if 'ExportManifest' in item:
+#                 return item
+#         return "ExportManifest.json!00_N96OiP1NSlFN57WsfBeiPw" # backup
+#     except lzma.LZMAError as e:
+#         raise ValueError(f"Failed to decompress the LZMA file: {e}")
+
 def get_manifest():
     """API request to get export manifest."""
     request_ref = "https://origin.warframe.com/PublicExport/index_en.txt.lzma"
-    request_object = requests.get(request_ref)
-    raise_detailed_error(request_object)
+    response = requests.get(request_ref)
+    response.raise_for_status()
+
+    # Check the Content-Type header
+    content_type = response.headers.get('Content-Type', '')
+    if 'html' in content_type.lower():
+        raise ValueError("Received HTML content instead of LZMA-compressed data.")
+
+    # Optionally, inspect the first few bytes of the response content
+    if response.content.lstrip().startswith(b'<!DOCTYPE html>'):
+        raise ValueError("Received an HTML document instead of LZMA-compressed data.")
+
     try:
-        decompressed_data = decompress_lzma(request_object.raw)
+        decompressed_data = lzma.decompress(response.content)
         manifest_list = decompressed_data.decode("utf-8")
         for item in manifest_list.split("\r\n"):
             if 'ExportManifest' in item:
                 return item
-        return "ExportManifest.json!00_N96OiP1NSlFN57WsfBeiPw" # backup
+        return "ExportManifest.json!00_N96OiP1NSlFN57WsfBeiPw"  # backup
     except lzma.LZMAError as e:
         raise ValueError(f"Failed to decompress the LZMA file: {e}")
 
