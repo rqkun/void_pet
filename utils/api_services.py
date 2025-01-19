@@ -103,7 +103,7 @@ def decompress_lzma(data):
             raise lzma.LZMAError("Compressed data ended before the end-of-stream marker was reached")
     return b"".join(results)
 
-@st.cache_data(ttl="1d",show_spinner=False)
+# @st.cache_data(ttl="1d",show_spinner=False)
 def get_manifest():
     """API request to get export manifest."""
     request_ref = "https://origin.warframe.com/PublicExport/index_en.txt.lzma"
