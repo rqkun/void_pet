@@ -119,30 +119,45 @@ def decompress_lzma(data):
 #     except lzma.LZMAError as e:
 #         raise ValueError(f"Failed to decompress the LZMA file: {e}")
 
+import lzma
+import os
+import tempfile
+
 def get_manifest():
-    """API request to get export manifest."""
-    request_ref = "https://origin.warframe.com/PublicExport/index_en.txt.lzma"
-    response = requests.get(request_ref)
-    response.raise_for_status()
+    """Download, decompress, and read the export manifest."""
+    url = "https://origin.warframe.com/PublicExport/index_en.txt.lzma"
 
-    # Check the Content-Type header
-    content_type = response.headers.get('Content-Type', '')
-    if 'html' in content_type.lower():
-        raise ValueError("Received HTML content instead of LZMA-compressed data.")
 
-    # Optionally, inspect the first few bytes of the response content
-    if response.content.lstrip().startswith(b'<!DOCTYPE html>'):
-        raise ValueError("Received an HTML document instead of LZMA-compressed data.")
+    # Step 1: Download the LZMA-compressed file
+    response = requests.get(url)
+    response.raise_for_status()  # Ensure the request was successful
+
+    # Step 2: Save the file to a temporary location
+    with tempfile.NamedTemporaryFile(delete=False, mode='wb') as temp_file:
+        temp_file.write(response.content)
+        temp_file_path = temp_file.name
 
     try:
-        decompressed_data = lzma.decompress(response.content)
-        manifest_list = decompressed_data.decode("utf-8")
-        for item in manifest_list.split("\r\n"):
+        # Step 3: Read and decompress the file
+        with lzma.open(temp_file_path, 'rt', encoding='utf-8') as decompressed_file:
+            manifest_content = decompressed_file.read()
+        list_a = manifest_content.split("\n")
+        # Process the manifest content as needed
+        print(f"--------------- {list_a}")
+        for item in list_a:
             if 'ExportManifest' in item:
+                st.write(item)
                 return item
+
+        # Return a default value if 'ExportManifest' is not found
         return "ExportManifest.json!00_N96OiP1NSlFN57WsfBeiPw"  # backup
+
     except lzma.LZMAError as e:
         raise ValueError(f"Failed to decompress the LZMA file: {e}")
+
+    finally:
+        # Step 4: Clean up the temporary file
+        os.remove(temp_file_path)
 
 @st.cache_data(ttl="1d",show_spinner=False)
 def get_public_image_export(file):
