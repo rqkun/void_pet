@@ -87,7 +87,7 @@ def get_item_data(unique_name):
 def decompress_lzma(data):
     results = []
     while True:
-        decomp = lzma.LZMADecompressor(lzma.FORMAT_AUTO, None, None)
+        decomp = lzma.LZMADecompressor(lzma.FORMAT_RAW, None, None)
         try:
             res = decomp.decompress(data)
         except lzma.LZMAError:
@@ -110,7 +110,7 @@ def get_manifest():
     request_object = requests.get(request_ref)
     raise_detailed_error(request_object)
     try:
-        decompressed_data = decompress_lzma(request_object.content)
+        decompressed_data = decompress_lzma(request_object.raw)
         manifest_list = decompressed_data.decode("utf-8")
         for item in manifest_list.split("\r\n"):
             if 'ExportManifest' in item:
