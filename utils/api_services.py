@@ -112,7 +112,7 @@ def get_manifest():
     raise_detailed_error(request_object)
     try:
         decompressed_data = lzma.decompress(request_object.content)
-        manifest_list = decompressed_data.decode("utf-8")
+        manifest_list = decompressed_data.decode("utf-8", errors='ignore')
         for item in manifest_list.split("\r\n"):
             if 'ExportManifest' in item:
                 return item
