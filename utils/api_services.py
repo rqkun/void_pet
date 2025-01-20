@@ -131,7 +131,7 @@ def get_manifest():
     # Step 1: Download the LZMA-compressed file
     response = requests.get(url)
     response.raise_for_status()  # Ensure the request was successful
-
+    print(response.content)
     # Step 2: Save the file to a temporary location
     with tempfile.NamedTemporaryFile(delete=False, mode='wb') as temp_file:
         temp_file.write(response.content)
