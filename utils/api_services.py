@@ -1,8 +1,9 @@
+import json
 import lzma
 import requests
 import streamlit as st
 
-from config.constants import Warframe
+from config.constants import AppPages, Warframe
 import urllib.parse
 
 @st.cache_data(ttl="1m",show_spinner=False)
@@ -103,45 +104,14 @@ def decompress_lzma(data):
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
 
-# @st.cache_data(ttl="1d",show_spinner=False)
-# def get_manifest():
-#     """API request to get export manifest."""
-#     request_ref = "https://origin.warframe.com/PublicExport/index_en.txt.lzma"
-#     request_object = requests.get(request_ref)
-#     st.write(request_object.content)
-#     raise_detailed_error(request_object)
-#     try:
-#         decompressed_data = lzma.decompress(request_object.content)
-#         manifest_list = decompressed_data.decode("utf-8", errors='ignore')
-#         for item in manifest_list.split("\r\n"):
-#             if 'ExportManifest' in item:
-#                 return item
-#         return "ExportManifest.json!00_N96OiP1NSlFN57WsfBeiPw" # backup
-#     except lzma.LZMAError as e:
-#         raise ValueError(f"Failed to decompress the LZMA file: {e}")
-
-def get_manifest():
-    """API request to get export manifest."""
-    file = st.file_uploader("upload")
-    if file is not None:
-        try:
-            decompressed_data = lzma.decompress(file.read())
-            manifest_list = decompressed_data.decode("utf-8", errors='ignore')
-            for item in manifest_list.split("\r\n"):
-                if 'ExportManifest' in item:
-                    return item
-            return "ExportManifest.json!00_N96OiP1NSlFN57WsfBeiPw" # backup
-        except lzma.LZMAError as e:
-            raise ValueError(f"Failed to decompress the LZMA file: {e}")
-    else:
-        return None
-
 @st.cache_data(ttl="1d",show_spinner=False)
-def get_public_image_export(file):
+def get_public_image_export():
     """API request to get export manifest."""
-    request_ref = Warframe.PUBLIC_EXPORT.value["api"] + f"/Manifest/{file}"
-    request_object = requests.get(request_ref)
-    raise_detailed_error(request_object)
+    # request_ref = Warframe.PUBLIC_EXPORT.value["api"] + f"/Manifest/{file}"
+    # request_object = requests.get(request_ref)
+    # raise_detailed_error(request_object)
+    with open(AppPages.MANIFEST.value, "r", encoding="utf-8") as file:
+        return json.load(file)
     return request_object.json()
 
 def get_abilities(frame_name):

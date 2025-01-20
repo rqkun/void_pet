@@ -93,6 +93,7 @@ class AppPages(Enum):
     VARZIA = "components/pages/varzia.py"
     BARO = "components/pages/baro.py"
     ISSUE = "https://github.com/rqkun/void_pet/issues"
+    MANIFEST = "config/manifest.json"
 
 class Warframe(Enum):
     """ Warframe APIs and images. """
