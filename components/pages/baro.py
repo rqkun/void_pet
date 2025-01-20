@@ -1,27 +1,8 @@
 import streamlit as st
-from components import cards, dialogs, headers
-from config import structures
+from components import cards, headers
 from utils import api_services, data_tools
 
-from config.constants import AppIcons, AppLabels, AppMessages, AppPages, Warframe
-
-# @st.cache_data(show_spinner=False)
-# def store_baro(data):
-#     if 'baro_wares_detail' not in st.session_state:
-#         item_list = {}
-#         progress_text = AppMessages.PROGRESS.value
-#         progress = st.progress(0, text=progress_text)
-#         for i, item in enumerate(data):
-#             relic_unique_name = item["uniqueName"]
-#             tmp = api_services.get_item_data(relic_unique_name)
-#             if len(tmp) >0:
-#                 item_list[item["uniqueName"]] = tmp[0]
-#                 progress.progress((i+1)/len(data), text=AppMessages.index_relic_message(item_list[item["uniqueName"]]["name"]))
-#         st.session_state.baro_wares_detail = item_list
-#         progress.empty()
-#         return item_list
-#     else:
-#         return st.session_state.baro_wares_detail
+from config.constants import AppMessages, AppPages, Warframe
 
 @st.cache_data(ttl="1d",show_spinner=False)
 def store_baro(data):
@@ -65,4 +46,4 @@ with mid:
     with st.spinner(AppMessages.LOAD_DATA.value):
         item = api_services.get_item_data(uniqueName)
         image_url = data_tools.get_item_image(uniqueName)
-        cards.info_card(item[0],image_url)
+        cards.item_card(item[0],image_url)

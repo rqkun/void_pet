@@ -27,7 +27,7 @@ def relic_reward_check(option):
     left_select,right_select = inspect_form.columns([2,1],vertical_alignment="top")
     status = left_select.segmented_control(AppLabels.STATUS.value,options=AppLabels.status_options(),default=AppLabels.DEFAULT_STATUS.value,help=AppMessages.OFFER_STATUS_TOOLTIP.value)
     wtb = right_select.segmented_control(AppLabels.TYPE.value,options=AppLabels.type_options(), default=AppLabels.DEFAULT_TYPE.value,help=AppMessages.OFFER_TYPE_TOOLTIP.value)
-    rep = left_number.number_input(AppLabels.TYPE.value,0,step=1)
+    rep = left_number.number_input(AppLabels.REPUTATION.value,0,step=1)
     limit = right_number.number_input(AppLabels.NUMBER_OF_TRADES.value,min_value=1,step=1,value=10)
     submit = inspect_form.form_submit_button(AppLabels.INSPECT.value,use_container_width=True,icon=AppIcons.INSPECT.value,type="primary")
     bottom_contain_r = inspect_form.container(border=True)
@@ -46,4 +46,27 @@ def baro_item_check(uniqueName):
     with st.spinner(AppMessages.LOAD_DATA.value):
         item = api_services.get_item_data(uniqueName)
         image_url = data_tools.get_item_image(uniqueName)
-    cards.info_card(item[0],image_url)
+    cards.item_card(item[0],image_url)
+
+@st.dialog(AppLabels.DETAIL_MARKET.value,width="large")
+def market_check(item):
+    option_map = data_tools.get_relic_reward(item)
+    reward_form = st.form("reward_inspect_form",clear_on_submit=False,border=False)
+    reward_option = reward_form.selectbox(
+        AppLabels.REWARD_SELECT.value,
+        options=option_map.keys(),
+    )
+    
+    
+    
+    st.write(reward_option)
+
+    if reward_form.form_submit_button(AppLabels.MARKET.value,use_container_width=True,icon=AppIcons.MARKET.value,type="primary"):
+        with st.spinner(AppMessages.LOAD_DATA.value):
+            relic_name_cleaned = option_map[reward_option]["name"].lower().replace(" ","_")
+            single_item =api_services.get_market_item(relic_name_cleaned)
+            item = data_tools.get_correct_piece(single_item["payload"]["item"]["items_in_set"],name=relic_name_cleaned)   
+            icon = item["sub_icon"]
+
+            cards.relic_reward_card(option_map[reward_option],item,icon)
+        

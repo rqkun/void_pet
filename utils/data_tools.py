@@ -1,11 +1,13 @@
 from collections import defaultdict
+import json
+
+import requests
 from config import structures
 from statistics import median
 import re
 import streamlit as st
-from config.constants import AppMessages, Warframe
+from config.constants import AppMessages, AppPages, Warframe
 from utils import api_services
-from utils.api_services import get_public_image_export 
 
 def market_filter(data, rep=0, status="All",wtb=""):
     """ Filter data with reputation threshold, online statuses, buy/sell orders. """
@@ -32,6 +34,19 @@ def get_relic_reward_options(relics,name):
         if 'Forma Blueprint' not in item["item"]["name"]:
             relic_option[item["item"]["name"]] = value
     return relic_option
+
+def get_relic_reward(relic):
+    """ Return relic's rewards dictionary. """
+    relic_option={}
+
+    if relic is None:
+        return None
+    for item in relic["rewards"]:
+        value = structures.relic_reward_object(item["chance"],item["rarity"],item["item"]["name"])
+        if 'Forma Blueprint' not in item["item"]["name"]:
+            relic_option[item["item"]["name"]] = value
+    return relic_option
+
 
 def search_rewards(search_keys,data):
     """ Return relic that have search_keys as reward(s). """
@@ -142,15 +157,44 @@ def get_item_name(uniqueName):
     else:
         return ""
 
+
+@st.cache_data(ttl="1d",show_spinner=False)
+def get_public_image_export():
+    """API request to get export manifest."""
+    with open(AppPages.MANIFEST.value, "r", encoding="utf-8") as file:
+        return json.load(file)
+
 def get_item_image(uniqueName):
     if 'image_manifest' not in st.session_state:
-        manifest_file = api_services.get_manifest()
-        st.session_state.image_manifest = api_services.get_public_image_export(manifest_file)["Manifest"]
+        st.session_state.image_manifest = get_public_image_export()["Manifest"]
     identifier = uniqueName.split("/")
     identifier = "/".join(identifier[len(identifier)-3:])
     for item in st.session_state.image_manifest:
         if identifier in item["uniqueName"]:
             return Warframe.PUBLIC_EXPORT.value["api"] + item["textureLocation"]
+    return "https://static.wikia.nocookie.net/warframe/images/4/46/Void.png"
+
+def transform_string(s):
+
+    # Define the pattern to match the specific cases
+    pattern1 = re.compile(r'\bPrime (\w+) (\w+)\b', re.IGNORECASE)
+    pattern2 = re.compile(r'\b(\w+) Prime (\w+)\b', re.IGNORECASE)
+    
+    # Replace the matched patterns with the desired output
+    s = pattern1.sub(lambda m: f"Prime{m.group(1).capitalize()}{m.group(2).capitalize()}", s)
+    s = pattern2.sub(lambda m: f"Prime{m.group(1).capitalize()}{m.group(2).capitalize()}", s)
+    
+    return s
+
+def get_item_image_single(uniqueName):
+    if 'image_manifest' not in st.session_state:
+        st.session_state.image_manifest = get_public_image_export()["Manifest"]
+    
+    for item in st.session_state.image_manifest:
+        uniqueName = re.sub(r'\bNeuroptics\b', 'Helmet', uniqueName, flags=re.IGNORECASE)
+        if uniqueName.replace(" ","") in item["uniqueName"] or transform_string(uniqueName) in item["uniqueName"]:
+            return Warframe.PUBLIC_EXPORT.value["api"] + item["textureLocation"]
+    
     return "https://static.wikia.nocookie.net/warframe/images/4/46/Void.png"
 
 def get_frame_abilities_with_image(frame):
@@ -159,8 +203,29 @@ def get_frame_abilities_with_image(frame):
     if len(result) ==0:
         return {}
     else:
-        
         for ability in result[0]["abilities"]:
             ability["imageName"] = get_item_image(ability["uniqueName"])
-    return result
+        return result
+
+
+def get_craftable_info(weapon):
+    result = api_services.get_craftable(weapon)
     
+    if len(result)==0:
+        return {}
+    else:
+        for component in result[0]["components"]:
+            component["imageName"] = get_item_image(component["uniqueName"])
+        return result
+
+
+def get_relic_info(relic):
+    try:
+        result = api_services.get_relic(relic)[0]
+    except requests.exceptions.HTTPError as e:
+        if e.response.json()["code"] == 404:
+            return None
+    for reward in result["rewards"]:
+        #uniqueName = (reward["item"]["name"]).replace(" ","")
+        reward["imageName"] = get_item_image_single(reward["item"]["name"])
+    return result

@@ -26,3 +26,8 @@ def relic_reward_names(name, rewards):
         "name": name,
         "rewards": rewards,
     }
+
+# def generic_icon():
+#     return{
+#         ""
+#     }

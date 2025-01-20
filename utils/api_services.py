@@ -1,9 +1,7 @@
-import json
-import lzma
 import requests
 import streamlit as st
 
-from config.constants import AppPages, Warframe
+from config.constants import Warframe
 import urllib.parse
 
 @st.cache_data(ttl="1m",show_spinner=False)
@@ -83,41 +81,28 @@ def get_item_data(unique_name):
     request_ref = Warframe.STATUS.value["api"]+f"/items/search/{encoded_name}?by=uniqueName&remove=abilities,components,patchlogs"
     request_object = requests.get(request_ref)
     raise_detailed_error(request_object)
-
-    return request_object.json()
-def decompress_lzma(data):
-    try:
-
-        # Step 2: Decompress the .lzma content directly from the response
-        compressed_data = data  # Get the binary content of the response
-        decompressed_data = lzma.decompress(compressed_data)  # Decompress the data
-
-        # Step 3: Use the decompressed data
-        content = decompressed_data.decode("utf-8")  # Decode to string if it's text
-        print("Decompressed Content:")
-        print(content)
-
-    except requests.exceptions.RequestException as e:
-        print(f"Error fetching the data: {e}")
-    except lzma.LZMAError as e:
-        print(f"Error decompressing the data: {e}")
-    except Exception as e:
-        print(f"An unexpected error occurred: {e}")
-
-@st.cache_data(ttl="1d",show_spinner=False)
-def get_public_image_export():
-    """API request to get export manifest."""
-    # request_ref = Warframe.PUBLIC_EXPORT.value["api"] + f"/Manifest/{file}"
-    # request_object = requests.get(request_ref)
-    # raise_detailed_error(request_object)
-    with open(AppPages.MANIFEST.value, "r", encoding="utf-8") as file:
-        return json.load(file)
     return request_object.json()
 
 def get_abilities(frame_name):
     """API request to get frame's abilities."""
     encoded_name = urllib.parse.quote(frame_name, safe="")
     request_ref = Warframe.STATUS.value["api"]+f"/warframes/search/{encoded_name}?by=name&only=abilities,uniqueName,passiveDescription"
+    request_object = requests.get(request_ref)
+    raise_detailed_error(request_object)
+    return request_object.json()
+
+def get_craftable(weapon_name):
+    """API request to get craftable's component."""
+    encoded_name = urllib.parse.quote(weapon_name, safe="")
+    request_ref = Warframe.STATUS.value["api"]+f"/items/search/{encoded_name}?by=name&only=name,uniqueName,description,category,type,masteryReq,components"
+    request_object = requests.get(request_ref)
+    raise_detailed_error(request_object)
+    return request_object.json()
+
+def get_relic(unique_name):
+    """API request to get craftable's component."""
+    encoded_name = urllib.parse.quote(unique_name, safe="")
+    request_ref = Warframe.STATUS.value["api"]+f"/items/search/{encoded_name}?by=uniqueName&only=rewards,name,description,vaulted"
     request_object = requests.get(request_ref)
     raise_detailed_error(request_object)
     return request_object.json()
