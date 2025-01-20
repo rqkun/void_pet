@@ -5,8 +5,9 @@ from utils import api_services
 if 'image_manifest' not in st.session_state:
     with st.spinner(AppMessages.LOAD_DATA.value):
         manifest_file = api_services.get_manifest()
-        st.session_state.image_manifest = api_services.get_public_image_export(manifest_file)["Manifest"]
-    st.rerun()
+        if manifest_file is not None:
+            st.session_state.image_manifest = api_services.get_public_image_export(manifest_file)["Manifest"]
+            st.rerun()
 else:
     st.set_page_config(page_title="Void Pet", page_icon=AppIcons.MAIN_APP.value,layout="wide")
     home_page = st.Page(AppPages.HOME.value, icon=AppIcons.HOME.value)

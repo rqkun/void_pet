@@ -104,22 +104,37 @@ def decompress_lzma(data):
         print(f"An unexpected error occurred: {e}")
 
 # @st.cache_data(ttl="1d",show_spinner=False)
+# def get_manifest():
+#     """API request to get export manifest."""
+#     request_ref = "https://origin.warframe.com/PublicExport/index_en.txt.lzma"
+#     request_object = requests.get(request_ref)
+#     st.write(request_object.content)
+#     raise_detailed_error(request_object)
+#     try:
+#         decompressed_data = lzma.decompress(request_object.content)
+#         manifest_list = decompressed_data.decode("utf-8", errors='ignore')
+#         for item in manifest_list.split("\r\n"):
+#             if 'ExportManifest' in item:
+#                 return item
+#         return "ExportManifest.json!00_N96OiP1NSlFN57WsfBeiPw" # backup
+#     except lzma.LZMAError as e:
+#         raise ValueError(f"Failed to decompress the LZMA file: {e}")
+
 def get_manifest():
     """API request to get export manifest."""
-    request_ref = "https://origin.warframe.com/PublicExport/index_en.txt.lzma"
-    request_object = requests.get(request_ref)
-    st.write(request_object.content)
-    raise_detailed_error(request_object)
-    try:
-        decompressed_data = lzma.decompress(request_object.content)
-        manifest_list = decompressed_data.decode("utf-8", errors='ignore')
-        for item in manifest_list.split("\r\n"):
-            if 'ExportManifest' in item:
-                return item
-        return "ExportManifest.json!00_N96OiP1NSlFN57WsfBeiPw" # backup
-    except lzma.LZMAError as e:
-        raise ValueError(f"Failed to decompress the LZMA file: {e}")
-
+    file = st.file_uploader("upload")
+    if file is not None:
+        try:
+            decompressed_data = lzma.decompress(file.read())
+            manifest_list = decompressed_data.decode("utf-8", errors='ignore')
+            for item in manifest_list.split("\r\n"):
+                if 'ExportManifest' in item:
+                    return item
+            return "ExportManifest.json!00_N96OiP1NSlFN57WsfBeiPw" # backup
+        except lzma.LZMAError as e:
+            raise ValueError(f"Failed to decompress the LZMA file: {e}")
+    else:
+        return None
 
 @st.cache_data(ttl="1d",show_spinner=False)
 def get_public_image_export(file):
