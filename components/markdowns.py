@@ -2,7 +2,8 @@ import streamlit as st
 
 from config import structures
 from config.constants import Warframe
-from utils.data_tools import get_frame_abilities_with_image, get_craftable_info, get_relic_info
+from utils.data_manage import get_craftable_info
+from utils.data_manage import get_frame_abilities_with_image
 
 def warframe_info_md(name):
     result = get_frame_abilities_with_image(name)
@@ -34,19 +35,20 @@ def weapon_info_md(name):
             </div>"""
     return md + """</div><br>"""
 
-def relic_info_md(name):
-    result = get_relic_info(name)
+def relic_info_md(item):
     md = f""" """
-    for reward in result["rewards"]:
+    for reward in item["rewards"]:
         md = md + f"""
-            <img alt="ducat" style="width:50px;height:50px;" src="{reward["imageName"]}" title="{reward["rarity"]}: {reward["chance"]}%"/>
+            <img alt="ducat" style="width:50px;height:50px;" src="{reward["item"]["imageName"]}" title="{reward["rarity"]}: {reward["chance"]}%"/>
             {reward["item"]["name"]} <br/>"""
     return md + """<br>"""
 
-def prime_component_info_md(item,rarity,chances):
+def prime_component_info_md(item,rarity,chances,price,offers):
     return f"""
+    <div> Average: <font color="#FF4B4B">{price:.2f} <img alt="plat" style="width:20px;height:20px;" src="{Warframe.PLATINUM.value}"/> </font> Platinum(s) from <font color="#FF4B4B">{offers}</font> offer(s). </a> <br>
     Rarity: <font color="#FF4B4B">{rarity}</font><br/>
-    Base chances: <font color="#FF4B4B">{chances}</font> %<br />
+    Base chances: <font color="#FF4B4B">{chances}</font> %<br/>
     Ducats: <font color="#FF4B4B">{item["ducats"]}</font> <img alt="ducat" style="width:20px;height:20px;" src="{Warframe.DUCAT.value}"/> <br/>
-    MR: <font color="#FF4B4B">{item["mastery_level"]}</font> <br />
+    MR: <font color="#FF4B4B">{item["mastery_level"]}</font>
+    <br/><br/>
     """

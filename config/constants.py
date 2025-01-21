@@ -93,7 +93,25 @@ class AppPages(Enum):
     VARZIA = "components/pages/varzia.py"
     BARO = "components/pages/baro.py"
     ISSUE = "https://github.com/rqkun/void_pet/issues"
-    MANIFEST = "config/manifest.json"
+
+class AppExports(Enum):
+    """ The Web app pages locations. """
+    COSMETICS = "config/data/ExportCustoms_en.json"
+    DRONES = "config/data/ExportDrones_en.json"
+    FLAVOURS = "config/data/ExportFlavour_en.json"
+    BUNDLES = "config/data/ExportFusionBundles_en.json"
+    GEARS = "config/data/ExportGear_en.json"
+    KEYS = "config/data/ExportKeys_en.json"
+    MANIFEST = "config/data/ExportManifest.json"
+    RECIPES = "config/data/ExportRecipes_en.json"
+    REGIONS = "config/data/ExportRegions_en.json"
+    RELIC_ARCANE = "config/data/ExportRelicArcane_en.json"
+    RESOURCES = "config/data/ExportResources_en.json"
+    SENTIELS = "config/data/ExportSentinels_en.json"
+    SORTIES = "config/data/ExportSortieRewards_en.json"
+    UPGRADES = "config/data/ExportUpgrades_en.json"
+    WARFRAMES = "config/data/ExportWarframes_en.json"
+    WEAPONS = "config/data/ExportWeapons_en.json"
 
 class Warframe(Enum):
     """ Warframe APIs and images. """

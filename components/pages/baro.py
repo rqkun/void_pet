@@ -1,6 +1,7 @@
 import streamlit as st
 from components import cards, headers
-from utils import api_services, data_tools
+from datasources import warframe_status
+from utils import data_tools,data_manage
 
 from config.constants import AppMessages, AppPages, Warframe
 
@@ -10,11 +11,12 @@ def store_baro(data):
         items = {}
         progress_text = AppMessages.PROGRESS.value
         progress = st.progress(0, text=progress_text)
+        
         for i, item in enumerate(data):
             if "M P V" in item["item"]:
                 pass
             else:
-                name = data_tools.get_item_name(item["uniqueName"])
+                name = data_manage.get_item_name(item["uniqueName"])
                 items[item["uniqueName"]] = name if name != "" else item["item"]
                 progress.progress((i+1)/len(data), text=AppMessages.index_relic_message(items[item["uniqueName"]]))
         
@@ -39,11 +41,12 @@ if 'baro_wares' not in st.session_state:
 data = st.session_state.baro_wares["data"]
 with mid:
     items = store_baro(data)
+    pass
     uniqueName = st.selectbox("item",
                               options=items.keys(),
                               format_func= lambda option: items[option],
                               )
     with st.spinner(AppMessages.LOAD_DATA.value):
-        item = api_services.get_item_data(uniqueName)
-        image_url = data_tools.get_item_image(uniqueName)
-        cards.item_card(item[0],image_url)
+        item = data_manage.get_item(uniqueName)
+        image_url = data_manage.get_image(uniqueName)
+        cards.generic(item,image_url)

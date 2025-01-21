@@ -12,12 +12,13 @@ def relic_object(price=1,data=None):
         "data": data
     }
 
-def relic_reward_object(chance=0, rarity="", name=""):
+def relic_reward_object(chance=0, rarity="", name="", image=""):
     """ Return reward's data. """
     return{
         "name": name,
         "chance": chance,
-        "rarity": rarity
+        "rarity": rarity,
+        "image" : image
     }
 
 def relic_reward_names(name, rewards):

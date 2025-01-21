@@ -1,10 +1,12 @@
 from datetime import datetime, timedelta
 import streamlit as st
 from config import structures
-from utils import api_services
+import datasources.warframe_status
 from PIL import Image
 from config.constants import AppIcons, AppLabels, AppMessages, AppPages, Warframe
-from utils.data_tools import get_invasions_rewards, get_sortie_missions
+from utils import data_manage
+from utils.data_manage import get_sortie_missions
+from utils.data_manage import get_invasions_rewards
 
 def prep_image(route):
     """ Crop images. """
@@ -32,7 +34,7 @@ def baro_timer():
     baro_card = st.container(border=True)
     with baro_card:
         with st.spinner(AppMessages.LOAD_DATA.value):
-            data=api_services.get_varzia_data()
+            data=data_manage.get_variza()
         st.markdown(f"""### {Warframe.BARO.value["name"]}""",unsafe_allow_html=True)
         baro_info_card = st.container(border=True)
         left,right = baro_info_card.columns([2,1])
@@ -67,7 +69,7 @@ def varzia_timer():
     varzia_card = st.container(border=True)
     with varzia_card:
         with st.spinner(AppMessages.LOAD_DATA.value):
-            data=api_services.get_varzia_data()
+            data=datasources.warframe_status.get_varzia_data()
         st.markdown(f"""### {Warframe.VARZIA.value["name"]}""",unsafe_allow_html=True)
         varzia_info_card = st.container(border=True)
         left,right = varzia_info_card.columns([2,1])
@@ -92,11 +94,14 @@ def varzia_timer():
                     del st.session_state["varzia_wares_detail"]
                 st.cache_data.clear()
                 st.rerun(scope="fragment")
-        if varzia_info.button(AppLabels.BROWSE.value,use_container_width=True,disabled=check_disable(data),help=AppMessages.VARZIA_BROWSE.value,key="variza_browse",type="primary"):
+        if varzia_info.button("Aya",use_container_width=True,disabled=check_disable(data),help=AppMessages.VARZIA_BROWSE.value,key="variza_browse",type="primary"):
             #Aya Only!
             filtered_data = [item for item in data["inventory"] if item['credits'] is not None]
             st.session_state["varzia_wares"] = structures.ware_object("varzia",filtered_data)
             st.switch_page(AppPages.VARZIA.value)
+        if varzia_info.button("Resurgent",use_container_width=True,disabled=check_disable(data),help=AppMessages.BARO_LOCKED.value,key="baro_browse",type="primary"):
+            st.session_state["baro_wares"] = structures.ware_object("baro",data["inventory"])
+            st.switch_page(AppPages.BARO.value)
 
 @st.fragment(run_every=timedelta(minutes=1))
 def event_state_timer():
@@ -104,7 +109,7 @@ def event_state_timer():
     event_state_card = st.container(border=True)
     with event_state_card:
         with st.spinner(AppMessages.LOAD_DATA.value):
-            data=api_services.get_world_state()
+            data=data_manage.get_world_state()
         st.markdown(f"""### Events """,unsafe_allow_html=True)
         events_info = st.container(border=True)
         # events_wiki = right.container(border=True)
@@ -124,7 +129,7 @@ def world_state_timer():
     world_state_card = st.container(border=True)
     with world_state_card:
         with st.spinner(AppMessages.LOAD_DATA.value):
-            data=api_services.get_world_state()
+            data=data_manage.get_world_state()
             data ={
                 "Cetus": data["cetusCycle"],
                 "Deimos": data["cambionCycle"],
@@ -165,10 +170,8 @@ def sortie_state_timer():
     event_state_card = st.container(border=True)
     with event_state_card:
         with st.spinner(AppMessages.LOAD_DATA.value):
-            data=api_services.get_world_state()["sortie"]
+            data=data_manage.get_world_state()["sortie"]
         st.markdown(f"""### Sortie""",unsafe_allow_html=True)
-        
-        
         with st.container(border=True),st.spinner(AppMessages.LOAD_DATA.value):
             sortie_steps, sortie_step_names = get_sortie_missions(data)
             tablist = st.tabs(sortie_step_names)
@@ -189,7 +192,7 @@ def invasion_state_timer():
     event_state_card = st.container(border=True)
     with event_state_card:
         with st.spinner(AppMessages.LOAD_DATA.value):
-            data=get_invasions_rewards(api_services.get_world_state()["invasions"])
+            data=get_invasions_rewards(data_manage.get_world_state()["invasions"])
         st.markdown(f"""### Invasion Rewards""",unsafe_allow_html=True)
         
         
@@ -201,7 +204,7 @@ def invasion_state_timer():
 
 left_col,right_col = st.columns(2)
 with left_col:
-    baro_timer()
+    # baro_timer()
     varzia_timer()
     invasion_state_timer()
 with right_col:
