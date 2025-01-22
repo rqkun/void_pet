@@ -31,7 +31,7 @@ def market_check(item):
     rep = left_number.number_input(AppLabels.REPUTATION.value,0,step=1)
     limit = right_number.number_input(AppLabels.NUMBER_OF_TRADES.value,min_value=1,step=1,value=10)
     bottom_contain_r = reward_form.container(border=False)
-    submit = reward_form.form_submit_button(AppLabels.MARKET.value,use_container_width=True,icon=AppIcons.INSPECT.value,type="primary")
+    submit = reward_form.form_submit_button(AppLabels.INSPECT.value,use_container_width=True,icon=AppIcons.INSPECT.value,type="secondary")
     
     if submit:
         with bottom_contain_r,st.spinner(AppMessages.LOAD_DATA.value):
