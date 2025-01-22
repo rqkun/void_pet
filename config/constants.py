@@ -96,22 +96,22 @@ class AppPages(Enum):
 
 class AppExports(Enum):
     """ The Web app pages locations. """
-    COSMETICS = "config/data/ExportCustoms_en.json"
-    DRONES = "config/data/ExportDrones_en.json"
-    FLAVOURS = "config/data/ExportFlavour_en.json"
-    BUNDLES = "config/data/ExportFusionBundles_en.json"
-    GEARS = "config/data/ExportGear_en.json"
-    KEYS = "config/data/ExportKeys_en.json"
-    MANIFEST = "config/data/ExportManifest.json"
-    RECIPES = "config/data/ExportRecipes_en.json"
-    REGIONS = "config/data/ExportRegions_en.json"
-    RELIC_ARCANE = "config/data/ExportRelicArcane_en.json"
-    RESOURCES = "config/data/ExportResources_en.json"
-    SENTIELS = "config/data/ExportSentinels_en.json"
-    SORTIES = "config/data/ExportSortieRewards_en.json"
-    UPGRADES = "config/data/ExportUpgrades_en.json"
-    WARFRAMES = "config/data/ExportWarframes_en.json"
-    WEAPONS = "config/data/ExportWeapons_en.json"
+    COSMETICS = "datasources/exports/ExportCustoms_en.json"
+    DRONES = "datasources/exports/ExportDrones_en.json"
+    FLAVOURS = "datasources/exports/ExportFlavour_en.json"
+    BUNDLES = "datasources/exports/ExportFusionBundles_en.json"
+    GEARS = "datasources/exports/ExportGear_en.json"
+    KEYS = "datasources/exports/ExportKeys_en.json"
+    MANIFEST = "datasources/exports/ExportManifest.json"
+    RECIPES = "datasources/exports/ExportRecipes_en.json"
+    REGIONS = "datasources/exports/ExportRegions_en.json"
+    RELIC_ARCANE = "datasources/exports/ExportRelicArcane_en.json"
+    RESOURCES = "datasources/exports/ExportResources_en.json"
+    SENTIELS = "datasources/exports/ExportSentinels_en.json"
+    SORTIES = "datasources/exports/ExportSortieRewards_en.json"
+    UPGRADES = "datasources/exports/ExportUpgrades_en.json"
+    WARFRAMES = "datasources/exports/ExportWarframes_en.json"
+    WEAPONS = "datasources/exports/ExportWeapons_en.json"
 
 class Warframe(Enum):
     """ Warframe APIs and images. """
@@ -121,11 +121,11 @@ class Warframe(Enum):
 
     BARO = {
         "name" : "Baro Ki'Teer",
-        "image" : "static/image/baro.png"
+        "image" : "datasources/images/baro.png"
     }
     VARZIA = {
         "name" : "Variza",
-        "image" : "static/image/varzia.png"
+        "image" : "datasources/images/varzia.png"
     }
     STATUS = {
         "api" : "https://api.warframestat.us"

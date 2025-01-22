@@ -1,10 +1,9 @@
 from collections import defaultdict
-import re
 import streamlit as st
 from config import structures
 from config.constants import Warframe
 from datasources import warframe_export,warframe_market,warframe_status
-from utils import api_services, data_tools
+from utils import data_tools
 from utils.data_tools import parse_item_string
 
 def get_image(uniqueName):
@@ -126,7 +125,7 @@ def get_market_item(url_path):
 
 
 def get_craftable_info(weapon):
-    result = api_services.get_craftable(weapon)
+    result = warframe_status.get_craftable(weapon)
 
     if len(result)==0:
         return {}
@@ -137,7 +136,7 @@ def get_craftable_info(weapon):
 
 
 def get_frame_abilities_with_image(frame):
-    result = api_services.get_abilities(frame)
+    result = warframe_status.get_abilities(frame)
 
     if len(result) ==0:
         return {}

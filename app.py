@@ -1,6 +1,5 @@
 import streamlit as st
-from config.constants import AppIcons, AppMessages, AppPages
-from utils import data_tools
+from config.constants import AppIcons, AppPages
 
 st.set_page_config(page_title="Void Pet", page_icon=AppIcons.MAIN_APP.value,layout="wide")
 home_page = st.Page(AppPages.HOME.value, icon=AppIcons.HOME.value)

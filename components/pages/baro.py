@@ -1,7 +1,6 @@
 import streamlit as st
 from components import cards, headers
-from datasources import warframe_status
-from utils import data_tools,data_manage
+from utils import data_manage
 
 from config.constants import AppMessages, AppPages, Warframe
 

@@ -1,6 +1,4 @@
-import streamlit as st
 
-from config import structures
 from config.constants import Warframe
 from utils.data_manage import get_craftable_info
 from utils.data_manage import get_frame_abilities_with_image

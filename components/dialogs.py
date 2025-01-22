@@ -1,6 +1,6 @@
 import streamlit as st
 from components import cards
-from config.constants import AppIcons, AppLabels, AppMessages, Warframe
+from config.constants import AppIcons, AppLabels, AppMessages
 import datasources.warframe_market
 from datasources import warframe_status
 from utils import data_manage, data_tools

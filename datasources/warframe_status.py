@@ -65,3 +65,21 @@ def get_item(unique_name):
     request_object = requests.get(request_ref)
     raise_detailed_error(request_object)
     return request_object.json()
+
+
+def get_abilities(frame_name):
+    """API request to get frame's abilities."""
+    encoded_name = urllib.parse.quote(frame_name, safe="")
+    request_ref = Warframe.STATUS.value["api"]+f"/warframes/search/{encoded_name}?by=name&only=abilities,uniqueName,passiveDescription"
+    request_object = requests.get(request_ref)
+    raise_detailed_error(request_object)
+    return request_object.json()
+
+
+def get_craftable(weapon_name):
+    """API request to get craftable's component."""
+    encoded_name = urllib.parse.quote(weapon_name, safe="")
+    request_ref = Warframe.STATUS.value["api"]+f"/items/search/{encoded_name}?by=name&only=name,uniqueName,description,category,type,masteryReq,components"
+    request_object = requests.get(request_ref)
+    raise_detailed_error(request_object)
+    return request_object.json()
