@@ -1,16 +1,10 @@
 import streamlit as st
 from components import cards
 from config.constants import AppIcons, AppLabels, AppMessages
-import datasources.warframe_market
 from datasources import warframe_status
 from utils import data_manage, data_tools
+from utils.data_manage import call_market
 
-
-@st.cache_data(show_spinner=False)
-def call_market(option):
-    """ All the market API. """
-    with st.spinner(AppMessages.LOAD_DATA.value):
-        return datasources.warframe_market.get_market_orders(option)['payload']['orders']
 
 @st.dialog(AppLabels.DETAIL_MARKET.value)
 def baro_item_check(uniqueName):
@@ -22,7 +16,7 @@ def baro_item_check(uniqueName):
 
 @st.dialog(AppLabels.DETAIL_MARKET.value)
 def market_check(item):
-
+    """ Market inspection dialog. """
     option_map = item["rewards"]
     reward_form = st.form("reward_inspect_form",clear_on_submit=False,border=False)
     reward_option = reward_form.selectbox(

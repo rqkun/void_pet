@@ -1,7 +1,14 @@
 import requests
 
 def raise_detailed_error(request_object):
-    """ Get details on http errors. """
+    """ Get details on http errors.
+
+    Args:
+        request_object (json): Json response data.
+
+    Raises:
+        requests.exceptions.HTTPError: HTTP error
+    """
     try:
         request_object.raise_for_status()
     except requests.exceptions.HTTPError as error:

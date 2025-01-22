@@ -6,6 +6,7 @@ from config.constants import AppIcons, AppLabels, AppMessages, Warframe
 
 
 def info_module(item):
+    """ Categorized item markdown. """
     if item["type"] == "Warframe" or item["type"] == "Archwing":
         st.markdown(components.markdowns.warframe_info_md(item["name"]),unsafe_allow_html=True)
     elif "Weapon" in item["uniqueName"] or "Sentinels" in item["category"]:
@@ -18,6 +19,7 @@ def info_module(item):
                 """,unsafe_allow_html=True)
 
 def component(item,market_item, image_url: str, price : int, offers: str):
+    """ Prime component info card. """
     relic_name_cleaned = item["item"]["name"].lower().replace(" ","_")
     market_url = Warframe.MARKET.value["url"]
     generic_container = st.container(border=True)
@@ -33,6 +35,7 @@ def component(item,market_item, image_url: str, price : int, offers: str):
     
 
 def generic(item, image_url: str):
+    """ Generic info card. """
     generic_container = st.container(border=True)
     left,right = generic_container.columns([2,1],vertical_alignment="top")
     with left:

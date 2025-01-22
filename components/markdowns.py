@@ -4,6 +4,7 @@ from utils.data_manage import get_craftable_info
 from utils.data_manage import get_frame_abilities_with_image
 
 def warframe_info_md(name):
+    """ Warframe markdown custom web element. """
     result = get_frame_abilities_with_image(name)
     abilities = result[0]["abilities"]
     return f"""
@@ -20,6 +21,7 @@ def warframe_info_md(name):
             </div><br>"""
 
 def weapon_info_md(name):
+    """ Weapon markdown custom web element. """
     result = get_craftable_info(name)
     weapon = result[0]
     md = f"""
@@ -34,6 +36,7 @@ def weapon_info_md(name):
     return md + """</div><br>"""
 
 def relic_info_md(item):
+    """ Relic markdown custom web element. """
     md = f""" """
     for reward in item["rewards"]:
         md = md + f"""
@@ -42,6 +45,7 @@ def relic_info_md(item):
     return md + """<br>"""
 
 def prime_component_info_md(item,rarity,chances,price,offers):
+    """ Prime component markdown custom web element. """
     return f"""
     <div> Average: <font color="#FF4B4B">{price:.2f} <img alt="plat" style="width:20px;height:20px;" src="{Warframe.PLATINUM.value}"/> </font> Platinum(s) from <font color="#FF4B4B">{offers}</font> offer(s). </a> <br>
     Rarity: <font color="#FF4B4B">{rarity}</font><br/>

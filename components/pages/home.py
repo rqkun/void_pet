@@ -2,32 +2,11 @@ from datetime import datetime, timedelta
 import streamlit as st
 from config import structures
 import datasources.warframe_status
-from PIL import Image
 from config.constants import AppIcons, AppLabels, AppMessages, AppPages, Warframe
 from utils import data_manage
-from utils.data_manage import get_sortie_missions
-from utils.data_manage import get_invasions_rewards
+from utils.data_manage import get_sortie_missions,get_invasions_rewards
+from utils.data_tools import prep_image,check_disable,format_timedelta
 
-def prep_image(route):
-    """ Crop images. """
-    image = Image.open(route)
-    return image.resize((150, 150))
-
-def format_timedelta(delta,day=True):
-    """ Extract hours, minutes, and seconds from the time delta. """
-    total_seconds = int(delta.total_seconds())
-    days, remainder = divmod(total_seconds, 86400)
-    hours, remainder = divmod(remainder, 3600)
-    minutes, _ = divmod(remainder, 60)
-    if day:
-        return AppMessages.delta_datetime_message(days,hours,minutes)
-    else:
-        return AppMessages.delta_time_message(hours,minutes)
-
-def check_disable(data):
-    """ Revert active variable. """
-    return False if data["active"] else True
-        
 @st.fragment(run_every=timedelta(minutes=1))
 def baro_timer():
     """ Show baro's card that update every minute. """
@@ -103,11 +82,11 @@ def varzia_timer():
                     del st.session_state["regal_wares_detail"]
                 st.cache_data.clear()
                 st.rerun(scope="fragment")
-        if right.button("Aya",use_container_width=True,disabled=check_disable(data),help=AppMessages.VARZIA_BROWSE.value,key="aya_browse",type="primary"):
+        if right.button("Relics",use_container_width=True,disabled=check_disable(data),help=AppMessages.VARZIA_BROWSE.value,key="aya_browse",type="primary"):
             #Aya Only!
             st.session_state["aya_wares"] = structures.ware_object("aya",filtered_data)
             st.switch_page(AppPages.AYA.value)
-        if varzia_info.button("Resurgent",use_container_width=True,disabled=check_disable(data),help=AppMessages.BARO_LOCKED.value,key="regal_browse",type="secondary"):
+        if varzia_info.button(AppLabels.BROWSE.value,use_container_width=True,disabled=check_disable(data),help=AppMessages.VARZIA_BROWSE.value,key="regal_browse",type="secondary"):
             st.session_state["regal_wares"] = structures.ware_object("regal",data["inventory"])
             st.switch_page(AppPages.REGAL.value)
 

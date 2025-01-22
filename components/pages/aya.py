@@ -6,6 +6,7 @@ from utils import data_manage
 from config.constants import AppIcons, AppLabels, AppMessages, AppPages, Warframe
 
 def store_aya(data):
+    """ Loading data from session state. """
     if 'aya_wares_detail' not in st.session_state:
         relic_list = []
         progress_text = AppMessages.PROGRESS.value

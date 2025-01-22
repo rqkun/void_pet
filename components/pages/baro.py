@@ -6,6 +6,7 @@ from config.constants import AppMessages, AppPages, Warframe
 
 @st.cache_data(ttl="1d",show_spinner=False)
 def store_baro(data):
+    """ Loading data from session state. """
     if 'baro_wares_detail' not in st.session_state:
         items = {}
         progress_text = AppMessages.PROGRESS.value
