@@ -11,7 +11,7 @@ def basic(logo=None):
         with right:
             with st.popover(AppIcons.MENU.value,use_container_width=True,):
                 
-                st.page_link(AppPages.VARZIA.value,
+                st.page_link(AppPages.AYA.value,
                              label=Warframe.VARZIA.value["name"],
                              icon=AppIcons.VARZIA.value,
                              use_container_width=True)

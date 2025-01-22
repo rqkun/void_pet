@@ -5,8 +5,8 @@ from utils import data_manage
 
 from config.constants import AppIcons, AppLabels, AppMessages, AppPages, Warframe
 
-def store_varzia(data):
-    if 'varzia_wares_detail' not in st.session_state:
+def store_aya(data):
+    if 'aya_wares_detail' not in st.session_state:
         relic_list = []
         progress_text = AppMessages.PROGRESS.value
         progress = st.progress(0, text=progress_text)
@@ -16,11 +16,11 @@ def store_varzia(data):
             item_name = tmp["name"].replace('Intact', '')
             relic_list.append(tmp)
             progress.progress((i+1)/len(data), text=AppMessages.index_relic_message(item_name))
-        st.session_state.varzia_wares_detail = relic_list
+        st.session_state.aya_wares_detail = relic_list
         progress.empty()
         return relic_list
     else:
-        return st.session_state.varzia_wares_detail
+        return st.session_state.aya_wares_detail
     
     
 query_params = st.query_params.to_dict()
@@ -32,14 +32,14 @@ _, mid,_ = st.columns([1,4,1])
 with mid:
     headers.basic(logo=Warframe.AYA.value)
 
-if 'varzia_wares' not in st.session_state:
+if 'aya_wares' not in st.session_state:
     full_data=data_manage.get_variza()
     filtered_data = [item for item in full_data["inventory"] if item['credits'] is not None]
-    st.session_state["varzia_wares"] = structures.ware_object("varzia",filtered_data)
+    st.session_state["aya_wares"] = structures.ware_object("aya",filtered_data)
 
-data = st.session_state.varzia_wares["data"]
+data = st.session_state.aya_wares["data"]
 with mid:
-    relics = store_varzia(data)
+    relics = store_aya(data)
     with st.spinner(AppMessages.LOAD_DATA.value):
         all_prime=  data_manage.get_prime_list()
         prime_frame_options = data_manage.get_prime_resurgent_list(all_prime,relics)

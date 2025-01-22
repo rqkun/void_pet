@@ -34,7 +34,7 @@ def baro_timer():
     baro_card = st.container(border=True)
     with baro_card:
         with st.spinner(AppMessages.LOAD_DATA.value):
-            data=data_manage.get_variza()
+            data=data_manage.get_baro()
         st.markdown(f"""### {Warframe.BARO.value["name"]}""",unsafe_allow_html=True)
         baro_info_card = st.container(border=True)
         left,right = baro_info_card.columns([2,1])
@@ -53,6 +53,7 @@ def baro_timer():
                 st.write(AppMessages.end_time_message(end_date))
             else:
                 st.write(AppMessages.start_time_message(start_date))
+            st.write(AppMessages.location_message(data["location"]))
             if st.button(AppLabels.RELOAD.value,use_container_width=True,type="secondary",icon=AppIcons.SYNC.value,key="baro_reload"):
                 if 'baro_wares' in st.session_state:
                     del st.session_state["baro_wares"]
@@ -86,22 +87,29 @@ def varzia_timer():
                 st.write(AppMessages.end_time_message(end_date))
             else:
                 st.write(AppMessages.start_time_message(start_date))
-            st.write("")
+                
+            filtered_data = [item for item in data["inventory"] if item['credits'] is not None]
+            other_len= len(data["inventory"])-len(filtered_data)
+            st.write(f"Inventory: `{len(filtered_data)}` Relics, `{other_len}` Others")
+            
             if st.button(AppLabels.RELOAD.value,use_container_width=True,type="secondary",icon=AppIcons.SYNC.value,key="variza_reload"):
-                if 'varzia_wares' in st.session_state:
-                    del st.session_state["varzia_wares"]
-                if 'varzia_wares_detail' in st.session_state:
-                    del st.session_state["varzia_wares_detail"]
+                if 'aya_wares' in st.session_state:
+                    del st.session_state["aya_wares"]
+                if 'aya_wares_detail' in st.session_state:
+                    del st.session_state["aya_wares_detail"]
+                if 'regal_wares' in st.session_state:
+                    del st.session_state["regal_wares"]
+                if 'regal_wares_detail' in st.session_state:
+                    del st.session_state["regal_wares_detail"]
                 st.cache_data.clear()
                 st.rerun(scope="fragment")
-        if varzia_info.button("Aya",use_container_width=True,disabled=check_disable(data),help=AppMessages.VARZIA_BROWSE.value,key="variza_browse",type="primary"):
+        if right.button("Aya",use_container_width=True,disabled=check_disable(data),help=AppMessages.VARZIA_BROWSE.value,key="aya_browse",type="primary"):
             #Aya Only!
-            filtered_data = [item for item in data["inventory"] if item['credits'] is not None]
-            st.session_state["varzia_wares"] = structures.ware_object("varzia",filtered_data)
-            st.switch_page(AppPages.VARZIA.value)
-        if varzia_info.button("Resurgent",use_container_width=True,disabled=check_disable(data),help=AppMessages.BARO_LOCKED.value,key="baro_browse",type="primary"):
-            st.session_state["baro_wares"] = structures.ware_object("baro",data["inventory"])
-            st.switch_page(AppPages.BARO.value)
+            st.session_state["aya_wares"] = structures.ware_object("aya",filtered_data)
+            st.switch_page(AppPages.AYA.value)
+        if varzia_info.button("Resurgent",use_container_width=True,disabled=check_disable(data),help=AppMessages.BARO_LOCKED.value,key="regal_browse",type="secondary"):
+            st.session_state["regal_wares"] = structures.ware_object("regal",data["inventory"])
+            st.switch_page(AppPages.REGAL.value)
 
 @st.fragment(run_every=timedelta(minutes=1))
 def event_state_timer():
@@ -204,7 +212,7 @@ def invasion_state_timer():
 
 left_col,right_col = st.columns(2)
 with left_col:
-    # baro_timer()
+    baro_timer()
     varzia_timer()
     invasion_state_timer()
 with right_col:

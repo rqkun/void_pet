@@ -90,7 +90,8 @@ class AppPages(Enum):
     """ The Web app pages locations. """
     HOME = "components/pages/home.py"
     ERROR = "components/pages/error.py"
-    VARZIA = "components/pages/varzia.py"
+    AYA = "components/pages/aya.py"
+    REGAL = "components/pages/regal.py"
     BARO = "components/pages/baro.py"
     ISSUE = "https://github.com/rqkun/void_pet/issues"
 
@@ -118,6 +119,7 @@ class Warframe(Enum):
     PLATINUM = "https://static.wikia.nocookie.net/warframe/images/e/e7/PlatinumLarge.png"
     DUCAT = "https://static.wikia.nocookie.net/warframe/images/d/d5/OrokinDucats.png"
     AYA ="https://static.wikia.nocookie.net/warframe/images/4/45/Aya.png"
+    REGAL_AYA = "https://static.wikia.nocookie.net/warframe/images/f/f0/RegalAya.png"
 
     BARO = {
         "name" : "Baro Ki'Teer",

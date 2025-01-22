@@ -16,13 +16,6 @@ def get_image(uniqueName):
             return Warframe.PUBLIC_EXPORT.value["api"] + item["textureLocation"]
     return "https://static.wikia.nocookie.net/warframe/images/4/46/Void.png"
 
-    # for item in st.session_state.image_manifest:
-    #     uniqueName = re.sub(r'\bNeuroptics\b', 'Helmet', uniqueName, flags=re.IGNORECASE)
-    #     if uniqueName.replace(" ","") in item["uniqueName"] or transform_string(uniqueName) in item["uniqueName"]:
-    #         return Warframe.PUBLIC_EXPORT.value["api"] + item["textureLocation"]
-    
-    # return "https://static.wikia.nocookie.net/warframe/images/4/46/Void.png"
-
 def export_relic(name,field):
     local_relic_data = warframe_export.open_relic_arcane()
     for item in local_relic_data:
@@ -44,8 +37,7 @@ def get_relic_reward(relic):
 def get_relic(name, is_unique):
     field = "name"
     relic ={}
-    
-    
+
     if is_unique:
         identifier = name.split("/")
         identifier = "/".join(identifier[len(identifier)-3:])
@@ -61,6 +53,9 @@ def get_relic(name, is_unique):
 
 def get_variza():
     return warframe_status.get_varzia_data()
+
+def get_baro():
+    return warframe_status.get_baro_data()
 
 def get_world_state():
     return warframe_status.get_world_state()
@@ -79,14 +74,13 @@ def get_prime_resurgent_list(primes,relics_list):
     return result
 
 def search_rewards(search_key,relics):
-    """ Return relic that have search_keys as reward(s). """
+    """ Return relic that have search_key as reward(s). """
     result = {}
     if search_key != "" and len(relics) :
         search_key = "_"+search_key.lower().replace(" ", "_")
         for item in relics:
             if any(search_key in "_"+reward["item"]["name"].lower().replace(" ", "_") for reward in item["rewards"]):
                 result[item["name"]] = item["uniqueName"]
-               # break  # No need to check further rewards for this key
         
     else:
         for item in relics:
