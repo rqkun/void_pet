@@ -41,6 +41,11 @@ Ensure you have the following installed:
    pip install -r requirements.txt
    ```
 
+3. Update the required export files:
+
+   ```bash
+   python3 ./utils/local_manifest_update.py
+   ```
 ---
 
 ## Usage
