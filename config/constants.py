@@ -57,7 +57,7 @@ class AppMessages(Enum):
     @staticmethod
     def delta_datetime_message(days,hours, minutes):
         """ Return delta time formatted message. """
-        return f"{days} days, {hours} hours, {minutes} minutes"
+        return f"{days}d, {hours}h, {minutes}m"
     @staticmethod
     def delta_time_message(hours, minutes):
         """ Return delta time formatted message. """

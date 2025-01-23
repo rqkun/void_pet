@@ -40,21 +40,19 @@ if 'varzia_wares' not in st.session_state:
 
 data = st.session_state.varzia_wares["data"]
     
-_, mid,_ = st.columns([1,4,1])
-with mid:
-    items = store_regal(data)
-    left, right =st.columns([6,1],vertical_alignment="bottom")
-    uniqueName = left.selectbox(AppLabels.INSPECT.value,
-                                options=items.keys(),
-                                format_func= lambda option: items[option],
-                                )
-    if right.button(AppIcons.SYNC.value,use_container_width=True):
-        if 'varzia_wares' in st.session_state:
-            del st.session_state["varzia_wares"]
-        if 'varzia_wares_detail' in st.session_state:
-            del st.session_state["varzia_wares_detail"]
-        st.cache_data.clear()
-    with st.spinner(AppMessages.LOAD_DATA.value):
-        item = data_manage.get_item(uniqueName)
-        image_url = data_manage.get_image(uniqueName)
-        cards.generic(item,image_url)
+items = store_regal(data)
+left, right =st.columns([6,1],vertical_alignment="bottom")
+uniqueName = left.selectbox(AppLabels.INSPECT.value,
+                            options=items.keys(),
+                            format_func= lambda option: items[option],
+                            )
+if right.button(AppIcons.SYNC.value,use_container_width=True):
+    if 'varzia_wares' in st.session_state:
+        del st.session_state["varzia_wares"]
+    if 'varzia_wares_detail' in st.session_state:
+        del st.session_state["varzia_wares_detail"]
+    st.cache_data.clear()
+with st.spinner(AppMessages.LOAD_DATA.value):
+    item = data_manage.get_item(uniqueName)
+    image_url = data_manage.get_image(uniqueName)
+    cards.generic(item,image_url)

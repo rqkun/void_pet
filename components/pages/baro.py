@@ -47,15 +47,13 @@ if 'baro_wares' not in st.session_state:
 
 data = st.session_state.baro_wares["data"]
 
-_, mid,_ = st.columns([1,4,1])
-with mid:
-    items = store_baro(data)
-    pass
-    uniqueName = st.selectbox("item",
-                              options=items.keys(),
-                              format_func= lambda option: items[option],
-                              )
-    with st.spinner(AppMessages.LOAD_DATA.value):
-        item = data_manage.get_item(uniqueName)
-        image_url = data_manage.get_image(uniqueName)
-        cards.generic(item,image_url)
+items = store_baro(data)
+pass
+uniqueName = st.selectbox("item",
+                            options=items.keys(),
+                            format_func= lambda option: items[option],
+                            )
+with st.spinner(AppMessages.LOAD_DATA.value):
+    item = data_manage.get_item(uniqueName)
+    image_url = data_manage.get_image(uniqueName)
+    cards.generic(item,image_url)
