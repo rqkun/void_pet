@@ -1,7 +1,7 @@
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://rqkun-voidpet.streamlit.app/)
 # Void Pet 
 
-A Python-based **Streamlit** application that utilizes the **Warframe Official API** and the **Warframe.market API** to provide up-to-date information on in-game events, vendor inventories, and market pricing.
+A Python-based **Streamlit** application that utilizes the **Warframe Status API** and the **Warframe.market API** to provide up-to-date information on in-game events, vendor inventories, and market pricing.
 
 Checkout the website [here](https://rqkun-voidpet.streamlit.app/)
 
@@ -67,8 +67,9 @@ void-pet/
 ├── app.py              # Main application file
 ├── components/         # Reusable UI components
 ├── config/             # Constants
-├── static/             # Static Files
-    ├── image/          # Static image files
+├── datasources/        # Static Files
+    ├── images/         # Static image files
+    └── exports/        # Downloaded JSON Exports
 ├── utils/              # Utility functions
 ├── requirements.txt    # Project dependencies
 └── README.md           # Project documentation
@@ -78,7 +79,7 @@ void-pet/
 
 ## APIs Used
 
-1. **[Warframe Official API](https://docs.warframestat.us/)**:
+1. **[Warframe Status API](https://docs.warframestat.us/)**:
    - Provides data on in-game events, alerts, and fissures.
 
 2. **[Warframe.market API](https://warframe.market/)**:
@@ -88,7 +89,7 @@ void-pet/
 
 ## Acknowledgments
 
-- **Warframe Official API** and **Warframe.market API** for making data accessible.
+- **Warframe Status API** and **Warframe.market API** for making data accessible.
 - The Warframe community for their support and feedback.
 
 ---
