@@ -31,7 +31,7 @@ def component(item,market_item, image_url: str, price : int, offers: str):
         st.markdown(components.markdowns.prime_component_info_md(market_item,item["rarity"],item["chance"],price,offers),unsafe_allow_html=True)
     with right.container(border=True):
         url = f"{market_url}/{relic_name_cleaned}"
-        st.markdown(components.markdowns.image_md(url,item["name"],image_url),unsafe_allow_html=True)
+        st.markdown(components.markdowns.image_md(url,item["item"]["name"],image_url),unsafe_allow_html=True)
     right.link_button(AppLabels.MARKET.value,url=url,use_container_width=True,icon=AppIcons.EXTERNAL.value,type="primary",help=AppMessages.MARKET_TOOL_TIP.value)
     
 
