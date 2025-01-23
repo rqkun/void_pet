@@ -57,6 +57,7 @@ def prime_component_info_md(item,rarity,chances,price,offers):
     """
 
 def image_md(url,alt,source, size="100%"):
+    """Return image markdown custom web element. """
     return f"""<a href="{url}">
                 <img alt="{alt}" 
                     style="display: block;
@@ -65,3 +66,12 @@ def image_md(url,alt,source, size="100%"):
                             height: auto;
                             width: {size};"
                     src="{source}"/></a>"""
+
+def hide_streamlit_header():
+    """Hide the Streamlit header. """
+    return """
+            <style>
+                /* Hide the Streamlit header and menu */
+                header {visibility: hidden;}
+            </style>
+        """
