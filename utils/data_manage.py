@@ -1,10 +1,10 @@
 from collections import defaultdict
 import streamlit as st
 from config import structures
-from config.constants import AppMessages, Warframe
+from config.constants import Warframe
 from datasources import warframe_export,warframe_market,warframe_status
-from utils import data_tools
-from utils.data_tools import parse_item_string
+from utils import tools
+from utils.tools import parse_item_string
 
 def get_image(unique_name) -> str:
     """ Return image url from export.
@@ -115,7 +115,7 @@ def get_prime_list() -> list:
         list: A clean prime names list.
     """
     p_frame, p_weapon = warframe_status.get_all_prime_names()
-    return data_tools.clean_prime_names(p_frame, p_weapon)
+    return tools.clean_prime_names(p_frame, p_weapon)
 
 def get_prime_resurgent_list(primes,relics_list) -> list:
     """ Get all of the current resurgent primes list using varzia data.
@@ -130,12 +130,12 @@ def get_prime_resurgent_list(primes,relics_list) -> list:
     result = []
     prime = get_prime_list()
     for prime in primes:
-        rewards = search_rewards(prime,relics_list)
+        rewards = search_rewards([prime],relics_list)
         if len(rewards)>0:
             result.append(prime)
     return result
 
-def search_rewards(search_key,relics) -> dict:
+def search_rewards(search_keys,relics) -> dict:
     """ Return relic that have search_key as reward(s).
 
     Args:
@@ -146,12 +146,12 @@ def search_rewards(search_key,relics) -> dict:
         dict: Result of the search.
     """
     result = {}
-    if search_key != "" and len(relics) :
-        search_key = "_"+search_key.lower().replace(" ", "_")
+    if len(search_keys) > 0 != "" and len(relics) :
         for item in relics:
-            if any(search_key in "_"+reward["item"]["name"].lower().replace(" ", "_") for reward in item["rewards"]):
-                result[item["name"]] = item["uniqueName"]
-        
+            if 'rewards' in item:
+                for reward in item['rewards']: 
+                    if any( "_"+search_key.lower().replace(" ", "_") in "_" + reward["item"]["name"].lower().replace(" ", "_") for search_key in search_keys):
+                        result[item["name"]] = item["uniqueName"]
     else:
         for item in relics:
             result[item["name"]] = item["uniqueName"]
@@ -288,5 +288,4 @@ def call_market(option):
     Returns:
         dict: Item's market data.
     """
-    with st.spinner(AppMessages.LOAD_DATA.value):
-        return warframe_market.get_market_orders(option)['payload']['orders']
+    return warframe_market.get_market_orders(option)['payload']['orders']

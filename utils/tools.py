@@ -1,7 +1,5 @@
 from statistics import median
 
-from PIL import Image
-
 from config.constants import AppMessages
 
 def market_filter(data, rep=0, status="All",wtb=""):
@@ -75,20 +73,6 @@ def clean_prime_names(frame_json,weap_json):
         result.append(item["name"])
     return result
 
-
-def prep_image(route):
-    """ Crop images. 
-
-    Args:
-        route (str): image location.
-
-    Returns:
-        Image: 150x150 image for icon.
-    """
-    image = Image.open(route)
-    return image.resize((150, 150))
-
-
 def format_timedelta(delta,day=True):
     """ Extract hours, minutes, and seconds from the time delta.
 
@@ -108,7 +92,6 @@ def format_timedelta(delta,day=True):
     else:
         return AppMessages.delta_time_message(hours,minutes)
 
-
 def check_disable(data):
     """ Check the button should be disable or not
 
@@ -119,6 +102,3 @@ def check_disable(data):
         bool: Button's disable state
     """
     return False if data["active"] else True
-
-
-    

@@ -1,8 +1,11 @@
+from datetime import datetime
 import streamlit as st
 from components import cards, headers
+from config import structures
 from utils import data_manage
 
 from config.constants import AppMessages, AppPages, Warframe
+from utils.tools import format_timedelta
 
 @st.cache_data(ttl="1d",show_spinner=False)
 def store_baro(data):
@@ -31,14 +34,20 @@ query_params = st.query_params.to_dict()
 if len(query_params)>0:
     st.switch_page(AppPages.ERROR.value)
     
-_, mid,_ = st.columns([1,4,1])
-with mid:
-    headers.basic(logo=Warframe.DUCAT.value)
+
+headers.basic(logo=Warframe.DUCAT)
     
 if 'baro_wares' not in st.session_state:
-    st.switch_page(AppPages.HOME.value)
+    full_data=data_manage.get_baro()
+    if full_data["active"] is False:
+        date = datetime.strptime(full_data["activation"],"%Y-%m-%dT%H:%M:%S.%fZ")-datetime.today()
+        st.session_state.not_baro_time = AppMessages.baro_time_message(format_timedelta(date))
+        st.switch_page(AppPages.HOME.value)
+    st.session_state["baro_wares"] = structures.ware_object("baro",full_data["inventory"])
 
 data = st.session_state.baro_wares["data"]
+
+_, mid,_ = st.columns([1,4,1])
 with mid:
     items = store_baro(data)
     pass

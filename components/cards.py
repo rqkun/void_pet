@@ -1,8 +1,10 @@
 import streamlit as st
-
+from PIL import Image
 from components import dialogs
 import components.markdowns
 from config.constants import AppIcons, AppLabels, AppMessages, Warframe
+from datasources import warframe_export
+from utils import data_manage
 
 
 def info_module(item):
@@ -23,15 +25,14 @@ def component(item,market_item, image_url: str, price : int, offers: str):
     relic_name_cleaned = item["item"]["name"].lower().replace(" ","_")
     market_url = Warframe.MARKET.value["url"]
     generic_container = st.container(border=True)
-    left,right = generic_container.columns([2,1],vertical_alignment="top")
+    left,right = generic_container.columns([2,1],vertical_alignment="bottom")
     with left:
         st.markdown(f"""##### {market_item["en"]["item_name"]}""")
         st.markdown(components.markdowns.prime_component_info_md(market_item,item["rarity"],item["chance"],price,offers),unsafe_allow_html=True)
     with right.container(border=True):
-        wiki_url = f"{market_url}/{relic_name_cleaned}"
-        st.markdown(f"""
-                    <a href="{wiki_url}"><img alt="duca" style="display: block;margin-left: auto;margin-right: auto;" src="{image_url}"/>""",unsafe_allow_html=True)
-    right.link_button(AppLabels.MARKET.value,url=wiki_url,use_container_width=True,icon=AppIcons.EXTERNAL.value,type="primary",help=AppMessages.MARKET_TOOL_TIP.value)
+        url = f"{market_url}/{relic_name_cleaned}"
+        st.markdown(components.markdowns.image_md(url,item["name"],image_url),unsafe_allow_html=True)
+    right.link_button(AppLabels.MARKET.value,url=url,use_container_width=True,icon=AppIcons.EXTERNAL.value,type="primary",help=AppMessages.MARKET_TOOL_TIP.value)
     
 
 def generic(item, image_url: str):
@@ -42,12 +43,22 @@ def generic(item, image_url: str):
         st.markdown(f"""##### {item["name"]}""")
         info_module(item)
     with right.container(border=True):
-        wiki_url = item["wikiaUrl"] if 'wikiaUrl' in item else Warframe.get_wiki_url("")
-        st.markdown(f"""<a href="{wiki_url}">
-                        <img alt="ducat" style="display: block;
-                                            margin-left: auto;
-                                            margin-right: auto;" 
-                            src="{image_url}"/></a>""",unsafe_allow_html=True)
+        wiki_url = item["wikiaUrl"] if 'wikiaUrl' in item else Warframe.get_wiki_url(item["name"].replace(" Intact", "").replace(" ","_"))
+        st.markdown(components.markdowns.image_md(wiki_url,item["name"],image_url),unsafe_allow_html=True)
+        st.write(" ")
     if "Relic" in item["type"]:
         if right.button(AppLabels.MARKET.value,use_container_width=True,icon=AppIcons.MARKET.value,type="primary"):
             dialogs.market_check(item)
+
+def prep_image(enum):
+    """ Image card of Baro/Varzia."""
+    img_location = data_manage.get_image(enum.value["uniqueName"])
+    img_bytes = warframe_export.get_image(img_location)
+    print(img_location)
+    if img_bytes is not None:
+        image = Image.open(img_bytes)
+        st.image(image,use_container_width=True)
+    else:
+        image = Image.open(enum.value["image"])
+        st.image(image.resize((200, 200)),use_container_width=True)
+    

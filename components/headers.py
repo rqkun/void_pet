@@ -1,25 +1,33 @@
 import streamlit as st
 
+from components.markdowns import image_md
 from config.constants import AppIcons, AppLabels, AppPages, Warframe
 def basic(logo=None):
     """ Add header function. """
     with st.header(""):
-        left, _,mid,_, right = st.columns([1,2,1,2,1],vertical_alignment="bottom")
+        left, _,mid,_, right = st.columns([1,3,1,3,1],vertical_alignment="bottom")
         with left:
-            if st.button(AppIcons.HOME.value,use_container_width=True):
+            if st.button(AppIcons.HOME.value, type="secondary",use_container_width=True):
                 st.switch_page(AppPages.HOME.value)
         with right:
-            with st.popover(AppIcons.MENU.value,use_container_width=True,):
+            with st.popover(AppIcons.MENU.value,use_container_width=True):
                 
                 st.page_link(AppPages.AYA.value,
-                             label=Warframe.VARZIA.value["name"],
+                             label=f"""{AppIcons.AYA.value} {Warframe.AYA.value["name"]}""",
+                             use_container_width=True)
+                st.page_link(AppPages.BARO.value,
+                             label=f"""{AppIcons.BARO.value} {Warframe.BARO.value["name"]}""",
+                             use_container_width=True)
+                st.page_link(AppPages.VARZIA.value,
+                             label="Varzia",
                              icon=AppIcons.VARZIA.value,
                              use_container_width=True)
                 st.page_link(AppPages.ISSUE.value,
                              label=AppLabels.REPORT.value,
                              icon=AppIcons.ISSUES.value,
                              use_container_width=True)
+                
         with mid:
             if logo is not None:
                 cont = st.container(border=False)
-                cont.html(f"""<img alt="logo" style="width:50%;display: block;margin-left: auto;margin-right: auto;width: 50px;" src="{logo}"/>""")
+                cont.html(image_md(url="#",alt=logo.value["name"],source=logo.value["image"],size="50%"))

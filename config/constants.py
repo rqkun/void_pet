@@ -9,14 +9,15 @@ class AppIcons(Enum):
     SYNC = ":material/sync:"
     MENU = ":material/menu:"
     HOME = ":material/home:"
-    VARZIA = ":material/shopping_cart_checkout:"
-    BARO = ":material/currency_exchange:"
+    VARZIA = ":material/local_convenience_store:"
+    BARO = ":coin:"
     ISSUES = ":material/bug_report:"
     WIKI =":material/import_contacts:"
     EXTERNAL =":material/open_in_new:"
     MARKET = ":material/storefront:"
     INSPECT = ":material/search:"
     INFO = ":material/info:"
+    AYA = ":droplet:"
 
 class AppMessages(Enum):
     """ Default messages for the app. """
@@ -28,6 +29,11 @@ class AppMessages(Enum):
     OFFER_TYPE_TOOLTIP = "WTS: sell offers, WTB: buy offers. Default to WTS if empty."
     PROGRESS = "Operation in progress. Please wait."
     GOTO_WIKI = "Go to Warframe Wiki."
+    
+    @staticmethod
+    def baro_time_message(date):
+        """ Return arrival date of baro formatted message. """
+        return f"Baro will arrive after: `{date}`"
     
     @staticmethod
     def index_relic_message(item_name):
@@ -73,7 +79,7 @@ class AppLabels(Enum):
     REPUTATION = "Reputation threshold: "
     NUMBER_OF_TRADES = "Number of Trades: "
     PRIME_SELECT = "Choose a Prime."
-    RELIC_SELECT = "Choose a relic to inspect it's rewards: "
+    RELIC_SELECT = "Choose a relic. "
     REWARD_SELECT = "Choose a reward to inspect: "
     
     @staticmethod
@@ -91,7 +97,7 @@ class AppPages(Enum):
     HOME = "components/pages/home.py"
     ERROR = "components/pages/error.py"
     AYA = "components/pages/aya.py"
-    REGAL = "components/pages/regal.py"
+    VARZIA = "components/pages/varzia.py"
     BARO = "components/pages/baro.py"
     ISSUE = "https://github.com/rqkun/void_pet/issues"
 
@@ -116,17 +122,30 @@ class AppExports(Enum):
 
 class Warframe(Enum):
     """ Warframe APIs and images. """
-    PLATINUM = "https://static.wikia.nocookie.net/warframe/images/e/e7/PlatinumLarge.png"
-    DUCAT = "https://static.wikia.nocookie.net/warframe/images/d/d5/OrokinDucats.png"
-    AYA ="https://static.wikia.nocookie.net/warframe/images/4/45/Aya.png"
-    REGAL_AYA = "https://static.wikia.nocookie.net/warframe/images/f/f0/RegalAya.png"
-
+    PLATINUM = {
+        "name": "Platinum",
+        "image": "https://static.wikia.nocookie.net/warframe/images/e/e7/PlatinumLarge.png"
+    } 
+    DUCAT = {
+        "name": "Ducat",
+        "image": "https://static.wikia.nocookie.net/warframe/images/d/d5/OrokinDucats.png"
+    }
+    AYA = {
+        "name": "Aya",
+        "image": "https://static.wikia.nocookie.net/warframe/images/4/45/Aya.png"
+    }
+    REGAL_AYA = {
+        "name": "Regal Aya",
+        "image": "https://static.wikia.nocookie.net/warframe/images/f/f0/RegalAya.png"
+    }
     BARO = {
         "name" : "Baro Ki'Teer",
+        "uniqueName" : "/Lotus/Types/StoreItems/AvatarImages/ImageBaroKiteer", 
         "image" : "datasources/images/baro.png"
     }
     VARZIA = {
         "name" : "Variza",
+        "uniqueName" : "/Lotus/Types/StoreItems/Packages/MegaPrimeVault/LastChanceItemA", 
         "image" : "datasources/images/varzia.png"
     }
     STATUS = {

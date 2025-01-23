@@ -2,7 +2,7 @@ import streamlit as st
 from components import cards
 from config.constants import AppIcons, AppLabels, AppMessages
 from datasources import warframe_status
-from utils import data_manage, data_tools
+from utils import data_manage, tools
 from utils.data_manage import call_market
 
 
@@ -11,7 +11,7 @@ def baro_item_check(uniqueName):
     """ Show item details with market lookup options. """
     with st.spinner(AppMessages.LOAD_DATA.value):
         item = warframe_status.get_item_data(uniqueName)
-        image_url = data_tools.get_item_image(uniqueName)
+        image_url = tools.get_item_image(uniqueName)
     cards.item_card(item[0],image_url)
 
 @st.dialog(AppLabels.DETAIL_MARKET.value)
@@ -37,7 +37,7 @@ def market_check(item):
         with bottom_contain_r,st.spinner(AppMessages.LOAD_DATA.value):
             relic_name_cleaned = reward_option["item"]["name"].lower().replace(" ","_")
             item = data_manage.get_market_item(relic_name_cleaned)  
-            market_data = data_tools.market_filter(call_market(relic_name_cleaned),rep=rep, status=status,wtb=wtb)[:limit]
-            avg_plat = data_tools.get_average_plat_price(market_data)
+            market_data = tools.market_filter(call_market(relic_name_cleaned),rep=rep, status=status,wtb=wtb)[:limit]
+            avg_plat = tools.get_average_plat_price(market_data)
             cards.component(reward_option,item,reward_option["item"]["imageName"],avg_plat,len(market_data))
         

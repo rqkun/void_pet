@@ -1,27 +1,28 @@
 from datetime import datetime, timedelta
 import streamlit as st
+from components import cards, headers
 from config import structures
 import datasources.warframe_status
 from config.constants import AppIcons, AppLabels, AppMessages, AppPages, Warframe
 from utils import data_manage
 from utils.data_manage import get_sortie_missions,get_invasions_rewards
-from utils.data_tools import prep_image,check_disable,format_timedelta
+from utils.tools import check_disable,format_timedelta
 
 @st.fragment(run_every=timedelta(minutes=1))
 def baro_timer():
     """ Show baro's card that update every minute. """
     baro_card = st.container(border=True)
-    with baro_card:
-        with st.spinner(AppMessages.LOAD_DATA.value):
-            data=data_manage.get_baro()
+    with baro_card, st.spinner(AppMessages.LOAD_DATA.value):
+        data=data_manage.get_baro()
         st.markdown(f"""### {Warframe.BARO.value["name"]}""",unsafe_allow_html=True)
         baro_info_card = st.container(border=True)
         left,right = baro_info_card.columns([2,1])
         
         baro_info = left.container(border=False)
         baro_img = right.container(border=True)
-        
-        baro_img.image(prep_image(Warframe.BARO.value["image"]),use_container_width=True)
+        with baro_img:
+            cards.prep_image(Warframe.BARO)
+            
 
         with baro_info:
             date = datetime.strptime(data["activation"],"%Y-%m-%dT%H:%M:%S.%fZ")-datetime.today()
@@ -32,7 +33,7 @@ def baro_timer():
                 st.write(AppMessages.end_time_message(end_date))
             else:
                 st.write(AppMessages.start_time_message(start_date))
-            st.write(AppMessages.location_message(data["location"]))
+
             if st.button(AppLabels.RELOAD.value,use_container_width=True,type="secondary",icon=AppIcons.SYNC.value,key="baro_reload"):
                 if 'baro_wares' in st.session_state:
                     del st.session_state["baro_wares"]
@@ -47,15 +48,15 @@ def baro_timer():
 def varzia_timer():
     """ Show varzia's card that update every minute. """
     varzia_card = st.container(border=True)
-    with varzia_card:
-        with st.spinner(AppMessages.LOAD_DATA.value):
-            data=datasources.warframe_status.get_varzia_data()
+    with varzia_card, st.spinner(AppMessages.LOAD_DATA.value):
+        data=datasources.warframe_status.get_varzia_data()
         st.markdown(f"""### {Warframe.VARZIA.value["name"]}""",unsafe_allow_html=True)
         varzia_info_card = st.container(border=True)
         left,right = varzia_info_card.columns([2,1])
         varzia_info = left.container(border=False)
         varzia_img = right.container(border=True)
-        varzia_img.image(prep_image(Warframe.VARZIA.value["image"]),use_container_width=True)
+        with varzia_img:
+            cards.prep_image(Warframe.VARZIA)
 
         with varzia_info:
             date = datetime.strptime(data["activation"],"%Y-%m-%dT%H:%M:%S.%fZ")-datetime.today()
@@ -66,37 +67,23 @@ def varzia_timer():
                 st.write(AppMessages.end_time_message(end_date))
             else:
                 st.write(AppMessages.start_time_message(start_date))
-                
-            filtered_data = [item for item in data["inventory"] if item['credits'] is not None]
-            other_len= len(data["inventory"])-len(filtered_data)
-            st.write(f"Inventory: `{len(filtered_data)}` Relics, `{other_len}` Others")
-            
+
             if st.button(AppLabels.RELOAD.value,use_container_width=True,type="secondary",icon=AppIcons.SYNC.value,key="variza_reload"):
-                if 'aya_wares' in st.session_state:
-                    del st.session_state["aya_wares"]
-                if 'aya_wares_detail' in st.session_state:
-                    del st.session_state["aya_wares_detail"]
-                if 'regal_wares' in st.session_state:
-                    del st.session_state["regal_wares"]
-                if 'regal_wares_detail' in st.session_state:
-                    del st.session_state["regal_wares_detail"]
+                if 'varzia_wares' in st.session_state:
+                    del st.session_state["varzia_wares"]
+                if 'varzia_wares_detail' in st.session_state:
+                    del st.session_state["varzia_wares_detail"]
                 st.cache_data.clear()
                 st.rerun(scope="fragment")
-        if right.button("Relics",use_container_width=True,disabled=check_disable(data),help=AppMessages.VARZIA_BROWSE.value,key="aya_browse",type="primary"):
-            #Aya Only!
-            st.session_state["aya_wares"] = structures.ware_object("aya",filtered_data)
-            st.switch_page(AppPages.AYA.value)
-        if varzia_info.button(AppLabels.BROWSE.value,use_container_width=True,disabled=check_disable(data),help=AppMessages.VARZIA_BROWSE.value,key="regal_browse",type="secondary"):
-            st.session_state["regal_wares"] = structures.ware_object("regal",data["inventory"])
-            st.switch_page(AppPages.REGAL.value)
+        if varzia_info.button(AppLabels.BROWSE.value,use_container_width=True,disabled=check_disable(data),help=AppMessages.VARZIA_BROWSE.value,key="varzia_browse",type="primary"):
+            st.switch_page(AppPages.VARZIA.value)
 
 @st.fragment(run_every=timedelta(minutes=1))
 def event_state_timer():
     """ Show event's card that update every minute. """
     event_state_card = st.container(border=True)
-    with event_state_card:
-        with st.spinner(AppMessages.LOAD_DATA.value):
-            data=data_manage.get_world_state()
+    with event_state_card, st.spinner(AppMessages.LOAD_DATA.value):
+        data=data_manage.get_world_state()
         st.markdown(f"""### Events """,unsafe_allow_html=True)
         events_info = st.container(border=True)
         # events_wiki = right.container(border=True)
@@ -114,16 +101,15 @@ def event_state_timer():
 def world_state_timer():
     """ Show Sortie's info card. """
     world_state_card = st.container(border=True)
-    with world_state_card:
-        with st.spinner(AppMessages.LOAD_DATA.value):
-            data=data_manage.get_world_state()
-            data ={
-                "Cetus": data["cetusCycle"],
-                "Deimos": data["cambionCycle"],
-                "Zariman": data["zarimanCycle"],
-                "Fortuna": data["vallisCycle"],
-                "Duviri": data["duviriCycle"]
-            }
+    with world_state_card, st.spinner(AppMessages.LOAD_DATA.value):
+        data=data_manage.get_world_state()
+        data ={
+            "Cetus": data["cetusCycle"],
+            "Deimos": data["cambionCycle"],
+            "Zariman": data["zarimanCycle"],
+            "Fortuna": data["vallisCycle"],
+            "Duviri": data["duviriCycle"]
+        }
             
         st.markdown(f"""### World""",unsafe_allow_html=True)
         with st.container(border=True):
@@ -155,9 +141,8 @@ def world_state_timer():
 def sortie_state_timer():
     """ Show Sortie's info card. """
     event_state_card = st.container(border=True)
-    with event_state_card:
-        with st.spinner(AppMessages.LOAD_DATA.value):
-            data=data_manage.get_world_state()["sortie"]
+    with event_state_card, st.spinner(AppMessages.LOAD_DATA.value):
+        data=data_manage.get_world_state()["sortie"]
         st.markdown(f"""### Sortie""",unsafe_allow_html=True)
         with st.container(border=True),st.spinner(AppMessages.LOAD_DATA.value):
             sortie_steps, sortie_step_names = get_sortie_missions(data)
@@ -177,9 +162,8 @@ def sortie_state_timer():
 def invasion_state_timer():
     """ Show Invasion rewards card. """
     event_state_card = st.container(border=True)
-    with event_state_card:
-        with st.spinner(AppMessages.LOAD_DATA.value):
-            data=get_invasions_rewards(data_manage.get_world_state()["invasions"])
+    with event_state_card, st.spinner(AppMessages.LOAD_DATA.value):
+        data=get_invasions_rewards(data_manage.get_world_state()["invasions"])
         st.markdown(f"""### Invasion Rewards""",unsafe_allow_html=True)
         
         
@@ -188,6 +172,8 @@ def invasion_state_timer():
             
             if st.button(AppLabels.RELOAD.value,use_container_width=True,type="secondary",icon=AppIcons.SYNC.value,key="invasion_state_reload"):
                 st.rerun(scope="fragment")
+
+headers.basic(None)
 
 left_col,right_col = st.columns(2)
 with left_col:

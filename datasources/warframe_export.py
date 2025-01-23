@@ -1,7 +1,10 @@
+from io import BytesIO
 import json
+import requests
 import streamlit as st
 
-from config.constants import AppExports
+from config.constants import AppExports, Warframe
+from utils.api_services import raise_detailed_error
 @st.cache_data(ttl="1d", show_spinner=False)
 def open_cosmetics():
     """ Read Cosmetic's Json info.
@@ -161,3 +164,21 @@ def open_weapons():
     """
     with open(AppExports.WEAPONS.value, "r", encoding="utf-8") as file:
         return json.load(file)["ExportWeapons"]
+
+def get_image(path) -> bytes: 
+    """ Getting image for json path to bytes.
+
+    Args:
+        path (str): Url of an item.
+
+    Returns:
+        bytes: Image bytes.
+    """
+    try:
+        request_object = requests.get(path)
+        raise_detailed_error(request_object)
+        print(path)
+        return BytesIO(request_object.content)
+    except requests.exceptions.HTTPError as err:
+        print(err)
+        return None
