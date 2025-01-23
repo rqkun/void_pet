@@ -177,8 +177,6 @@ def get_image(path) -> bytes:
     try:
         request_object = requests.get(path)
         raise_detailed_error(request_object)
-        print(path)
         return BytesIO(request_object.content)
     except requests.exceptions.HTTPError as err:
-        print(err)
         return None

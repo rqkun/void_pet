@@ -54,7 +54,6 @@ def prep_image(enum):
     """ Image card of Baro/Varzia."""
     img_location = data_manage.get_image(enum.value["uniqueName"])
     img_bytes = warframe_export.get_image(img_location)
-    print(img_location)
     if img_bytes is not None:
         image = Image.open(img_bytes)
         st.image(image,use_container_width=True)
