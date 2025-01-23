@@ -48,7 +48,7 @@ def write_manifest(file):
             file = file.split(".json")[0] + ".json"
         
         # Save the JSON data to a file
-        output_path = f"./config/data/{file}"
+        output_path = f"./datasources/exports/{file}"
         with open(output_path, "w", encoding="utf-8") as output_file:
             json.dump(data, output_file, indent=4)
         
