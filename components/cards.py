@@ -11,7 +11,7 @@ def info_module(item):
     """ Categorized item markdown. """
     if item["type"] == "Warframe" or item["type"] == "Archwing":
         st.markdown(components.markdowns.warframe_info_md(item["name"]),unsafe_allow_html=True)
-    elif "Weapon" in item["uniqueName"] or "Sentinels" in item["category"]:
+    elif ("Weapons" in item["uniqueName"] or "Sentinels" in item["category"]) and item["category"] != "Skins":
         st.markdown(components.markdowns.weapon_info_md(item["name"]),unsafe_allow_html=True)
     elif "Relic" in item["type"]:
         st.markdown(components.markdowns.relic_info_md(item),unsafe_allow_html=True)
@@ -44,6 +44,32 @@ def generic(item, image_url: str):
         info_module(item)
     with right.container(border=True):
         wiki_url = item["wikiaUrl"] if 'wikiaUrl' in item else Warframe.get_wiki_url(item["name"].replace(" Intact", "").replace(" ","_"))
+        if item["category"] == "Mods":
+            image_url = item["wikiaThumbnail"].split(".png")[0] + ".png"
+        st.markdown(components.markdowns.image_md(wiki_url,item["name"],image_url),unsafe_allow_html=True)
+        st.write(" ")
+    if "Relic" in item["type"]:
+        if right.button(AppLabels.MARKET.value,use_container_width=True,icon=AppIcons.MARKET.value,type="primary"):
+            dialogs.market_check(item)
+
+def baro(item,baro_info, image_url: str):
+    """ Generic info card. """
+    generic_container = st.container(border=True)
+    left,right = generic_container.columns([2,1],vertical_alignment="top")
+    with left:
+        st.markdown(f"""##### {item["name"]}""")
+        if  item["category"] != "Mods" and "Relic" not in item["type"]:
+            st.markdown(f"""
+                    <i>{item["description"]}</i> <br/>
+                    """,unsafe_allow_html=True)
+        st.markdown(components.markdowns.baro_ware_md(item,baro_info),unsafe_allow_html=True)
+        if "Relic"  in item["type"]:
+            st.markdown(components.markdowns.relic_info_md(item),unsafe_allow_html=True)
+
+    with right.container(border=True):
+        wiki_url = item["wikiaUrl"] if 'wikiaUrl' in item else Warframe.get_wiki_url(item["name"].replace(" Intact", "").replace(" ","_"))
+        if item["category"] == "Mods":
+            image_url = item["wikiaThumbnail"].split(".png")[0] + ".png"
         st.markdown(components.markdowns.image_md(wiki_url,item["name"],image_url),unsafe_allow_html=True)
         st.write(" ")
     if "Relic" in item["type"]:

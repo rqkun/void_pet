@@ -223,6 +223,8 @@ def get_craftable_info(unique_name):
     Returns:
         dict: Full item and it's images location.
     """
+    if "QuestKey" in unique_name:
+        unique_name=unique_name.replace("Blueprint","")
     result = warframe_status.get_craftable(unique_name)
 
     if len(result)==0:
@@ -260,6 +262,9 @@ def get_item(unique_name):
     Returns:
         dict: Full item and it's images location.
     """
+    if "QuestKey" in unique_name:
+        unique_name = unique_name.split("/")[-1]
+        unique_name=unique_name.replace("Blueprint","")
     item = warframe_status.get_item(unique_name)[0]
     if item["category"] == "Relics":
         return get_relic(unique_name,True)
@@ -274,7 +279,10 @@ def get_item_name(unique_name):
 
     Returns:
         str: Item name
-    """
+    """ 
+    if "QuestKey" in unique_name:
+        unique_name = unique_name.split("/")[-1]
+        unique_name=unique_name.replace("Blueprint","")
     return warframe_status.get_item(unique_name)[0]["name"]
 
 

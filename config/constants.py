@@ -130,6 +130,10 @@ class Warframe(Enum):
         "name": "Ducat",
         "image": "https://static.wikia.nocookie.net/warframe/images/d/d5/OrokinDucats.png"
     }
+    CREDITS = {
+        "name": "Credits",
+        "image": "https://static.wikia.nocookie.net/warframe/images/2/2b/Credits.png"
+    }
     AYA = {
         "name": "Aya",
         "image": "https://static.wikia.nocookie.net/warframe/images/4/45/Aya.png"

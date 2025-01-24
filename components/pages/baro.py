@@ -20,8 +20,12 @@ def store_baro(data):
                 pass
             else:
                 name = data_manage.get_item_name(item["uniqueName"])
-                items[item["uniqueName"]] = name if name != "" else item["item"]
-                progress.progress((i+1)/len(data), text=AppMessages.index_relic_message(items[item["uniqueName"]]))
+                items[item["uniqueName"]] = {
+                    "name": name if name != "" else item["item"],
+                    "ducats" : item["ducats"],
+                    "credits" : item["credits"],
+                }
+                progress.progress((i+1)/len(data), text=AppMessages.index_relic_message(items[item["uniqueName"]]["name"]))
         
         progress.empty()
         st.session_state.baro_wares_detail = items
@@ -48,12 +52,11 @@ if 'baro_wares' not in st.session_state:
 data = st.session_state.baro_wares["data"]
 
 items = store_baro(data)
-pass
 uniqueName = st.selectbox("item",
                             options=items.keys(),
-                            format_func= lambda option: items[option],
+                            format_func= lambda option: items[option]["name"],
                             )
 with st.spinner(AppMessages.LOAD_DATA.value):
     item = data_manage.get_item(uniqueName)
     image_url = data_manage.get_image(uniqueName)
-    cards.generic(item,image_url)
+    cards.baro(item,items[uniqueName],image_url)
