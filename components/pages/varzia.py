@@ -52,6 +52,7 @@ if right.button(AppIcons.SYNC.value,use_container_width=True):
     if 'varzia_wares_detail' in st.session_state:
         del st.session_state["varzia_wares_detail"]
     st.cache_data.clear()
+
 with st.spinner(AppMessages.LOAD_DATA.value):
     item = data_manage.get_item(uniqueName)
     image_url = data_manage.get_image(uniqueName)

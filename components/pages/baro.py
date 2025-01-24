@@ -4,7 +4,7 @@ from components import cards, headers
 from config import structures
 from utils import data_manage
 
-from config.constants import AppMessages, AppPages, Warframe
+from config.constants import AppIcons, AppMessages, AppPages, Warframe
 from utils.tools import format_timedelta
 
 @st.cache_data(ttl="1d",show_spinner=False)
@@ -52,10 +52,21 @@ if 'baro_wares' not in st.session_state:
 data = st.session_state.baro_wares["data"]
 
 items = store_baro(data)
-uniqueName = st.selectbox("item",
+
+left, right =st.columns([6,1],vertical_alignment="bottom")
+
+uniqueName = left.selectbox("item",
                             options=items.keys(),
                             format_func= lambda option: items[option]["name"],
                             )
+
+if right.button(AppIcons.SYNC.value,use_container_width=True):
+    if 'baro_wares' in st.session_state:
+        del st.session_state["baro_wares"]
+    if 'baro_wares_detail' in st.session_state:
+        del st.session_state["baro_wares_detail"]
+    st.cache_data.clear()
+
 with st.spinner(AppMessages.LOAD_DATA.value):
     item = data_manage.get_item(uniqueName)
     image_url = data_manage.get_image(uniqueName)
