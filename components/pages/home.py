@@ -99,9 +99,12 @@ def event_state_timer():
             data=data_manage.get_world_state()
             if len(data["events"])>0:
                 for event in data["events"]:
-                    left,right = events_info.columns([8,1],vertical_alignment="top")
-                    right.link_button(AppIcons.EXTERNAL.value,url=Warframe.get_wiki_url(event["description"]),use_container_width=True,type="tertiary")
-                    left.progress(event["currentScore"],f"""{event["description"]} | {event["node"]}""")
+                    try:
+                        left,right = events_info.columns([8,1],vertical_alignment="top")
+                        right.link_button(AppIcons.EXTERNAL.value,url=Warframe.get_wiki_url(event["description"]),use_container_width=True,type="tertiary")
+                        left.progress(event["currentScore"],f"""{event["description"]} | {event["node"]}""")
+                    except:
+                        pass
             else:
                 events_info.info('There are currently no events', icon=AppIcons.INFO.value)
             if event_state_reload:
