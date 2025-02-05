@@ -1,7 +1,8 @@
 import streamlit as st
-
+from PIL import Image
 from components.markdowns import image_md
 from config.constants import AppIcons, AppLabels, AppPages, Warframe
+from utils import data_manage
 def basic(logo=None):
     """ Add header function. """
     with st.header(""):
@@ -30,4 +31,6 @@ def basic(logo=None):
         with mid:
             if logo is not None:
                 cont = st.container(border=False)
-                cont.html(image_md(url="#",alt=logo.value["name"],source=logo.value["image"],size="50%"))
+                image = Image.open(data_manage.get_image_bytes(logo.value["image"]))
+                cont.image(image)
+                #cont.html(image_md(url="#",alt=logo.value["name"],source=logo.value["image"],size="50%"))

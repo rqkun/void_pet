@@ -190,8 +190,8 @@ def invasion_state_timer():
         with st.container(border=True),st.spinner(AppMessages.LOAD_DATA.value):
             data=get_invasions_rewards(data_manage.get_world_state()["invasions"])
             for item,amount in data.items():
-                left,right = st.columns([1,8],vertical_alignment="top")
-                right.write(f"{item} `{amount}`")
+                left,right = st.columns([1,5],vertical_alignment="top")
+                right.write(f"{item}: `{amount}`")
                 image = Image.open(data_manage.get_invasion_reward_image(item))
                 left.image(image)
 

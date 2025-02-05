@@ -3,7 +3,7 @@ from PIL import Image
 from components import dialogs
 import components.markdowns
 from config.constants import AppIcons, AppLabels, AppMessages, Warframe
-from datasources import warframe_export
+from utils import api_services
 from utils import data_manage
 
 
@@ -78,8 +78,8 @@ def baro(item,baro_info, image_url: str):
 
 def prep_image(enum):
     """ Image card of Baro/Varzia."""
-    img_location = data_manage.get_image(enum.value["uniqueName"])
-    img_bytes = warframe_export.get_image(img_location)
+    img_location = data_manage.get_image_url(enum.value["uniqueName"])
+    img_bytes = api_services.get_image(img_location)
     if img_bytes is not None:
         image = Image.open(img_bytes)
         st.image(image,use_container_width=True)

@@ -17,7 +17,7 @@ def baro_item_check(uniqueName):
 @st.dialog(AppLabels.DETAIL_MARKET.value)
 def market_check(item):
     """ Market inspection dialog. """
-    option_map = item["rewards"]
+    option_map = data_manage.deforma_rewards(item["rewards"])
     reward_form = st.form("reward_inspect_form",clear_on_submit=False,border=False)
     reward_option = reward_form.selectbox(
         AppLabels.REWARD_SELECT.value,

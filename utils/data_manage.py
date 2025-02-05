@@ -5,9 +5,10 @@ from config import structures
 from config.constants import Warframe
 from datasources import warframe_export,warframe_market,warframe_status
 from utils import tools
+import utils.api_services as api_services
 from utils.tools import parse_item_string
 
-def get_image(unique_name,is_full =True) -> str:
+def get_image_url(unique_name,is_full =True) -> str:
     """ Return image url from export.
 
     Args:
@@ -28,6 +29,17 @@ def get_image(unique_name,is_full =True) -> str:
             return Warframe.PUBLIC_EXPORT.value["api"] + item["textureLocation"]
 
     return "https://static.wikia.nocookie.net/warframe/images/4/46/Void.png"
+
+def get_image_bytes(url) -> bytes:
+    """ Get Image bytes from url.
+
+    Args:
+        url (str): Request Image Url
+
+    Returns:
+        bytes: ImageBytes
+    """
+    return api_services.get_image(url)
 
 def export_relic(name,field):
     """ Return the relic from the public export file.
@@ -86,7 +98,7 @@ def get_relic(name, is_unique) -> dict:
     relic_export = export_relic(identifier,field)
     for i,item in enumerate(relic["rewards"]):
         item["item"]["uniqueName"] = relic_export["relicRewards"][i]["rewardName"]
-        item["item"]["imageName"] = get_image(relic_export["relicRewards"][i]["rewardName"])
+        item["item"]["imageName"] = get_image_url(relic_export["relicRewards"][i]["rewardName"])
     return relic
 
 def get_variza():
@@ -236,7 +248,7 @@ def get_craftable_info(unique_name):
         return {}
     else:
         for component in result[0]["components"]:
-            component["imageName"] = get_image(component["uniqueName"])
+            component["imageName"] = get_image_url(component["uniqueName"])
         return result
 
 
@@ -255,7 +267,7 @@ def get_frame_abilities_with_image(frame):
         return {}
     else:
         for ability in result[0]["abilities"]:
-            ability["imageName"] = get_image(ability["uniqueName"])
+            ability["imageName"] = get_image_url(ability["uniqueName"])
         return result
 
 def get_item(unique_name):
@@ -304,14 +316,26 @@ def call_market(option):
     return warframe_market.get_market_orders(option)['payload']['orders']
 
 def get_invasion_reward_image(name) -> bytes:
+    """ Get the material image from export API.
+
+    Args:
+        name (str): Either name or uniqueName of item
+
+    Returns:
+        bytes: ImageBytes
+    """
     resoureces_json = warframe_export.open_resources()
     for item in resoureces_json:
-        # item_name = re.sub(r'[\d\s]+', '', item["name"])
-        # search_name = re.sub(r'[\d\s]+', '',name)
         if (name in item["name"]):
             unique_name = item["uniqueName"]
             break
     if unique_name:
-        return warframe_export.get_image(get_image(unique_name))
+        return get_image_bytes(get_image_url(unique_name))
     else:
-        return warframe_export.get_image(get_image(unique_name,False))
+        return get_image_bytes(get_image_url(unique_name,False))
+    
+def deforma_rewards(option_map):
+    for item in option_map:
+        if "Forma Blueprint" in item["item"]["name"]:
+            option_map.remove(item)
+    return option_map

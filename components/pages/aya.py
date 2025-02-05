@@ -73,5 +73,5 @@ if refresh.button(AppIcons.SYNC.value,use_container_width=True):
 
 with st.spinner(AppMessages.LOAD_DATA.value):
     item = data_manage.get_relic(names[relic_index],True)
-    image_url = data_manage.get_image(item["uniqueName"])
+    image_url = data_manage.get_image_url(item["uniqueName"])
     cards.generic(item,image_url)
