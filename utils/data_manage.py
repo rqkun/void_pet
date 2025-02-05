@@ -1,4 +1,5 @@
 from collections import defaultdict
+import re
 import streamlit as st
 from config import structures
 from config.constants import Warframe
@@ -6,7 +7,7 @@ from datasources import warframe_export,warframe_market,warframe_status
 from utils import tools
 from utils.tools import parse_item_string
 
-def get_image(unique_name) -> str:
+def get_image(unique_name,is_full =True) -> str:
     """ Return image url from export.
 
     Args:
@@ -17,11 +18,15 @@ def get_image(unique_name) -> str:
     """
     if 'image_manifest' not in st.session_state:
         st.session_state.image_manifest = warframe_export.open_manifest()
-    identifier = unique_name.split("/")
-    identifier = "/".join(identifier[len(identifier)-3:])
+    if is_full:
+        identifier = unique_name.split("/")
+        identifier = "/".join(identifier[len(identifier)-3:])
+    else:
+        identifier = unique_name
     for item in st.session_state.image_manifest:
         if identifier in item["uniqueName"]:
             return Warframe.PUBLIC_EXPORT.value["api"] + item["textureLocation"]
+
     return "https://static.wikia.nocookie.net/warframe/images/4/46/Void.png"
 
 def export_relic(name,field):
@@ -297,3 +302,16 @@ def call_market(option):
         dict: Item's market data.
     """
     return warframe_market.get_market_orders(option)['payload']['orders']
+
+def get_invasion_reward_image(name) -> bytes:
+    resoureces_json = warframe_export.open_resources()
+    for item in resoureces_json:
+        # item_name = re.sub(r'[\d\s]+', '', item["name"])
+        # search_name = re.sub(r'[\d\s]+', '',name)
+        if (name in item["name"]):
+            unique_name = item["uniqueName"]
+            break
+    if unique_name:
+        return warframe_export.get_image(get_image(unique_name))
+    else:
+        return warframe_export.get_image(get_image(unique_name,False))

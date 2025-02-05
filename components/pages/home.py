@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 import streamlit as st
+from PIL import Image
 from components import cards, headers
 from config import structures
 import datasources.warframe_status
@@ -188,7 +189,12 @@ def invasion_state_timer():
         
         with st.container(border=True),st.spinner(AppMessages.LOAD_DATA.value):
             data=get_invasions_rewards(data_manage.get_world_state()["invasions"])
-            st.json(data)
+            for item,amount in data.items():
+                left,right = st.columns([1,8],vertical_alignment="top")
+                right.write(f"{item} `{amount}`")
+                image = Image.open(data_manage.get_invasion_reward_image(item))
+                left.image(image)
+
             if invasion_state_reload:
                 st.rerun(scope="fragment")
 
