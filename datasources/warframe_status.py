@@ -80,7 +80,7 @@ def get_relic_by(name, is_unique):
     raise_detailed_error(request_object)
     return request_object.json()
 
-def get_item(unique_name):
+def get_item(unique_name, search_by_name=False):
     """ API request to get all matching item data.
 
     Args:
@@ -89,10 +89,15 @@ def get_item(unique_name):
     Returns:
         dict: Item's data.
     """
-    identifier = unique_name.split("/")
-    identifier = "/".join(identifier[len(identifier)-3:])
-    encoded_name = urllib.parse.quote_plus(identifier, safe="")
-    request_ref = Warframe.STATUS.value["api"]+f"/items/search/{encoded_name}?by=uniqueName&remove=abilities,components,patchlogs"
+    if search_by_name:
+        encoded_name = urllib.parse.quote_plus(unique_name, safe="")
+        request_ref = Warframe.STATUS.value["api"]+f"/items/search/{encoded_name}?by=name&remove=abilities,components,patchlogs"
+    else:
+        identifier = unique_name.split("/")
+        identifier = "/".join(identifier[len(identifier)-3:])
+        encoded_name = urllib.parse.quote_plus(identifier, safe="")
+        request_ref = Warframe.STATUS.value["api"]+f"/items/search/{encoded_name}?by=uniqueName&remove=abilities,components,patchlogs"
+        
     request_object = requests.get(request_ref)
     raise_detailed_error(request_object)
     return request_object.json()

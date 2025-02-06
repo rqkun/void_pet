@@ -18,6 +18,7 @@ class AppIcons(Enum):
     INSPECT = ":material/search:"
     INFO = ":material/info:"
     AYA = ":droplet:"
+    NO_IMAGE_DATA_URL = "https://cdn-icons-png.flaticon.com/512/7466/7466140.png"
 
 class AppMessages(Enum):
     """ Default messages for the app. """

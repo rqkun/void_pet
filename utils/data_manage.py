@@ -2,7 +2,7 @@ from collections import defaultdict
 import re
 import streamlit as st
 from config import structures
-from config.constants import Warframe
+from config.constants import AppIcons, Warframe
 from datasources import warframe_export,warframe_market,warframe_status
 from utils import tools
 import utils.api_services as api_services
@@ -28,7 +28,7 @@ def get_image_url(unique_name,is_full =True) -> str:
         if identifier in item["uniqueName"]:
             return Warframe.PUBLIC_EXPORT.value["api"] + item["textureLocation"]
 
-    return "https://static.wikia.nocookie.net/warframe/images/4/46/Void.png"
+    return AppIcons.NO_IMAGE_DATA_URL.value
 
 def get_image_bytes(url) -> bytes:
     """ Get Image bytes from url.
@@ -324,15 +324,30 @@ def get_invasion_reward_image(name) -> bytes:
     Returns:
         bytes: ImageBytes
     """
+    unique_name = name
     resoureces_json = warframe_export.open_resources()
+    recipes_json = warframe_export.open_recipes()
+    
+    for item in recipes_json:
+        if (name.replace(" ","") in item["uniqueName"]):
+            unique_name = item["uniqueName"]
+            break
+    
     for item in resoureces_json:
         if (name in item["name"]):
             unique_name = item["uniqueName"]
             break
     if unique_name:
-        return get_image_bytes(get_image_url(unique_name))
+        img = get_image_url(unique_name)
     else:
-        return get_image_bytes(get_image_url(unique_name,False))
+        img = get_image_url(unique_name,False)
+    
+    if img == AppIcons.NO_IMAGE_DATA_URL.value:
+        unique_name = warframe_status.get_item(name.replace(" Blueprint", ""),True)
+        if len(unique_name)>0:
+            img = get_image_url(unique_name[0]["uniqueName"])
+        
+    return get_image_bytes(img)
     
 def deforma_rewards(option_map):
     for item in option_map:
