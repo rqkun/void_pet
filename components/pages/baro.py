@@ -19,13 +19,18 @@ def store_baro(data):
             if "M P V" in item["item"]:
                 pass
             else:
-                name = data_manage.get_item_name(item["uniqueName"])
-                items[item["uniqueName"]] = {
-                    "name": name if name != "" else item["item"],
-                    "ducats" : item["ducats"],
-                    "credits" : item["credits"],
-                }
-                progress.progress((i+1)/len(data), text=AppMessages.index_relic_message(items[item["uniqueName"]]["name"]))
+                try:
+                    name = data_manage.get_item_name(item["uniqueName"])
+                
+                    items[item["uniqueName"]] = {
+                        "name": name if name != "" else item["item"],
+                        "ducats" : item["ducats"],
+                        "credits" : item["credits"],
+                    }
+                    progress.progress((i+1)/len(data), text=AppMessages.index_relic_message(items[item["uniqueName"]]["name"]))
+                except IndexError as err:
+                    progress.progress((i+1)/len(data), text=f"Failed {item["uniqueName"]}")
+                    print(f"Failed {item["uniqueName"]}")
         
         progress.empty()
         st.session_state.baro_wares_detail = items
