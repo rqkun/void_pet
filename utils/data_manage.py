@@ -55,6 +55,7 @@ def export_relic(name,field):
     for item in local_relic_data:
         if name in item[field]:
             return item
+    return None
 
 def get_relic_reward(relic) -> dict:
     """ Return relic's rewards dictionary.
@@ -229,6 +230,7 @@ def get_market_item(url_path):
     for item in piece_list["payload"]["item"]["items_in_set"]:
         if item['en']['item_name'].lower().replace(" ","_") == url_path:
             return item
+    return None
 
 
 def get_craftable_info(unique_name):
@@ -244,12 +246,12 @@ def get_craftable_info(unique_name):
         unique_name=unique_name.replace("Blueprint","")
     result = warframe_status.get_craftable(unique_name)
 
-    if len(result)==0:
-        return {}
-    else:
+    if len(result)>0:
         for component in result[0]["components"]:
             component["imageName"] = get_image_url(component["uniqueName"])
         return result
+    else:
+        return None
 
 
 def get_frame_abilities_with_image(frame):
@@ -263,12 +265,12 @@ def get_frame_abilities_with_image(frame):
     """
     result = warframe_status.get_abilities(frame)
 
-    if len(result) ==0:
-        return {}
-    else:
+    if len(result)>0:
         for ability in result[0]["abilities"]:
             ability["imageName"] = get_image_url(ability["uniqueName"])
         return result
+    else:
+        return None
 
 def get_item(unique_name):
     """ Get item data using warframe status API.
@@ -282,11 +284,16 @@ def get_item(unique_name):
     if "QuestKey" in unique_name:
         unique_name = unique_name.split("/")[-1]
         unique_name=unique_name.replace("Blueprint","")
-    item = warframe_status.get_item(unique_name)[0]
-    if item["category"] == "Relics":
-        return get_relic(unique_name,True)
-    else: 
-        return item
+    
+    result = warframe_status.get_item(unique_name)
+    if len(result > 0):
+        item = result[0]
+        if item["category"] == "Relics":
+            return get_relic(unique_name,True)
+        else: 
+            return item
+    else:
+        return None
 
 def get_item_name(unique_name):
     """ Get item name from uniqueName
@@ -300,7 +307,11 @@ def get_item_name(unique_name):
     if "QuestKey" in unique_name:
         unique_name = unique_name.split("/")[-1]
         unique_name=unique_name.replace("Blueprint","")
-    return warframe_status.get_item(unique_name)[0]["name"]
+    result = warframe_status.get_item(unique_name)
+    if len(result > 0):
+        return warframe_status.get_item(unique_name)[0]["name"]
+    else:
+        return unique_name.split("/")[-1]
 
 
 @st.cache_data(show_spinner=False)

@@ -3,34 +3,44 @@ from utils.data_manage import get_craftable_info,get_frame_abilities_with_image
 def warframe_info_md(name):
     """ Warframe markdown custom web element. """
     result = get_frame_abilities_with_image(name)
-    abilities = result[0]["abilities"]
-    return f"""
-            <b>Passive</b>: <i>{result[0]["passiveDescription"]}</i> <br/>
-            <div class="row" style="display: flex;">
-            <div class="column">
-            <img alt="{abilities[0]["name"]}" src="{abilities[0]["imageName"]}" title="{abilities[0]["description"]}"/></div>
-            <div class="column">
-            <img alt="{abilities[1]["name"]}" src="{abilities[1]["imageName"]}" title="{abilities[1]["description"]}"/></div>
-            <div class="column">
-            <img alt="{abilities[2]["name"]}" src="{abilities[2]["imageName"]}" title="{abilities[2]["description"]}"/></div>
-            <div class="column">
-            <img alt="{abilities[3]["name"]}" src="{abilities[3]["imageName"]}" title="{abilities[3]["description"]}"/></div>
-            </div><br>"""
+    if result is not None:
+        abilities = result[0]["abilities"]
+        return f"""
+                <b>Passive</b>: <i>{result[0]["passiveDescription"]}</i> <br/>
+                <div class="row" style="display: flex;">
+                <div class="column">
+                <img alt="{abilities[0]["name"]}" src="{abilities[0]["imageName"]}" title="{abilities[0]["description"]}"/></div>
+                <div class="column">
+                <img alt="{abilities[1]["name"]}" src="{abilities[1]["imageName"]}" title="{abilities[1]["description"]}"/></div>
+                <div class="column">
+                <img alt="{abilities[2]["name"]}" src="{abilities[2]["imageName"]}" title="{abilities[2]["description"]}"/></div>
+                <div class="column">
+                <img alt="{abilities[3]["name"]}" src="{abilities[3]["imageName"]}" title="{abilities[3]["description"]}"/></div>
+                </div><br>"""
+    else:
+        return f"""
+                Undefined Data.
+                """
 
 def weapon_info_md(name):
     """ Weapon markdown custom web element. """
     result = get_craftable_info(name)
-    weapon = result[0]
-    md = f"""
-            <b>Description</b>: <i>{weapon["description"]}</i> <br/>
-            <div class="row" style="display: flex;">
-            """
-    for component in weapon["components"]:
-        md = md + f"""
-            <div class="column">
-            <img alt="{component["name"]}" src="{component["imageName"]}" title="{component["name"]} x{component["itemCount"]}"/>
-            </div>"""
-    return md + """</div><br>"""
+    if result is not None:
+        weapon = result[0]
+        md = f"""
+                <b>Description</b>: <i>{weapon["description"]}</i> <br/>
+                <div class="row" style="display: flex;">
+                """
+        for component in weapon["components"]:
+            md = md + f"""
+                <div class="column">
+                <img alt="{component["name"]}" src="{component["imageName"]}" title="{component["name"]} x{component["itemCount"]}"/>
+                </div>"""
+        return md + """</div><br>"""
+    else:
+        return f"""
+                Undefined Data.
+                """
 
 def relic_info_md(item):
     """ Relic markdown custom web element. """

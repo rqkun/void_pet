@@ -19,19 +19,14 @@ def store_baro(data):
             if "M P V" in item["item"]:
                 pass
             else:
-                try:
-                    name = data_manage.get_item_name(item["uniqueName"])
-                
-                    items[item["uniqueName"]] = {
-                        "name": name if name != "" else item["item"],
-                        "ducats" : item["ducats"],
-                        "credits" : item["credits"],
-                    }
-                    progress.progress((i+1)/len(data), text=AppMessages.index_relic_message(items[item["uniqueName"]]["name"]))
-                except IndexError as err:
-                    progress.progress((i+1)/len(data), text=f"Failed {item["uniqueName"]}")
-                    print(f"Failed {item["uniqueName"]}")
-        
+                name = data_manage.get_item_name(item["uniqueName"])
+                items[item["uniqueName"]] = {
+                    "name": name if name != "" else item["item"],
+                    "ducats" : item["ducats"],
+                    "credits" : item["credits"],
+                }
+                progress.progress((i+1)/len(data), text=AppMessages.index_relic_message(items[item["uniqueName"]]["name"]))
+    
         progress.empty()
         st.session_state.baro_wares_detail = items
         return items
@@ -74,5 +69,6 @@ if right.button(AppIcons.SYNC.value,use_container_width=True):
 
 with st.spinner(AppMessages.LOAD_DATA.value):
     item = data_manage.get_item(uniqueName)
-    image_url = data_manage.get_image_url(uniqueName)
-    cards.baro(item,items[uniqueName],image_url)
+    if item is not None:
+        image_url = data_manage.get_image_url(uniqueName)
+        cards.baro(item,items[uniqueName],image_url)
