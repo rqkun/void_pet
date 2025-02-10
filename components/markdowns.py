@@ -68,13 +68,21 @@ def prime_component_info_md(item,rarity,chances,price,offers):
 
 def baro_ware_md(item,baro_info):
     """ Baro wares markdown custom web element. """
-    return f"""
-    Ducats: <font color="#FF4B4B">{baro_info["ducats"]}</font>
-        <img alt="{Warframe.DUCAT.value["name"]}" style="width:20px;height:20px;" src="{Warframe.DUCAT.value["image"]}"/> |
-    Credits: <font color="#FF4B4B">{baro_info["credits"]}</font>
-        <img alt="{Warframe.CREDITS.value["name"]}" style="width:20px;height:20px;" src="{Warframe.CREDITS.value["image"]}"/> |
-    Type: <font color="#FF4B4B">{item["type"].replace(" Mod", "")}</font>
-    """
+    if item is not None:
+        return f"""
+        Ducats: <font color="#FF4B4B">{baro_info["ducats"]}</font>
+            <img alt="{Warframe.DUCAT.value["name"]}" style="width:20px;height:20px;" src="{Warframe.DUCAT.value["image"]}"/> |
+        Credits: <font color="#FF4B4B">{baro_info["credits"]}</font>
+            <img alt="{Warframe.CREDITS.value["name"]}" style="width:20px;height:20px;" src="{Warframe.CREDITS.value["image"]}"/> |
+        Type: <font color="#FF4B4B">{item["type"].replace(" Mod", "")}</font>
+        """
+    else:
+        return f"""
+        Ducats: <font color="#FF4B4B">{baro_info["ducats"]}</font>
+            <img alt="{Warframe.DUCAT.value["name"]}" style="width:20px;height:20px;" src="{Warframe.DUCAT.value["image"]}"/> |
+        Credits: <font color="#FF4B4B">{baro_info["credits"]}</font>
+            <img alt="{Warframe.CREDITS.value["name"]}" style="width:20px;height:20px;" src="{Warframe.CREDITS.value["image"]}"/>
+        """
 
 def image_md(url,alt,source, size="100%"):
     """Return image markdown custom web element. """

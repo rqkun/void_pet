@@ -57,14 +57,16 @@ def baro(item,baro_info, image_url: str):
     generic_container = st.container(border=True)
     left,right = generic_container.columns([2,1],vertical_alignment="top")
     with left:
-        st.markdown(f"""##### {item["name"]}""")
-        if  item["category"] != "Mods" and "Relic" not in item["type"]:
-            st.markdown(f"""
-                    <i>{item["description"]}</i> <br/>
-                    """,unsafe_allow_html=True)
+        st.markdown(f"""##### {baro_info["name"]}""")
+        if item is not None:
+            if  item["category"] != "Mods" and "Relic" not in item["type"]:
+                st.markdown(f"""
+                        <i>{item["description"]}</i> <br/>
+                        """,unsafe_allow_html=True)
+            st.markdown(components.markdowns.baro_ware_md(item,baro_info),unsafe_allow_html=True)
+            if "Relic"  in item["type"]:
+                st.markdown(components.markdowns.relic_info_md(item),unsafe_allow_html=True)
         st.markdown(components.markdowns.baro_ware_md(item,baro_info),unsafe_allow_html=True)
-        if "Relic"  in item["type"]:
-            st.markdown(components.markdowns.relic_info_md(item),unsafe_allow_html=True)
 
     with right.container(border=True):
         wiki_url = item["wikiaUrl"] if 'wikiaUrl' in item else Warframe.get_wiki_url(item["name"].replace(" Intact", "").replace(" ","_"))
