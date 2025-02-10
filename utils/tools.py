@@ -1,3 +1,4 @@
+import re
 from statistics import median
 
 from config.constants import AppMessages
@@ -119,3 +120,5 @@ def get_min_status_plat(data,status):
     )
     return filtered_sorted_orders[0]
 
+def remove_wf_color_codes(string):
+    return re.sub(r"<.*?>", "", string)

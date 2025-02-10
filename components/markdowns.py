@@ -1,4 +1,5 @@
 from config.constants import Warframe
+from utils import tools
 from utils.data_manage import get_craftable_info,get_frame_abilities_with_image
 def warframe_info_md(name):
     """ Warframe markdown custom web element. """
@@ -19,23 +20,36 @@ def warframe_info_md(name):
                 Undefined Data.
                 """
 
-def weapon_info_md(name):
-    """ Weapon markdown custom web element. """
+def craftable_info_md(name):
+    """ Craftable markdown custom web element. """
     result = get_craftable_info(name)
+    md = f""" """
     if result is not None:
-        weapon = result[0]
-        if 'masteryReq' in weapon:
-            md = f"""
-                    <b>MR</b>: <i>{weapon["masteryReq"]}</i> <br/>
-                    <b>Components</b>: <br/>"""
-        else:
-            md = f"""<b>Components</b>: <br/>"""
-        for component in weapon["components"]:
+        craftable = result[0]
+        
+        if 'masteryReq' in craftable:
             md = md + f"""
-                {component["itemCount"]} x 
-                <img alt="{component["name"]}" style="width:30px;height:30px;" src="{component["imageName"]}" title="{component["name"]}"/>
-                <i>{component["name"]}</i><br/>"""
-        return md + """<br>"""
+                    <b>MR</b>: <i>{craftable["masteryReq"]}</i> <br/>
+                """
+        
+        if 'damage' in craftable:
+            md = md + f"""<b>Stats</b>: <br/><p style="padding-left: 20px;">"""
+            md = md + f"""<i>Status Chance: {craftable["procChance"]*100:.2f} %</i><br>"""
+            md = md + f"""<i>Crit Chance: {craftable["criticalChance"]*100:.2f} %</i><br>"""
+            md = md + f"""<i>Crit Multiplier: {craftable["criticalMultiplier"]:.2f}x</i><br>"""
+            md = md + f"""<i>Firerate/Attack Speed: {craftable["fireRate"]:.2f}</i><br>"""
+            md = md + "</p>"        
+
+        sub_md = f""" """
+
+        if 'components' in craftable:
+            sub_md = sub_md + f"""<b>Components</b>:<span>"""
+            for component in craftable["components"]:
+                sub_md = sub_md + f"""
+                    <img alt="{component["name"]}" style="width:30px;height:30px;" src="{component["imageName"]}" title="{component["name"]}"/>
+                    <i>x {component["itemCount"]} {component["name"]},</i>"""
+        
+        return md,sub_md+"""</span>"""
     else:
         return f"""
                 Undefined Data.
@@ -102,3 +116,37 @@ def hide_streamlit_header():
                 header {visibility: hidden;}
             </style>
         """
+
+
+def mod_info_md(item):
+    """ Mods markdown custom web element. """
+    md = f""" """
+    
+    if 'polarity' in item:
+        md = md + f"""
+                <b> Polarity: </b><i>{item["polarity"]}</i><br>
+                """
+                
+    if 'compatName' in item:
+        md = md + f"""
+                <b> Slot: </b> <i>{item["compatName"]}</i><br>
+                """
+
+    if 'levelStats' in item:
+        
+        for idx, level in enumerate(item["levelStats"]):
+            md = md + f"""
+                <b> Level {idx}:</b>
+                """
+            for stat in level["stats"]:  
+                md = md + f"""<i>{ tools.remove_wf_color_codes(stat)} </i><br>"""
+    
+    sub_md = f""" """
+    if 'drops' in item:
+        sub_md = sub_md + """<b>Drop Locations:</b><br><div style="padding-left: 20px;">"""
+        for drop in item["drops"]:
+            sub_md = sub_md + f"""Rates: <font color="#FF4B4B"><i>{drop["chance"]}</i></font> - {drop["location"]}<br> """
+        sub_md = sub_md + """</div>"""
+    else: 
+        sub_md = sub_md + """<b>Drop Locations:</b> <br><div style="padding-left: 20px;"><i>None</i></div>"""
+    return md,sub_md

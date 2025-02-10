@@ -130,7 +130,7 @@ def get_craftable(item_name):
     """
 
     encoded_name = urllib.parse.quote(item_name, safe="")
-    request_ref = Warframe.STATUS.value["api"]+f"/items/search/{encoded_name}?by=name&only=name,uniqueName,description,category,type,masteryReq,components"
+    request_ref = Warframe.STATUS.value["api"]+f"/items/search/{encoded_name}?by=name"
     request_object = requests.get(request_ref)
     raise_detailed_error(request_object)
     return request_object.json()

@@ -246,8 +246,9 @@ def get_craftable_info(unique_name):
     result = warframe_status.get_craftable(unique_name)
 
     if len(result)>0:
-        for component in result[0]["components"]:
-            component["imageName"] = get_image_url(component["uniqueName"])
+        if 'components' in result[0]:
+            for component in result[0]["components"]:
+                component["imageName"] = get_image_url(component["uniqueName"])
         return result
     else:
         return None

@@ -18,15 +18,23 @@ def info_module(item, baro_info = None):
         st.markdown(components.markdowns.baro_ware_md(item,baro_info),unsafe_allow_html=True)
     
     if 'description' in item:
-            st.markdown(f"""
-                <i>{item["description"]}</i> <br/>
-                """,unsafe_allow_html=True)
+        st.markdown(f"""
+            <i>{item["description"]}</i> <br/>
+            """,unsafe_allow_html=True)
+    
+    # st.json(item)
     pop_info = left.popover(AppIcons.INFO.value, use_container_width=True)
     if 'type' in item and 'category' in item:
         if item["type"] == "Warframe" or item["type"] == "Archwing":
             pop_info.container(border=True).markdown(components.markdowns.warframe_info_md(item["name"]),unsafe_allow_html=True)
         elif ("Weapons" in item["uniqueName"] or "Sentinels" in item["category"]) and item["category"] != "Skins":
-            pop_info.container(border=True).markdown(components.markdowns.weapon_info_md(item["name"]),unsafe_allow_html=True)
+            md , sub_md = components.markdowns.craftable_info_md(item["name"])
+            st.markdown(sub_md,unsafe_allow_html=True)
+            pop_info.container(border=True).markdown(md,unsafe_allow_html=True)
+        elif ("Mods" in item["category"]):
+            md , sub_md = components.markdowns.mod_info_md(item)
+            st.markdown(sub_md,unsafe_allow_html=True)
+            pop_info.container(border=True).markdown(md,unsafe_allow_html=True)
         elif "Relic" in item["type"]:
             pop_info.container(border=True).markdown(components.markdowns.relic_info_md(item),unsafe_allow_html=True)
             if st.button(AppLabels.MARKET.value,use_container_width=True,icon=AppIcons.MARKET.value,type="primary"):
