@@ -5,7 +5,7 @@ from config.constants import AppIcons, AppLabels, AppPages, Warframe
 from utils import data_manage
 def basic(logo=None):
     """ Add header function. """
-    with st.header(""):
+    with st.header("",anchor=False):
         left, _,mid,_, right = st.columns([1,3,1,3,1],vertical_alignment="bottom")
         with left:
             if st.button(AppIcons.HOME.value, type="secondary",use_container_width=True):

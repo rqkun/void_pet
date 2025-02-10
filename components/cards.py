@@ -55,6 +55,7 @@ def generic(item, image_url: str):
 def baro(item,baro_info, image_url: str):
     """ Generic info card. """
     generic_container = st.container(border=True)
+    
     left,right = generic_container.columns([2,1],vertical_alignment="top")
     with left:
         st.markdown(f"""##### {baro_info["name"]}""")
@@ -66,18 +67,22 @@ def baro(item,baro_info, image_url: str):
             st.markdown(components.markdowns.baro_ware_md(item,baro_info),unsafe_allow_html=True)
             if "Relic"  in item["type"]:
                 st.markdown(components.markdowns.relic_info_md(item),unsafe_allow_html=True)
-        st.markdown(components.markdowns.baro_ware_md(item,baro_info),unsafe_allow_html=True)
+        else:
+            st.markdown(components.markdowns.baro_ware_md(item,baro_info),unsafe_allow_html=True)
+        
 
     with right.container(border=True):
-        wiki_url = item["wikiaUrl"] if 'wikiaUrl' in item else Warframe.get_wiki_url(item["name"].replace(" Intact", "").replace(" ","_"))
-        if item["category"] == "Mods":
-            image_url = item["wikiaThumbnail"].split(".png")[0] + ".png"
-        st.markdown(components.markdowns.image_md(wiki_url,item["name"],image_url),unsafe_allow_html=True)
+        if item is not None:
+            wiki_url = item["wikiaUrl"] if 'wikiaUrl' in item else Warframe.get_wiki_url(item["name"].replace(" Intact", "").replace(" ","_"))
+            if item["category"] == "Mods":
+                image_url = item["wikiaThumbnail"].split(".png")[0] + ".png"
+        else:
+            wiki_url = Warframe.get_wiki_url(baro_info["name"].replace("StoreItem", "").replace(" ","_"))
+        st.markdown(components.markdowns.image_md(wiki_url,baro_info["name"],image_url),unsafe_allow_html=True)
         st.write(" ")
-    if "Relic" in item["type"]:
+    if item is not None and "Relic" in item["type"]:
         if right.button(AppLabels.MARKET.value,use_container_width=True,icon=AppIcons.MARKET.value,type="primary"):
             dialogs.market_check(item)
-
 def prep_image(enum):
     """ Image card of Baro/Varzia."""
     img_location = data_manage.get_image_url(enum.value["uniqueName"])
