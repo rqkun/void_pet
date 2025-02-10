@@ -18,7 +18,7 @@ def market_filter(data, rep=0, status="All",wtb=""):
         data =[entry for entry in data if (entry['order_type'] == "buy")]
     else:
         data =[entry for entry in data if (entry['order_type'] == "sell")]
-    if status != "All":
+    if status != "All" and status is not None:
         data =[entry for entry in data if (entry['user']['status'] == status.lower())]
     return [entry for entry in data if entry['user']['reputation'] >= rep]
  
@@ -102,3 +102,20 @@ def check_disable(data):
         bool: Button's disable state
     """
     return False if data["active"] else True
+
+def get_min_status_plat(data,status):
+    """ Filter and find the lowest plat price for an item.
+
+    Args:
+        data (object): Warframe.market Data
+        status (str): Online status, usually Ingame.
+
+    Returns:
+        object: The lowest price order object.
+    """
+    filtered_sorted_orders = sorted(
+    [order for order in data if (order["user"]["status"] == status and order['order_type'] == "sell") ],
+    key=lambda x: x["platinum"]
+    )
+    return filtered_sorted_orders[0]
+

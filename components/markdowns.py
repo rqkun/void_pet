@@ -5,18 +5,15 @@ def warframe_info_md(name):
     result = get_frame_abilities_with_image(name)
     if result is not None:
         abilities = result[0]["abilities"]
-        return f"""
-                <b>Passive</b>: <i>{result[0]["passiveDescription"]}</i> <br/>
-                <div class="row" style="display: flex;">
-                <div class="column">
-                <img alt="{abilities[0]["name"]}" src="{abilities[0]["imageName"]}" title="{abilities[0]["description"]}"/></div>
-                <div class="column">
-                <img alt="{abilities[1]["name"]}" src="{abilities[1]["imageName"]}" title="{abilities[1]["description"]}"/></div>
-                <div class="column">
-                <img alt="{abilities[2]["name"]}" src="{abilities[2]["imageName"]}" title="{abilities[2]["description"]}"/></div>
-                <div class="column">
-                <img alt="{abilities[3]["name"]}" src="{abilities[3]["imageName"]}" title="{abilities[3]["description"]}"/></div>
-                </div><br>"""
+        if 'passiveDescription' in result[0]:
+            md = f"""<b>Passive</b>: <i>{result[0]["passiveDescription"]}</i> <br/>"""
+        else:
+            md = f""" """
+        for ability in abilities:
+            md = md + f"""
+                <img alt="{ability["name"]}" style="width:30px;height:30px;" src="{ability["imageName"]}" title="{ability["name"]}"/>
+                <b>{ability["name"]}</b> : <i>{ability["description"]}</i><br/>"""
+        return md + """<br>"""
     else:
         return f"""
                 Undefined Data.
@@ -27,16 +24,18 @@ def weapon_info_md(name):
     result = get_craftable_info(name)
     if result is not None:
         weapon = result[0]
-        md = f"""
-                <b>Description</b>: <i>{weapon["description"]}</i> <br/>
-                <div class="row" style="display: flex;">
-                """
+        if 'masteryReq' in weapon:
+            md = f"""
+                    <b>MR</b>: <i>{weapon["masteryReq"]}</i> <br/>
+                    <b>Components</b>: <br/>"""
+        else:
+            md = f"""<b>Components</b>: <br/>"""
         for component in weapon["components"]:
             md = md + f"""
-                <div class="column">
-                <img alt="{component["name"]}" src="{component["imageName"]}" title="{component["name"]} x{component["itemCount"]}"/>
-                </div>"""
-        return md + """</div><br>"""
+                {component["itemCount"]} x 
+                <img alt="{component["name"]}" style="width:30px;height:30px;" src="{component["imageName"]}" title="{component["name"]}"/>
+                <i>{component["name"]}</i><br/>"""
+        return md + """<br>"""
     else:
         return f"""
                 Undefined Data.
@@ -51,18 +50,19 @@ def relic_info_md(item):
             {reward["item"]["name"]} <br/>"""
     return md + """<br>"""
 
-def prime_component_info_md(item,rarity,chances,price,offers):
+def prime_component_info_md(item,rarity,chances,price,offers,lowest_ingame):
     """ Prime component markdown custom web element. """
     return f"""
     <div> Average: 
-    <font color="#FF4B4B">{price:.2f}
+    <font color="#FF4B4B">{price:,.2f}
         <img alt="{Warframe.PLATINUM.value["name"]}" style="width:20px;height:20px;" src="{Warframe.PLATINUM.value["image"]}"/> 
     </font> from <font color="#FF4B4B">{offers}</font> offer(s).<br>
-    Rarity: <font color="#FF4B4B">{rarity}</font><br/>
-    Base chances: <font color="#FF4B4B">{chances}</font> %<br/>
-    Ducats: <font color="#FF4B4B">{item["ducats"]}</font>
-        <img alt="{Warframe.DUCAT.value["name"]}" style="width:20px;height:20px;" src="{Warframe.DUCAT.value["image"]}"/> <br/>
-    MR: <font color="#FF4B4B">{item["mastery_level"]}</font>
+    <div> Lowest: 
+    <font color="#FF4B4B">{lowest_ingame:,}</font>
+        <img alt="{Warframe.PLATINUM.value["name"]}" style="width:20px;height:20px;" src="{Warframe.PLATINUM.value["image"]}"/><br>
+    Rarity: <font color="#FF4B4B">{rarity}</font> | <font color="#FF4B4B">{chances}</font> %<br/>
+    Ducats: <font color="#FF4B4B">{item["ducats"]:,}</font>
+        <img alt="{Warframe.DUCAT.value["name"]}" style="width:20px;height:20px;" src="{Warframe.DUCAT.value["image"]}"/> | MR: <font color="#FF4B4B">{item["mastery_level"]}</font>
     <br/><br/>
     """
 
@@ -70,17 +70,16 @@ def baro_ware_md(item,baro_info):
     """ Baro wares markdown custom web element. """
     if item is not None:
         return f"""
-        Ducats: <font color="#FF4B4B">{baro_info["ducats"]}</font>
+        Ducats: <font color="#FF4B4B">{baro_info["ducats"]:,}</font>
             <img alt="{Warframe.DUCAT.value["name"]}" style="width:20px;height:20px;" src="{Warframe.DUCAT.value["image"]}"/> |
-        Credits: <font color="#FF4B4B">{baro_info["credits"]}</font>
-            <img alt="{Warframe.CREDITS.value["name"]}" style="width:20px;height:20px;" src="{Warframe.CREDITS.value["image"]}"/> |
-        Type: <font color="#FF4B4B">{item["type"].replace(" Mod", "")}</font>
+        Credits: <font color="#FF4B4B">{baro_info["credits"]:,}</font>
+            <img alt="{Warframe.CREDITS.value["name"]}" style="width:20px;height:20px;" src="{Warframe.CREDITS.value["image"]}"/>
         """
     else:
         return f"""
-        Ducats: <font color="#FF4B4B">{baro_info["ducats"]}</font>
+        Ducats: <font color="#FF4B4B">{baro_info["ducats"]:,}</font>
             <img alt="{Warframe.DUCAT.value["name"]}" style="width:20px;height:20px;" src="{Warframe.DUCAT.value["image"]}"/> |
-        Credits: <font color="#FF4B4B">{baro_info["credits"]}</font>
+        Credits: <font color="#FF4B4B">{baro_info["credits"]:,}</font>
             <img alt="{Warframe.CREDITS.value["name"]}" style="width:20px;height:20px;" src="{Warframe.CREDITS.value["image"]}"/>
         """
 

@@ -133,6 +133,16 @@ def open_sorties():
         return json.load(file)["ExportSortieRewards"]
 
 @st.cache_data(ttl="1d", show_spinner=False)
+def open_other():
+    """ Read Other Export's Json info.
+
+    Returns:
+        dict: Json of Sortie Rewards info.
+    """
+    with open(AppExports.SORTIES.value, "r", encoding="utf-8") as file:
+        return json.load(file)["ExportOther"]
+
+@st.cache_data(ttl="1d", show_spinner=False)
 def open_upgrades():
     """ Read Upgrade's Json info.
 

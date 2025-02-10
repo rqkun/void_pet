@@ -1,10 +1,11 @@
 import streamlit as st
-from components import cards
-from config.constants import AppIcons, AppLabels, AppMessages
+from components import cards, markdowns
+import pyperclip
+from config.constants import AppIcons, AppLabels, AppMessages, Warframe
 from datasources import warframe_status
 from utils import data_manage, tools
 from utils.data_manage import call_market
-
+from st_copy_to_clipboard import st_copy_to_clipboard
 
 @st.dialog(AppLabels.DETAIL_MARKET.value)
 def baro_item_check(uniqueName):
@@ -17,27 +18,43 @@ def baro_item_check(uniqueName):
 @st.dialog(AppLabels.DETAIL_MARKET.value)
 def market_check(item):
     """ Market inspection dialog. """
-    option_map = data_manage.deforma_rewards(item["rewards"])
-    reward_form = st.form("reward_inspect_form",clear_on_submit=False,border=False)
-    reward_option = reward_form.selectbox(
-        AppLabels.REWARD_SELECT.value,
-        options=option_map,
-        format_func= lambda option: option["item"]["name"],
-    )
-    left_number,right_number = reward_form.columns([1,1],vertical_alignment="top")
-    left_select,right_select = reward_form.columns([2,1],vertical_alignment="top")
-    status = left_select.segmented_control(AppLabels.STATUS.value,options=AppLabels.status_options(),default=AppLabels.DEFAULT_STATUS.value,help=AppMessages.OFFER_STATUS_TOOLTIP.value)
-    wtb = right_select.segmented_control(AppLabels.TYPE.value,options=AppLabels.type_options(), default=AppLabels.DEFAULT_TYPE.value,help=AppMessages.OFFER_TYPE_TOOLTIP.value)
-    rep = left_number.number_input(AppLabels.REPUTATION.value,0,step=1)
-    limit = right_number.number_input(AppLabels.NUMBER_OF_TRADES.value,min_value=1,step=1,value=10)
-    bottom_contain_r = reward_form.container(border=False)
-    submit = reward_form.form_submit_button(AppLabels.INSPECT.value,use_container_width=True,icon=AppIcons.INSPECT.value,type="secondary")
+    with st.container(border=True), st.spinner(AppMessages.LOAD_DATA.value):
+        
+        left,right = st.columns([5,1],vertical_alignment="bottom")
+        
+        with right.popover(":material/settings:",use_container_width=True):
+            status = st.segmented_control(AppLabels.STATUS.value,options=AppLabels.status_options(),default=AppLabels.DEFAULT_STATUS.value,help=AppMessages.OFFER_STATUS_TOOLTIP.value)
+            wtb = st.segmented_control(AppLabels.TYPE.value,options=AppLabels.type_options(), default=AppLabels.DEFAULT_TYPE.value,help=AppMessages.OFFER_TYPE_TOOLTIP.value)
+            rep = st.number_input(AppLabels.REPUTATION.value,0,step=1)
+            limit = st.number_input(AppLabels.NUMBER_OF_TRADES.value,min_value=1,step=1,value=10)
+        
+        option_map = data_manage.deforma_rewards(item["rewards"])
     
-    if submit:
-        with bottom_contain_r,st.spinner(AppMessages.LOAD_DATA.value):
-            relic_name_cleaned = reward_option["item"]["name"].lower().replace(" ","_")
-            item = data_manage.get_market_item(relic_name_cleaned)  
-            market_data = tools.market_filter(call_market(relic_name_cleaned),rep=rep, status=status,wtb=wtb)[:limit]
-            avg_plat = tools.get_average_plat_price(market_data)
-            cards.component(reward_option,item,reward_option["item"]["imageName"],avg_plat,len(market_data))
+        reward_option = left.selectbox(
+            AppLabels.REWARD_SELECT.value,
+            options=option_map,
+            format_func= lambda option: option["item"]["name"],
+        )
+
+        relic_name_cleaned = reward_option["item"]["name"].lower().replace(" ","_")
+        market_url = f"""{Warframe.MARKET.value["url"]}/{relic_name_cleaned}"""
+        
+        
+        item = data_manage.get_market_item(relic_name_cleaned) 
+        market_data = call_market(relic_name_cleaned)
+        filtered_data = tools.market_filter(market_data,rep=rep, status=status,wtb=wtb)[:limit]
+        order = tools.get_min_status_plat(market_data,"ingame")
+        whisper = f"""/w {order["user"]["ingame_name"]} Hi! I want to buy: "{item["en"]["item_name"]}" for {order["platinum"]} platinum. (warframe.market)"""
+        avg_plat = tools.get_average_plat_price(filtered_data)
+
+
+        left,right = st.columns([2,1],vertical_alignment="center")
+        with left:
+            st.markdown(markdowns.prime_component_info_md(item,reward_option["rarity"],reward_option["chance"],avg_plat,len(filtered_data),order["platinum"]),unsafe_allow_html=True)
+        right.container(border=True).image(reward_option["item"]["imageName"]) 
+
+    
+    st.code(whisper,language="md",wrap_lines=True)
+    st.link_button(AppLabels.MARKET.value,url=market_url,use_container_width=True,type="primary",icon=AppIcons.EXTERNAL.value,help=AppMessages.MARKET_TOOL_TIP.value)
+
         

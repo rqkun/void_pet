@@ -72,7 +72,7 @@ class AppLabels(Enum):
     STATUS = "Status"
     TYPE = "Type"
     DEFAULT_TYPE = "WTS"
-    DEFAULT_STATUS = "All"
+    DEFAULT_STATUS = "Ingame"
     INSPECT = "Inspect"
     MARKET = "Market"
     WIKI = "Wiki"
@@ -86,7 +86,7 @@ class AppLabels(Enum):
     @staticmethod
     def status_options():
         """ Return the labels of options for online status widget. """
-        return ["All", "Online", "Offline", "Ingame"]
+        return ["Ingame", "Online", "Offline", "All"]
     @staticmethod
     def type_options():
         """ Return the labels of options for the order type widget. """

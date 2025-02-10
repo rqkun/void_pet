@@ -286,6 +286,8 @@ def get_item(unique_name):
         unique_name=unique_name.replace("Blueprint","")
     
     result = warframe_status.get_item(unique_name)
+    others_item = warframe_export.open_other()
+    
     if len(result)>0:
         item = result[0]
         if item["category"] == "Relics":
@@ -293,7 +295,11 @@ def get_item(unique_name):
         else: 
             return item
     else:
+        for export_item in others_item:
+            if unique_name in export_item["uniqueName"]:
+                return export_item
         return None
+    
 
 def get_item_name(unique_name):
     """ Get item name from uniqueName
@@ -304,14 +310,12 @@ def get_item_name(unique_name):
     Returns:
         str: Item name
     """ 
-    if "QuestKey" in unique_name:
-        unique_name = unique_name.split("/")[-1]
-        unique_name=unique_name.replace("Blueprint","")
-    result = warframe_status.get_item(unique_name)
-    if len(result) > 0:
-        return warframe_status.get_item(unique_name)[0]["name"]
+
+    result = get_item(unique_name)
+    if result is not None:
+        return result["name"]
     else:
-        return unique_name.split("/")[-1]
+        return ""
 
 
 @st.cache_data(show_spinner=False)
@@ -324,7 +328,9 @@ def call_market(option):
     Returns:
         dict: Item's market data.
     """
-    return warframe_market.get_market_orders(option)['payload']['orders']
+    result = warframe_market.get_market_orders(option)['payload']['orders']
+    sorted_orders = sorted(result, key=lambda x: x["platinum"])
+    return sorted_orders
 
 def get_invasion_reward_image(name) -> bytes:
     """ Get the material image from export API.

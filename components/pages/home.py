@@ -192,8 +192,8 @@ def invasion_state_timer():
             for item,amount in data.items():
                 left,right = st.columns([1,6],vertical_alignment="top")
                 right.write(f"{item}: `{amount}`")
-                image = Image.open(data_manage.get_invasion_reward_image(item))
-                left.image(image)
+                image = data_manage.get_invasion_reward_image(item)
+                left.image(image,use_container_width=True)
 
             if invasion_state_reload:
                 st.rerun(scope="fragment")
