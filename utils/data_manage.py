@@ -286,7 +286,7 @@ def get_item(unique_name):
         unique_name=unique_name.replace("Blueprint","")
     
     result = warframe_status.get_item(unique_name)
-    if len(result > 0):
+    if len(result)>0:
         item = result[0]
         if item["category"] == "Relics":
             return get_relic(unique_name,True)
