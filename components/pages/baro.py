@@ -70,4 +70,4 @@ if right.button(AppIcons.SYNC.value,use_container_width=True):
 with st.spinner(AppMessages.LOAD_DATA.value):
     item = data_manage.get_item(uniqueName)
     image_url = data_manage.get_image_url(uniqueName)
-    cards.baro(item,items[uniqueName],image_url)
+    cards.generic(item=item,baro_info=items[uniqueName],image_url=image_url)

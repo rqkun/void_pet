@@ -57,4 +57,4 @@ with st.spinner(AppMessages.LOAD_DATA.value):
     item = data_manage.get_item(uniqueName)
     if item is not None:
         image_url = data_manage.get_image_url(uniqueName)
-        cards.generic(item,image_url)
+        cards.generic(item=item,image_url=image_url)
