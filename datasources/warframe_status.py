@@ -32,7 +32,7 @@ def get_baro_data():
     return request_object.json()
 
 
-@st.cache_data(ttl="1m",show_spinner=False)
+@st.cache_data(ttl="1d",show_spinner=False)
 def get_varzia_data():
     """ API request to get current varzia's data.
 

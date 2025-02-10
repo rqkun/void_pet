@@ -5,7 +5,7 @@ from utils import data_manage
 
 from config.constants import AppIcons, AppLabels, AppMessages, AppPages, Warframe
 
-@st.cache_data(ttl="1d",show_spinner=False)
+@st.cache_data(ttl="7d",show_spinner=False)
 def store_regal(data):
     """ Loading data from session state. """
     if 'varzia_wares_detail' not in st.session_state:
