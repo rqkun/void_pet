@@ -101,7 +101,7 @@ def event_state_timer():
             if len(data["events"])>0:
                 for event in data["events"]:
                     try:
-                        left,right = events_info.columns([8,1],vertical_alignment="top")
+                        left,right = events_info.columns([8,1],vertical_alignment="bottom")
                         right.link_button(AppIcons.EXTERNAL.value,url=Warframe.get_wiki_url(event["description"]),use_container_width=True,type="tertiary")
                         left.progress(event["currentScore"],f"""{event["description"]} | {event["node"]}""")
                     except:

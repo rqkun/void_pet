@@ -19,4 +19,5 @@ regal_page = st.Page(AppPages.VARZIA.value)
 error_page = st.Page(AppPages.ERROR.value, url_path="/not_found")
 authenticated_pages = [home_page,varzia_page,baro_page,error_page,regal_page]
 pg = st.navigation(authenticated_pages,position="hidden")
+st.html("<style>[data-testid='stHeaderActionElements'] {display: none;}</style>")
 pg.run()
