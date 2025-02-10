@@ -1,11 +1,9 @@
 import streamlit as st
 from components import cards, markdowns
-import pyperclip
 from config.constants import AppIcons, AppLabels, AppMessages, Warframe
 from datasources import warframe_status
 from utils import data_manage, tools
 from utils.data_manage import call_market
-from st_copy_to_clipboard import st_copy_to_clipboard
 
 @st.dialog(AppLabels.DETAIL_MARKET.value)
 def baro_item_check(uniqueName):

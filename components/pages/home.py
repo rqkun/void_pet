@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
 import streamlit as st
-from PIL import Image
 from components import cards, headers
 from config import structures
 import datasources.warframe_status

@@ -1,5 +1,4 @@
 from collections import defaultdict
-import re
 import streamlit as st
 from config import structures
 from config.constants import AppIcons, Warframe

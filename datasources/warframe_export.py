@@ -1,7 +1,7 @@
 import json
 import streamlit as st
 
-from config.constants import AppExports, Warframe
+from config.constants import AppExports
 @st.cache_data(ttl="1d", show_spinner=False)
 def open_cosmetics():
     """ Read Cosmetic's Json info.
