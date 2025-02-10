@@ -308,7 +308,7 @@ def get_item_name(unique_name):
         unique_name = unique_name.split("/")[-1]
         unique_name=unique_name.replace("Blueprint","")
     result = warframe_status.get_item(unique_name)
-    if len(result > 0):
+    if len(result) > 0:
         return warframe_status.get_item(unique_name)[0]["name"]
     else:
         return unique_name.split("/")[-1]
