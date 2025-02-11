@@ -1,5 +1,6 @@
 from config.constants import Warframe
 from utils import tools
+from utils import data_manage
 from utils.data_manage import get_craftable_info,get_frame_abilities_with_image
 def warframe_info_md(name):
     """ Warframe markdown custom web element. """
@@ -150,3 +151,26 @@ def mod_info_md(item):
     else: 
         sub_md = sub_md + """<b>Drop Locations:</b> <br><div style="padding-left: 20px;"><i>None</i></div>"""
     return md,sub_md
+
+def alerts_reward_info_md(data):
+    """ Relic markdown custom web element. """
+    md = f""" """
+    for reward in data:
+        if reward["item"] != "Credits":
+            reward["image"] = data_manage.get_reward_image(reward["image"])
+        md = md + f"""
+            {reward["amount"]:,}
+            <img alt="{reward["item"]}" style="width:30px;height:30px;" src="{reward["image"]}" title="{reward["item"]}"/>
+            <span>{reward["item"]}</span><br/> """
+    return md
+
+def invasions_reward_info_md(data):
+    """ Relic markdown custom web element. """
+    md = f""" """
+    for item,amount in data.items():
+        image = data_manage.get_reward_image(item)
+        md = md + f"""
+            {amount:,}
+            <img alt="{item}" style="width:30px;height:30px;" src="{image}" title="{item}"/>
+            <span>{item}</span><br/> """
+    return md

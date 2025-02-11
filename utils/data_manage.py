@@ -93,7 +93,7 @@ def get_relic(name, is_unique) -> dict:
         identifier = "/".join(identifier[len(identifier)-3:])
         field = "uniqueName"
         
-    relic = warframe_status.get_relic_by(identifier, is_unique)[0]
+    relic = warframe_status.relic_request(identifier, is_unique)[0]
     
     relic_export = export_relic(identifier,field)
     for i,item in enumerate(relic["rewards"]):
@@ -107,7 +107,7 @@ def get_variza():
     Returns:
         dict: Json data of the api response.
     """
-    return warframe_status.get_varzia_data()
+    return warframe_status.vault_traider_request()
 
 def get_baro():
     """ Call the warframe status api for baro data.
@@ -115,7 +115,7 @@ def get_baro():
     Returns:
         dict: Json data of the api response.
     """
-    return warframe_status.get_baro_data()
+    return warframe_status.void_traider_request()
 
 def get_world_state():
     """ Call the warframe status api for world state data.
@@ -123,7 +123,7 @@ def get_world_state():
     Returns:
         dict: Json data of the api response.
     """
-    return warframe_status.get_world_state()
+    return warframe_status.world_state_request()
 
 def get_prime_list() -> list:
     """ Call the warframe status api for list of primes.
@@ -131,7 +131,9 @@ def get_prime_list() -> list:
     Returns:
         list: A clean prime names list.
     """
-    p_frame, p_weapon = warframe_status.get_all_prime_names()
+    p_frame = warframe_status.prime_warframes_request()
+    p_weapon = warframe_status.prime_weapons_request()
+    
     return tools.clean_prime_names(p_frame, p_weapon)
 
 def get_prime_resurgent_list(primes,relics_list) -> list:
@@ -243,7 +245,7 @@ def get_craftable_info(unique_name):
     """
     if "QuestKey" in unique_name:
         unique_name=unique_name.replace("Blueprint","")
-    result = warframe_status.get_craftable(unique_name)
+    result = warframe_status.craftable_request(unique_name)
 
     if len(result)>0:
         if 'components' in result[0]:
@@ -263,7 +265,7 @@ def get_frame_abilities_with_image(frame):
     Returns:
         dict: Full frame data and it's ability images location.
     """
-    result = warframe_status.get_abilities(frame)
+    result = warframe_status.abilities_request(frame)
 
     if len(result)>0:
         for ability in result[0]["abilities"]:
@@ -285,7 +287,7 @@ def get_item(unique_name):
         unique_name = unique_name.split("/")[-1]
         unique_name=unique_name.replace("Blueprint","")
     
-    result = warframe_status.get_item(unique_name)
+    result = warframe_status.item_request(unique_name)
     others_item = warframe_export.open_other()
     
     if len(result)>0:
@@ -332,7 +334,7 @@ def call_market(option):
     sorted_orders = sorted(result, key=lambda x: x["platinum"])
     return sorted_orders
 
-def get_invasion_reward_image(name) -> bytes:
+def get_reward_image(name) -> str:
     """ Get the material image from export API.
 
     Args:
@@ -360,14 +362,81 @@ def get_invasion_reward_image(name) -> bytes:
         img = get_image_url(unique_name,False)
     
     if img == AppIcons.NO_IMAGE_DATA_URL.value:
-        unique_name = warframe_status.get_item(name.replace(" Blueprint", ""),True)
+        unique_name = warframe_status.item_request(name.replace(" Blueprint", ""),True)
         if len(unique_name)>0:
             img = get_image_url(unique_name[0]["uniqueName"])
         
-    return get_image_bytes(img)
+    return img
+
+def clean_event_data(data):
+    if 'currentScore' in data:
+        pass
+    else: 
+        data['currentScore'] = 0
     
-def deforma_rewards(option_map):
-    for item in option_map:
-        if "Forma Blueprint" in item["item"]["name"]:
-            option_map.remove(item)
-    return option_map
+    if 'description' in data:
+        pass
+    else: 
+        data['description'] = "No Description"
+    
+    if 'node' in data:
+        pass
+    else: 
+        data['node'] = "No Data"
+    return data
+
+def get_ongoing_events():
+    response = warframe_status.ongoing_event_request()
+    events = []
+    if len(response)>0:
+        for event in response:
+            events.append(clean_event_data(event))
+            
+        sorted_event = sorted(
+        [order for order in events ],
+        key=lambda x: x["expiry"]
+        )
+        return sorted_event
+    else:
+        return None
+
+def get_alerts_data():
+    response = warframe_status.alert_request()
+    if len(response) >0:
+        sorted_alert = sorted(
+        [order for order in response ],
+        key=lambda x: x["expiry"]
+        )
+        return sorted_alert
+    else:
+        return None
+
+
+def get_alert_reward(data):
+    reward = []
+    if 'mission' in data:
+        if 'reward' in data['mission']:
+                if 'items' in data['mission']['reward']:
+                    if len(data['mission']['reward']['items']) > 0:
+                        for item in data['mission']['reward']['items']:
+                            reward.append({
+                                            "item": item,
+                                            "image": item,
+                                            "amount": 1
+                                        })
+                if 'countedItems' in data['mission']['reward']:
+                    if len(data['mission']['reward']['countedItems']) > 0:
+                        for item in data['mission']['reward']['countedItems']:
+                            reward.append({
+                                            "item": item['key'],
+                                            "image": item['key'],
+                                            "amount": item['count']
+                                        })
+                if 'credits' in data['mission']['reward']:
+                    if data['mission']['reward']['credits'] > 0:
+                        reward.append({
+                                        "item": Warframe.CREDITS.value["name"],
+                                        "image": Warframe.CREDITS.value["image"],
+                                        "amount": data['mission']['reward']['credits']
+                                        })
+    return reward

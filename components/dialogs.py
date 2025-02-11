@@ -26,7 +26,7 @@ def market_check(item):
             rep = st.number_input(AppLabels.REPUTATION.value,0,step=1)
             limit = st.number_input(AppLabels.NUMBER_OF_TRADES.value,min_value=1,step=1,value=10)
         
-        option_map = data_manage.deforma_rewards(item["rewards"])
+        option_map = tools.deforma_rewards(item["rewards"])
     
         reward_option = left.selectbox(
             AppLabels.REWARD_SELECT.value,

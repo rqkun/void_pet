@@ -5,10 +5,11 @@ from utils import data_manage
 def basic(logo=None):
     """ Add header function. """
     with st.header("",anchor=False):
-        left, _,mid,_, right = st.columns([1,3,1,3,1],vertical_alignment="bottom")
+        left,_,mid,_, right = st.columns([1,3,1,3,1],vertical_alignment="bottom")
         with left:
             if st.button(AppIcons.HOME.value, type="secondary",use_container_width=True):
                 st.switch_page(AppPages.HOME.value)
+        
         with right:
             with st.popover(AppIcons.MENU.value,use_container_width=True):
                 

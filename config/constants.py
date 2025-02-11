@@ -18,7 +18,7 @@ class AppIcons(Enum):
     INSPECT = ":material/search:"
     INFO = ":material/info:"
     AYA = ":droplet:"
-    NO_IMAGE_DATA_URL = "https://cdn-icons-png.flaticon.com/512/7466/7466140.png"
+    NO_IMAGE_DATA_URL = "https://storage.googleapis.com/replit/images/1608749573246_3ecaeb5cdbf14cd5f1ad8c48673dd7ce.png"
 
 class AppMessages(Enum):
     """ Default messages for the app. """

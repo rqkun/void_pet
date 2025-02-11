@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 import re
 from statistics import median
 
@@ -23,6 +24,7 @@ def market_filter(data, rep=0, status="All",wtb=""):
         data =[entry for entry in data if (entry['user']['status'] == status.lower())]
     return [entry for entry in data if entry['user']['reputation'] >= rep]
  
+ 
 def get_average_plat_price(orders) -> float:
     """ Return median price of a list of orders. 
         By doing it this way, we can avoid large deviation between prices.
@@ -37,6 +39,7 @@ def get_average_plat_price(orders) -> float:
     for order in orders:
         prices.append(order["platinum"])
     return median(prices) if len(orders) > 0 else 0
+
 
 def parse_item_string(item_string):
     """ Return name and count of the reward string.
@@ -57,6 +60,7 @@ def parse_item_string(item_string):
         name = item_string
     return name, count
 
+
 def clean_prime_names(frame_json,weap_json):
     """ Group and clean the prime list.
 
@@ -73,6 +77,7 @@ def clean_prime_names(frame_json,weap_json):
     for item in weap_json:
         result.append(item["name"])
     return result
+
 
 def format_timedelta(delta,day=True):
     """ Extract hours, minutes, and seconds from the time delta.
@@ -93,6 +98,7 @@ def format_timedelta(delta,day=True):
     else:
         return AppMessages.delta_time_message(hours,minutes)
 
+
 def check_disable(data):
     """ Check the button should be disable or not
 
@@ -103,6 +109,7 @@ def check_disable(data):
         bool: Button's disable state
     """
     return False if data["active"] else True
+
 
 def get_min_status_plat(data,status):
     """ Filter and find the lowest plat price for an item.
@@ -120,5 +127,24 @@ def get_min_status_plat(data,status):
     )
     return filtered_sorted_orders[0]
 
+
 def remove_wf_color_codes(string):
     return re.sub(r"<.*?>", "", string)
+
+
+def deforma_rewards(option_map):
+    for item in option_map:
+        if "Forma Blueprint" in item["item"]["name"]:
+            option_map.remove(item)
+    return option_map
+
+def calculate_percentage_time(start,end):
+    target_time = datetime.fromisoformat(end.replace("Z", "+00:00"))
+    # Current time in UTC
+    current_time = datetime.now(timezone.utc)
+    # Calculate percentage
+    start_time = datetime.fromisoformat(start.replace("Z", "+00:00"))  # Arbitrary start point
+    elapsed_time = (current_time - start_time).total_seconds()
+    total_time = (target_time - start_time).total_seconds()
+    percentage_completed = (elapsed_time / total_time)
+    return percentage_completed
