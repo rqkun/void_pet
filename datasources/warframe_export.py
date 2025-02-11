@@ -113,7 +113,7 @@ def open_resources():
         return json.load(file)["ExportResources"]
 
 @st.cache_data(ttl="1d", show_spinner=False)
-def open_sentiels():
+def open_sentinels():
     """ Read Sentiel's Json info.
 
     Returns:
@@ -133,11 +133,41 @@ def open_sorties():
         return json.load(file)["ExportSortieRewards"]
 
 @st.cache_data(ttl="1d", show_spinner=False)
+def open_nightwave():
+    """ Read Nightwave Reward's Json info.
+
+    Returns:
+        dict: Json of Nightwave Rewards info.
+    """
+    with open(AppExports.SORTIES.value, "r", encoding="utf-8") as file:
+        return json.load(file)["ExportNightwave"]
+
+@st.cache_data(ttl="1d", show_spinner=False)
+def open_railjack():
+    """ Read Railjack Reward's Json info.
+
+    Returns:
+        dict: Json of Railjack Rewards info.
+    """
+    with open(AppExports.SORTIES.value, "r", encoding="utf-8") as file:
+        return json.load(file)["ExportRailjack"]
+
+@st.cache_data(ttl="1d", show_spinner=False)
+def open_intrinsics():
+    """ Read Intrinsics's Json info.
+
+    Returns:
+        dict: Json of Intrinsics info.
+    """
+    with open(AppExports.SORTIES.value, "r", encoding="utf-8") as file:
+        return json.load(file)["ExportIntrinsics"]
+
+@st.cache_data(ttl="1d", show_spinner=False)
 def open_other():
     """ Read Other Export's Json info.
 
     Returns:
-        dict: Json of Sortie Rewards info.
+        dict: Json of Other Rewards info.
     """
     with open(AppExports.SORTIES.value, "r", encoding="utf-8") as file:
         return json.load(file)["ExportOther"]
@@ -153,6 +183,36 @@ def open_upgrades():
         return json.load(file)["ExportUpgrades"]
 
 @st.cache_data(ttl="1d", show_spinner=False)
+def open_modsets():
+    """ Read Mod set's Json info.
+
+    Returns:
+        dict: Json of Mod sets info.
+    """
+    with open(AppExports.UPGRADES.value, "r", encoding="utf-8") as file:
+        return json.load(file)["ExportModSet"]
+
+@st.cache_data(ttl="1d", show_spinner=False)
+def open_avionics():
+    """ Read Mod Avionics Json info.
+
+    Returns:
+        dict: Json of Avionics info.
+    """
+    with open(AppExports.UPGRADES.value, "r", encoding="utf-8") as file:
+        return json.load(file)["ExportAvionics"]
+
+@st.cache_data(ttl="1d", show_spinner=False)
+def open_focusupgrades():
+    """ Read Mod FocusUpgrades Json info.
+
+    Returns:
+        dict: Json of FocusUpgrades info.
+    """
+    with open(AppExports.UPGRADES.value, "r", encoding="utf-8") as file:
+        return json.load(file)["ExportFocusUpgrades"]
+
+@st.cache_data(ttl="1d", show_spinner=False)
 def open_warframes():
     """ Read Frame's Json info.
 
@@ -161,6 +221,16 @@ def open_warframes():
     """
     with open(AppExports.WARFRAMES.value, "r", encoding="utf-8") as file:
         return json.load(file)["ExportWarframes"]
+
+@st.cache_data(ttl="1d", show_spinner=False)
+def open_abilities():
+    """ Read Ability's Json info.
+
+    Returns:
+        dict: Json of Abilities info.
+    """
+    with open(AppExports.WARFRAMES.value, "r", encoding="utf-8") as file:
+        return json.load(file)["ExportAbilities"]
 
 @st.cache_data(ttl="1d", show_spinner=False)
 def open_weapons():
@@ -172,3 +242,12 @@ def open_weapons():
     with open(AppExports.WEAPONS.value, "r", encoding="utf-8") as file:
         return json.load(file)["ExportWeapons"]
 
+@st.cache_data(ttl="1d", show_spinner=False)
+def open_railjackweapons():
+    """ Read Railjack Weapons's Json info.
+
+    Returns:
+        dict: Json of Railjack Weapons info.
+    """
+    with open(AppExports.WEAPONS.value, "r", encoding="utf-8") as file:
+        return json.load(file)["ExportRailjackWeapons"]
