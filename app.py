@@ -1,6 +1,7 @@
 import streamlit as st
 from components.markdowns import hide_streamlit_header
 from config.constants import AppIcons, AppPages
+from utils import api_services
 
 st.set_page_config(page_title="Void Pet", page_icon=AppIcons.MAIN_APP.value, layout="centered")
 
@@ -11,6 +12,8 @@ st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 if 'not_baro_time' in st.session_state:
     st.toast(st.session_state.not_baro_time)
     del st.session_state.not_baro_time
+
+st.write(api_services.get_manifest())
 
 home_page = st.Page(AppPages.HOME.value)
 baro_page = st.Page(AppPages.BARO.value)
