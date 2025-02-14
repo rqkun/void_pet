@@ -13,8 +13,6 @@ if 'not_baro_time' in st.session_state:
     st.toast(st.session_state.not_baro_time)
     del st.session_state.not_baro_time
 
-st.write(api_services.get_manifest())
-
 home_page = st.Page(AppPages.HOME.value)
 baro_page = st.Page(AppPages.BARO.value)
 regal_page = st.Page(AppPages.VARZIA.value)
