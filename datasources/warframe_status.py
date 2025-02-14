@@ -1,13 +1,12 @@
 
 import asyncio
 import random
-import aiohttp
 import requests
 import urllib
 from config.constants import Warframe
 from utils.api_services import raise_detailed_error
 import streamlit as st
-# import httpx
+import httpx
 
 @st.cache_data(ttl="1m",show_spinner=False)
 def world_state_request():
@@ -172,63 +171,32 @@ def alert_request():
     return request_object.json()
 
 
-# async def fetch_item(client, item_id, retries=3, SEMAPHORE=None):
-#     """Fetch item asynchronously with retries and concurrency limit."""
-#     async with SEMAPHORE:
-#         for attempt in range(retries):
-#             try:
-#                 identifier = item_id["uniqueName"].split("/")
-#                 identifier = "/".join(identifier[len(identifier)-3:])
-#                 encoded_name = urllib.parse.quote_plus(identifier, safe="")
-#                 url = Warframe.STATUS.value["api"]+f"/items/search/{encoded_name}?by=uniqueName&remove=introduced,patchlogs"
-                
-#                 response = await client.get(url, follow_redirects=True)
-#                 if response.status_code == 200 and len(response.json())>0:
-#                     result = response.json()[0]
-#                     result["ducats"] = item_id["ducats"]
-#                     result["credits"] = item_id["credits"]
-#                     return result
-#             except httpx.HTTPStatusError as e:
-#                 if e.response.status_code in [429, 500]:  # Too many requests or server error
-#                     wait_time = 2 ** attempt + random.uniform(0, 1)
-#                     await asyncio.sleep(wait_time)
-#     return None  # Return None if all retries fail
-
-# async def fetch_all_items(item_ids):
-#     """Fetch multiple items concurrently with error handling."""
-#     SEMAPHORE = asyncio.Semaphore(5)  # Semaphore to limit concurrency
-#     async with httpx.AsyncClient() as client:
-#         tasks = [fetch_item(client, item_id, SEMAPHORE=SEMAPHORE) for item_id in item_ids]
-#         results = await asyncio.gather(*tasks, return_exceptions=True)  # Continue on failure
-#         return [res for res in results if res is not None] # Remove failed requests
-async def fetch_item(session, item_id, retries=3, semaphore=None):
+async def fetch_item(client, item_id, retries=3, SEMAPHORE=None):
     """Fetch item asynchronously with retries and concurrency limit."""
-    async with semaphore:
+    async with SEMAPHORE:
         for attempt in range(retries):
             try:
                 identifier = item_id["uniqueName"].split("/")
-                identifier = "/".join(identifier[-3:])
+                identifier = "/".join(identifier[len(identifier)-3:])
                 encoded_name = urllib.parse.quote_plus(identifier, safe="")
-                url = f"{Warframe.STATUS.value['api']}/items/search/{encoded_name}?by=uniqueName&remove=introduced,patchlogs"
+                url = Warframe.STATUS.value["api"]+f"/items/search/{encoded_name}?by=uniqueName&remove=introduced,patchlogs"
                 
-                async with session.get(url) as response:
-                    if response.status == 200:
-                        data = await response.json()
-                        if data:
-                            result = data[0]
-                            result["ducats"] = item_id["ducats"]
-                            result["credits"] = item_id["credits"]
-                            return result
-            except aiohttp.ClientResponseError as e:
-                if e.status in [429, 500]:  # Too many requests or server error
+                response = await client.get(url, follow_redirects=True)
+                if response.status_code == 200 and len(response.json())>0:
+                    result = response.json()[0]
+                    result["ducats"] = item_id["ducats"]
+                    result["credits"] = item_id["credits"]
+                    return result
+            except httpx.HTTPStatusError as e:
+                if e.response.status_code in [429, 500]:  # Too many requests or server error
                     wait_time = 2 ** attempt + random.uniform(0, 1)
                     await asyncio.sleep(wait_time)
     return None  # Return None if all retries fail
 
 async def fetch_all_items(item_ids):
     """Fetch multiple items concurrently with error handling."""
-    semaphore = asyncio.Semaphore(5)  # Semaphore to limit concurrency
-    async with aiohttp.ClientSession() as session:
-        tasks = [fetch_item(session, item_id, semaphore=semaphore) for item_id in item_ids]
-        results = await asyncio.gather(*tasks)
-        return [res for res in results if res is not None] 
+    SEMAPHORE = asyncio.Semaphore(5)  # Semaphore to limit concurrency
+    async with httpx.AsyncClient() as client:
+        tasks = [fetch_item(client, item_id, SEMAPHORE=SEMAPHORE) for item_id in item_ids]
+        results = await asyncio.gather(*tasks, return_exceptions=True)  # Continue on failure
+        return [res for res in results if res is not None] # Remove failed requests
