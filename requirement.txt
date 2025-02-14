@@ -2,3 +2,4 @@ streamlit==1.42.0
 pillow==11.1.0
 streamlit-antd-components==0.3.2
 millify
+httpx
