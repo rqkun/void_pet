@@ -461,7 +461,7 @@ def get_alert_reward(data):
                                         })
     return reward
 
-@st.cache_data(ttl="10m",show_spinner=False)
+@st.cache_data(ttl="30d",show_spinner=False)
 def get_cached_items(item_ids):
     return asyncio.run(warframe_status.fetch_all_items(item_ids))
 # @st.cache_data(ttl="10m",show_spinner=False)
