@@ -79,7 +79,7 @@ class AppLabels(Enum):
     REPORT = "Report"
     REPUTATION = "Reputation threshold: "
     NUMBER_OF_TRADES = "Number of Trades: "
-    PRIME_SELECT = "Choose a Prime."
+    PRIME_SELECT = "Choose up to 2 Primes."
     RELIC_SELECT = "Choose a relic. "
     REWARD_SELECT = "Choose a reward to inspect: "
     
@@ -97,7 +97,7 @@ class AppPages(Enum):
     """ The Web app pages locations. """
     HOME = "components/pages/home.py"
     ERROR = "components/pages/error.py"
-    AYA = "components/pages/aya.py"
+    # AYA = "components/pages/aya.py"
     VARZIA = "components/pages/varzia.py"
     BARO = "components/pages/baro.py"
     ISSUE = "https://github.com/rqkun/void_pet/issues"

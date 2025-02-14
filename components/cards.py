@@ -1,54 +1,36 @@
 import streamlit as st
 from PIL import Image
-from components import dialogs
+from components import custom, dialogs
 import components.markdowns
-from config.constants import AppIcons, AppLabels, Warframe
+from config.constants import AppIcons, AppLabels, AppMessages, Warframe
 from utils import api_services
 from utils import data_manage
 
-
-def info_module(item, baro_info = None):
-    """ Categorized item markdown. """
-    
-    left,right = st.columns([2,5],vertical_alignment="center")
-    
-    right.markdown(f"""##### {item["name"]}""")
-    
-    if baro_info is not None:
-        st.markdown(components.markdowns.baro_ware_md(item,baro_info),unsafe_allow_html=True)
-    
-    if 'description' in item:
-        st.markdown(f"""
-            <i>{item["description"]}</i> <br/>
-            """,unsafe_allow_html=True)
-    
-    # st.json(item)
-    pop_info = left.popover(AppIcons.INFO.value, use_container_width=True)
+def info(item):
+    hover_md = ""
     if 'type' in item and 'category' in item:
         if item["type"] == "Warframe" or item["type"] == "Archwing":
-            pop_info.container(border=True).markdown(components.markdowns.warframe_info_md(item["name"]),unsafe_allow_html=True)
+            type_data = data_manage.extract_frame_abilities(item)
+            hover_md = components.markdowns.ability_info_md(item,type_data)
         elif ("Weapons" in item["uniqueName"] or "Sentinels" in item["category"]) and item["category"] != "Skins":
-            md , sub_md = components.markdowns.craftable_info_md(item["name"])
-            st.markdown(sub_md,unsafe_allow_html=True)
-            pop_info.container(border=True).markdown(md,unsafe_allow_html=True)
+            type_data = data_manage.extract_craftable_components(item)
+            hover_md =components.markdowns.craftable_info_md(type_data)
         elif ("Mods" in item["category"]):
-            md , sub_md = components.markdowns.mod_info_md(item)
-            st.markdown(sub_md,unsafe_allow_html=True)
-            pop_info.container(border=True).markdown(md,unsafe_allow_html=True)
+            # type_data = market.get (item name url)
+            pass
         elif "Relic" in item["type"]:
-            pop_info.container(border=True).markdown(components.markdowns.relic_info_md(item),unsafe_allow_html=True)
-            if st.button(AppLabels.MARKET.value,use_container_width=True,icon=AppIcons.MARKET.value,type="primary"):
-                dialogs.market_check(item)
+            type_data = data_manage.extract_relic_rewards(item)
+            hover_md = components.markdowns.relic_rewards_info_md(type_data)
+        else:
+            hover_md = components.markdowns.misc_info_md(item)
 
-def generic(image_url: str,item=None,baro_info=None):
+    return hover_md
+
+def generic(image_url: str,package=None,price_info=None):
     """ Generic info card. """
-    generic_container = st.container(border=True)
-    left,right = generic_container.columns([2,1],vertical_alignment="top")
-    with left:
-        if item is not None:
-            info_module(item,baro_info) 
-        
-    with right.container(border=True):
+    item = package
+    generic_container = st.container(border=False)
+    with generic_container:
         if item is not None:
             if 'wikiaUrl' in item:
                 wiki_url = item["wikiaUrl"]
@@ -56,10 +38,19 @@ def generic(image_url: str,item=None,baro_info=None):
                 wiki_url = Warframe.get_wiki_url(item["name"].replace(" Intact", "").replace(" ","_"))
             if 'category' in item and item["category"] == "Mods":
                 image_url = item["wikiaThumbnail"].split(".png")[0] + ".png"
-        elif baro_info is not None:
-            wiki_url = Warframe.get_wiki_url(baro_info["name"].replace("StoreItem", "").replace(" ","_"))
-        st.markdown(components.markdowns.image_md(wiki_url,item["name"],image_url),unsafe_allow_html=True)
-        st.write(" ")
+        elif price_info is not None:
+             wiki_url = Warframe.get_wiki_url(price_info["name"].replace("StoreItem", "").replace(" ","_"))
+        
+        hover_md = info(item)
+                
+        image_md = components.markdowns.image_md(wiki_url,item["name"],image_url,caption="visible")
+        info_md = components.markdowns.hover_md(image_md,hover_md)
+        ducat_md = components.markdowns.price_overlay_md(price_info) if price_info is not None else ""
+        md = components.markdowns.card_md(info_md,ducat_md)
+
+        return md + """</div>"""
+
+            
 def prep_image(enum):
     """ Image card of Baro/Varzia."""
     img_location = data_manage.get_image_url(enum.value["uniqueName"])
@@ -71,3 +62,14 @@ def prep_image(enum):
         image = Image.open(enum.value["image"])
         st.image(image.resize((200, 200)),use_container_width=True)
     
+    
+def relic(image_url: str,item):
+    """ Generic relic card. """
+    relic_container = st.container(border=False)
+    with relic_container:
+        wiki_url = Warframe.get_wiki_url(item["name"].replace(" Intact", "").replace(" ","_"))
+        label = item["name"].replace(" Intact","")
+        image_md = components.markdowns.image_md(wiki_url,label,image_url,caption="visible")
+        reward_md = components.markdowns.relic_rewards_info_md(item)
+        st.markdown(components.markdowns.hover_md(image_md,reward_md),unsafe_allow_html=True)
+        custom.hover_dialog()

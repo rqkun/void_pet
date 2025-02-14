@@ -148,3 +148,35 @@ def calculate_percentage_time(start,end):
     total_time = (target_time - start_time).total_seconds()
     percentage_completed = (elapsed_time / total_time)
     return percentage_completed
+
+
+def filter_data(items, types):
+    filtered = []
+
+    # If types is None or empty, set condition to True to keep all items
+    if types is None or len(types) == 0:
+        return items
+
+    for item in items:
+        condition = False
+
+        # If 'Weapon' is selected, include weapon items
+        if "Weapon" in types and item["category"] in ["Primary", "Secondary", "Melee", "Arch-Gun", "Arch-Melee"]:
+            condition = True
+
+        # If 'Relic' is selected, include relic items
+        if "Relic" in types and item["type"] == "Relic":
+            condition = True
+
+        # If 'Warframe' is selected, include warframe items
+        if "Warframe" in types and item["type"] == "Warframe":
+            condition = True
+
+        # If 'Others' is selected, include items that are not Weapon, Relic, or Warframe
+        if "Others" in types and item["category"] not in ["Primary", "Secondary", "Melee", "Arch-Gun", "Arch-Melee", "Relic", "Warframe"] and item["type"] not in ["Primary", "Secondary", "Melee", "Arch-Gun", "Arch-Melee", "Relic", "Warframe"]:
+            condition = True
+
+        # Append the item if it matches any of the selected conditions
+        if condition:
+            filtered.append(item)
+    return filtered

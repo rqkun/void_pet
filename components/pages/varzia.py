@@ -1,60 +1,52 @@
 import streamlit as st
-from components import cards, headers
+from components import cards, custom
 from config import structures
 from utils import data_manage
+from millify import millify
+from config.constants import AppIcons, Warframe
 
-from config.constants import AppIcons, AppLabels, AppMessages, AppPages, Warframe
+from utils.tools import filter_data
 
-@st.cache_data(ttl="7d",show_spinner=False)
-def store_regal(data):
+
+def store_regal():
     """ Loading data from session state. """
-    if 'varzia_wares_detail' not in st.session_state:
-        items = {}
-        progress_text = AppMessages.PROGRESS.value
-        progress = st.progress(0, text=progress_text)
-        
-        for i, item in enumerate(data):
-            if "M P V" in item["item"]:
-                pass
-            else:
-                name = data_manage.get_item_name(item["uniqueName"])
-                items[item["uniqueName"]] = name if name != "" else item["item"]
-                progress.progress((i+1)/len(data), text=AppMessages.index_relic_message(items[item["uniqueName"]]))
-        
-        progress.empty()
-        st.session_state.varzia_wares_detail = items
-        return items
-    else:
-        return st.session_state.varzia_wares_detail
+    data=data_manage.get_variza()
+    # if data is not None: 
     
-query_params = st.query_params.to_dict()
+    items = data_manage.preload_data(data["inventory"])
+    return items
 
-if len(query_params)>0:
-    st.switch_page(AppPages.ERROR.value)
+custom.sideNav(3,Warframe.REGAL_AYA.value)
 
-headers.basic(logo=Warframe.REGAL_AYA)
-    
-if 'varzia_wares' not in st.session_state:
-    full_data=data_manage.get_variza()
-    st.session_state["varzia_wares"] = structures.ware_object("regal",full_data["inventory"])
+items = store_regal()
 
-data = st.session_state.varzia_wares["data"]
-    
-items = store_regal(data)
-left, right =st.columns([6,1],vertical_alignment="bottom")
-uniqueName = left.selectbox(AppLabels.INSPECT.value,
-                            options=items.keys(),
-                            format_func= lambda option: items[option],
-                            )
-if right.button(AppIcons.SYNC.value,use_container_width=True):
-    if 'varzia_wares' in st.session_state:
-        del st.session_state["varzia_wares"]
-    if 'varzia_wares_detail' in st.session_state:
-        del st.session_state["varzia_wares_detail"]
-    st.cache_data.clear()
+_,left,right =st.columns([1,7,1],vertical_alignment="center")
 
-with st.spinner(AppMessages.LOAD_DATA.value):
-    item = data_manage.get_item(uniqueName)
-    if item is not None:
-        image_url = data_manage.get_image_url(uniqueName)
-        cards.generic(item=item,image_url=image_url)
+with right.popover(":material/filter_list:",use_container_width=True):
+    categories = ["Warframe", "Weapon", "Relic", "Others"]
+    selected_categories= st.pills("Pick the desired item type.",categories,selection_mode="multi")
+    filtered_data = filter_data(items["items"],selected_categories)
+
+with left:
+    paged_items, page, items_per_row, num_of_row = custom.paginations(filtered_data,3)
+
+_,middle,_ = st.columns([3,2,3],vertical_alignment="center")
+
+with middle,st.spinner("",show_time=True,_cache=False):
+    for item in paged_items:
+        item["image"] = data_manage.get_image_url(item["uniqueName"])
+        type = Warframe.REGAL_AYA.value if item["ducats"]>0 else Warframe.AYA.value
+        amount = item["ducats"] if item["ducats"]>0 else item["credits"]
+        item["html"] = cards.generic(package=item, image_url=item["image"], price_info=
+                {
+                    "type": type,
+                    "amount": millify(amount,precision=2)
+                })
+
+list_col = st.columns(items_per_row)
+start_idx = 0
+custom.hover_dialog()
+for idx, item in enumerate(iterable=paged_items[start_idx:]):
+    with list_col[idx%items_per_row]:
+        if item is not None:
+            st.markdown(item["html"],unsafe_allow_html=True)

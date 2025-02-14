@@ -1,6 +1,6 @@
 import streamlit as st
 
-from components import headers
+from components import custom
 
-headers.basic()
+custom.basic()
 st.error("Unimplemented Function")

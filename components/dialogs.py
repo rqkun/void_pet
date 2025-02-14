@@ -11,7 +11,18 @@ def baro_item_check(uniqueName):
     with st.spinner(AppMessages.LOAD_DATA.value):
         item = warframe_status.get_item_data(uniqueName)
         image_url = tools.get_item_image(uniqueName)
-    cards.item_card(item[0],image_url)
+    # cards.generic(item,image_url)
+
+@st.dialog(AppLabels.DETAIL_MARKET.value,width="large")
+def info(data,image_md):
+    """ Show item details with market lookup options. """
+    with st.spinner(AppMessages.LOAD_DATA.value,show_time=True):
+        st.markdown(f"""<h1>{data["name"]} &middot; {data["type"]} </h1>""",unsafe_allow_html=True)
+        left, right = st.columns([1,4],vertical_alignment="top")
+        with left:
+            st.container(border=True).markdown(f"""{image_md}<br>""",unsafe_allow_html=True)
+        with right:
+            cards.info(item=data)
 
 @st.dialog(AppLabels.DETAIL_MARKET.value)
 def market_check(item):
