@@ -1,10 +1,12 @@
 
+import asyncio
+import random
 import requests
 import urllib
 from config.constants import Warframe
 from utils.api_services import raise_detailed_error
 import streamlit as st
-
+import httpx
 
 @st.cache_data(ttl="1m",show_spinner=False)
 def world_state_request():
@@ -13,7 +15,7 @@ def world_state_request():
     Returns:
         dict: World state data
     """
-    request_ref = Warframe.STATUS.value["api"]+"/pc"
+    request_ref = Warframe.STATUS.value["api"]+"/pc?language=en"
     request_object = requests.get(request_ref)
     raise_detailed_error(request_object)
     return request_object.json()
@@ -26,7 +28,7 @@ def void_traider_request():
     Returns:
         dict: Baro's data
     """
-    request_ref = Warframe.STATUS.value["api"]+"/pc/voidTrader"
+    request_ref = Warframe.STATUS.value["api"]+"/pc/voidTrader?language=en"
     request_object = requests.get(request_ref)
     raise_detailed_error(request_object)
     return request_object.json()
@@ -39,7 +41,7 @@ def vault_traider_request():
     Returns:
         dict: Varzia's data
     """
-    request_ref = Warframe.STATUS.value["api"]+"/pc/vaultTrader"
+    request_ref = Warframe.STATUS.value["api"]+"/pc/vaultTrader?language=en"
     request_object = requests.get(request_ref)
     raise_detailed_error(request_object)
     return request_object.json()
@@ -99,12 +101,12 @@ def item_request(unique_name, search_by_name=False):
     """
     if search_by_name:
         encoded_name = urllib.parse.quote_plus(unique_name, safe="")
-        request_ref = Warframe.STATUS.value["api"]+f"/items/search/{encoded_name}?by=name&remove=abilities,components,patchlogs"
+        request_ref = Warframe.STATUS.value["api"]+f"/items/search/{encoded_name}?by=name&remove=patchlogs"
     else:
         identifier = unique_name.split("/")
         identifier = "/".join(identifier[len(identifier)-3:])
         encoded_name = urllib.parse.quote_plus(identifier, safe="")
-        request_ref = Warframe.STATUS.value["api"]+f"/items/search/{encoded_name}?by=uniqueName&remove=abilities,components,patchlogs"
+        request_ref = Warframe.STATUS.value["api"]+f"/items/search/{encoded_name}?by=uniqueName&remove=patchlogs"
         
     request_object = requests.get(request_ref)
     raise_detailed_error(request_object)
@@ -151,7 +153,7 @@ def ongoing_event_request():
     Returns:
         dict: Event state data
     """
-    request_ref = Warframe.STATUS.value["api"]+"/pc/events"
+    request_ref = Warframe.STATUS.value["api"]+"/pc/events?language=en"
     request_object = requests.get(request_ref)
     raise_detailed_error(request_object)
     return request_object.json()
@@ -163,7 +165,38 @@ def alert_request():
     Returns:
         dict: Alert state data
     """
-    request_ref = Warframe.STATUS.value["api"]+"/pc/alerts"
+    request_ref = Warframe.STATUS.value["api"]+"/pc/alerts?language=en"
     request_object = requests.get(request_ref)
     raise_detailed_error(request_object)
     return request_object.json()
+
+
+async def fetch_item(client, item_id, retries=3, SEMAPHORE=None):
+    """Fetch item asynchronously with retries and concurrency limit."""
+    async with SEMAPHORE:
+        for attempt in range(retries):
+            try:
+                identifier = item_id["uniqueName"].split("/")
+                identifier = "/".join(identifier[len(identifier)-3:])
+                encoded_name = urllib.parse.quote_plus(identifier, safe="")
+                url = Warframe.STATUS.value["api"]+f"/items/search/{encoded_name}?by=uniqueName&remove=introduced,patchlogs"
+                
+                response = await client.get(url, follow_redirects=True)
+                if response.status_code == 200 and len(response.json())>0:
+                    result = response.json()[0]
+                    result["ducats"] = item_id["ducats"]
+                    result["credits"] = item_id["credits"]
+                    return result
+            except httpx.HTTPStatusError as e:
+                if e.response.status_code in [429, 500]:  # Too many requests or server error
+                    wait_time = 2 ** attempt + random.uniform(0, 1)
+                    await asyncio.sleep(wait_time)
+    return None  # Return None if all retries fail
+
+async def fetch_all_items(item_ids):
+    """Fetch multiple items concurrently with error handling."""
+    SEMAPHORE = asyncio.Semaphore(5)  # Semaphore to limit concurrency
+    async with httpx.AsyncClient() as client:
+        tasks = [fetch_item(client, item_id, SEMAPHORE=SEMAPHORE) for item_id in item_ids]
+        results = await asyncio.gather(*tasks, return_exceptions=True)  # Continue on failure
+        return [res for res in results if res is not None] # Remove failed requests

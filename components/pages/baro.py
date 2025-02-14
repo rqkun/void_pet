@@ -1,73 +1,55 @@
 from datetime import datetime
+from millify import millify
 import streamlit as st
-from components import cards, headers
+from components import cards, custom
 from config import structures
 from utils import data_manage
 
 from config.constants import AppIcons, AppMessages, AppPages, Warframe
-from utils.tools import format_timedelta
+from utils.tools import filter_data, format_timedelta
 
-@st.cache_data(ttl="1d",show_spinner=False)
-def store_baro(data):
+def store_baro():
     """ Loading data from session state. """
-    if 'baro_wares_detail' not in st.session_state:
-        items = {}
-        progress_text = AppMessages.PROGRESS.value
-        progress = st.progress(0, text=progress_text)
-        
-        for i, item in enumerate(data):
-            if "M P V" in item["item"]:
-                pass
-            else:
-                name = data_manage.get_item_name(item["uniqueName"])
-                items[item["uniqueName"]] = {
-                    "name": name if name != "" else item["item"],
-                    "ducats" : item["ducats"],
-                    "credits" : item["credits"],
-                }
-                progress.progress((i+1)/len(data), text=AppMessages.index_relic_message(items[item["uniqueName"]]["name"]))
-    
-        progress.empty()
-        st.session_state.baro_wares_detail = items
-        return items
-    else:
-        return st.session_state.baro_wares_detail
-    
-query_params = st.query_params.to_dict()
-
-if len(query_params)>0:
-    st.switch_page(AppPages.ERROR.value)
-    
-
-headers.basic(logo=Warframe.DUCAT)
-    
-if 'baro_wares' not in st.session_state:
     full_data=data_manage.get_baro()
     if full_data["active"] is False:
         date = datetime.strptime(full_data["activation"],"%Y-%m-%dT%H:%M:%S.%fZ")-datetime.today()
         st.session_state.not_baro_time = AppMessages.baro_time_message(format_timedelta(date))
         st.switch_page(AppPages.HOME.value)
-    st.session_state["baro_wares"] = structures.ware_object("baro",full_data["inventory"])
+    else:
+        items = data_manage.preload_data(full_data["inventory"])
+        return items
 
-data = st.session_state.baro_wares["data"]
+custom.sideNav(2,Warframe.DUCAT.value)
+    
+items = store_baro()
 
-items = store_baro(data)
+_,left,right =st.columns([1,7,1],vertical_alignment="center")
 
-left, right =st.columns([6,1],vertical_alignment="bottom")
+with right.popover(":material/filter_list:",use_container_width=True):
+    categories = ["Warframe", "Weapon", "Relic", "Others"]
+    selected_categories= st.pills("Pick the desired item type.",categories,selection_mode="multi")
+    filtered_data = filter_data(items["items"],selected_categories)
 
-uniqueName = left.selectbox("item",
-                            options=items.keys(),
-                            format_func= lambda option: items[option]["name"],
-                            )
+with left:
+    paged_items, page, items_per_row, num_of_row = custom.paginations(filtered_data,3)
 
-if right.button(AppIcons.SYNC.value,use_container_width=True):
-    if 'baro_wares' in st.session_state:
-        del st.session_state["baro_wares"]
-    if 'baro_wares_detail' in st.session_state:
-        del st.session_state["baro_wares_detail"]
-    st.cache_data.clear()
+_,middle,_ = st.columns([3,2,3],vertical_alignment="center")
 
-with st.spinner(AppMessages.LOAD_DATA.value):
-    item = data_manage.get_item(uniqueName)
-    image_url = data_manage.get_image_url(uniqueName)
-    cards.generic(item=item,baro_info=items[uniqueName],image_url=image_url)
+with middle,st.spinner("",show_time=True,_cache=False):
+    for item in paged_items:
+        item["image"] = data_manage.get_image_url(item["uniqueName"])
+        type = Warframe.DUCAT.value
+        amount = item["ducats"]
+        item["html"] = cards.generic(package=item, image_url=item["image"], price_info=
+                {
+                    "type": type,
+                    "amount": millify(amount,precision=2)
+                })
+
+list_col = st.columns(items_per_row)
+start_idx = 0
+custom.hover_dialog()
+for idx, item in enumerate(iterable=paged_items[start_idx:]):
+    with list_col[idx%items_per_row]:
+        if item is not None:
+            st.markdown(item["html"],unsafe_allow_html=True)

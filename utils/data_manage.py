@@ -1,7 +1,8 @@
+import asyncio
 from collections import defaultdict
 import streamlit as st
 from config import structures
-from config.constants import AppIcons, Warframe
+from config.constants import AppIcons, AppMessages, Warframe
 from datasources import warframe_export,warframe_market,warframe_status
 from utils import tools
 import utils.api_services as api_services
@@ -96,6 +97,14 @@ def get_relic(name, is_unique) -> dict:
     relic = warframe_status.relic_request(identifier, is_unique)[0]
     
     relic_export = export_relic(identifier,field)
+    for i,item in enumerate(relic["rewards"]):
+        item["item"]["uniqueName"] = relic_export["relicRewards"][i]["rewardName"]
+        item["item"]["imageName"] = get_image_url(relic_export["relicRewards"][i]["rewardName"])
+    return relic
+
+def extract_relic_rewards(relic):
+    
+    relic_export = export_relic(relic["uniqueName"],"uniqueName")
     for i,item in enumerate(relic["rewards"]):
         item["item"]["uniqueName"] = relic_export["relicRewards"][i]["rewardName"]
         item["item"]["imageName"] = get_image_url(relic_export["relicRewards"][i]["rewardName"])
@@ -234,7 +243,7 @@ def get_market_item(url_path):
     return None
 
 
-def get_craftable_info(unique_name):
+def get_craftable_info(name):
     """ Get craftable item and it's components.
 
     Args:
@@ -243,18 +252,22 @@ def get_craftable_info(unique_name):
     Returns:
         dict: Full item and it's images location.
     """
-    if "QuestKey" in unique_name:
-        unique_name=unique_name.replace("Blueprint","")
-    result = warframe_status.craftable_request(unique_name)
+    if "QuestKey" in name:
+        name=name.replace("Blueprint","")
+    result = warframe_status.craftable_request(name)
 
     if len(result)>0:
         if 'components' in result[0]:
             for component in result[0]["components"]:
                 component["imageName"] = get_image_url(component["uniqueName"])
-        return result
+        return result[0]
     else:
         return None
 
+def extract_craftable_components(json_data):
+    for component in json_data["components"]:
+        component["imageName"] = get_image_url(component["uniqueName"])
+    return json_data
 
 def get_frame_abilities_with_image(frame):
     """ Get warframe abilities with the ability images.
@@ -270,9 +283,17 @@ def get_frame_abilities_with_image(frame):
     if len(result)>0:
         for ability in result[0]["abilities"]:
             ability["imageName"] = get_image_url(ability["uniqueName"])
-        return result
+        return result[0]
     else:
         return None
+
+def extract_frame_abilities(json_data):
+    for ability in json_data["abilities"]:
+        ability["imageName"] = get_image_url(ability["uniqueName"])
+    return {
+        "passive": json_data["passiveDescription"] if "passiveDescription" in json_data else "",
+        "abilities": json_data["abilities"]
+        }
 
 def get_item(unique_name):
     """ Get item data using warframe status API.
@@ -440,3 +461,37 @@ def get_alert_reward(data):
                                         "amount": data['mission']['reward']['credits']
                                         })
     return reward
+
+@st.cache_data(ttl="10m",show_spinner=False)
+def get_cached_items(item_ids):
+    return asyncio.run(warframe_status.fetch_all_items(item_ids))
+@st.cache_data(ttl="10m",show_spinner=False)
+def get_cached_item(unique_name):
+    return asyncio.run(warframe_status.fetch_item_async(unique_name))
+@st.cache_data(ttl="7d",show_spinner=False)
+def preload_data(data):
+    items = {
+            "types" : [],
+            "items" : []
+    }
+    ids = []
+    progress_text = AppMessages.PROGRESS.value
+    progress = st.progress(0, text=progress_text)
+    with st.spinner(AppMessages.LOAD_DATA.value,show_time=True):
+        for i, item in enumerate(data):
+            if "M P V" in item["item"]:
+                progress.progress((i+1)/len(data), text=f"""{(i+1)}/{len(data)} Items. Removing {item["item"]}""")
+                continue
+            else:
+                ids.append({
+                            "uniqueName": item["uniqueName"],
+                            "ducats" : item["ducats"] if item["ducats"] is not None else 0,
+                            "credits" : item["credits"] if item["credits"] is not None else 0,
+                        })
+            
+                progress.progress((i+1)/len(data), text=f"""{(i+1)}/{len(data)} Items. Indexed: {item["item"]}""")
+        
+        items["items"] =get_cached_items(ids)
+
+    progress.empty()
+    return items

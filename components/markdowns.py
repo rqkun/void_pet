@@ -2,68 +2,67 @@ from config.constants import Warframe
 from utils import tools
 from utils import data_manage
 from utils.data_manage import get_craftable_info,get_frame_abilities_with_image
-def warframe_info_md(name):
-    """ Warframe markdown custom web element. """
-    result = get_frame_abilities_with_image(name)
-    if result is not None:
-        abilities = result[0]["abilities"]
-        if 'passiveDescription' in result[0]:
-            md = f"""<b>Passive</b>: <i>{result[0]["passiveDescription"]}</i> <br/>"""
-        else:
-            md = f""" """
-        for ability in abilities:
-            md = md + f"""
-                <img alt="{ability["name"]}" style="width:30px;height:30px;" src="{ability["imageName"]}" title="{ability["name"]}"/>
-                <b>{ability["name"]}</b> : <i>{ability["description"]}</i><br/>"""
-        return md + """<br>"""
-    else:
-        return f"""
-                Undefined Data.
-                """
+from typing import Literal
 
-def craftable_info_md(name):
+def ability_info_md(item,abilities):
+    md = f"""<span class="item-image-drop-down-content"> <b>{item["name"]} &middot; {item["type"]} </b><br>"""
+    if 'passiveDescription' in abilities:
+        md = md + f"""<b>Passive</b>: <i>{abilities["passiveDescription"]}</i><br/>"""
+    for ability in abilities["abilities"]:
+        md = md + f"""
+            <img alt="{ability["name"]}" style="width:30px;height:30px;" src="{ability["imageName"]}" title="{ability["name"]}"/>
+            <b>{ability["name"]}</b> : <i>{ability["description"]}</i><br/>"""
+    return md + """</span>"""
+
+
+def craftable_info_md(item):
     """ Craftable markdown custom web element. """
-    result = get_craftable_info(name)
-    md = f""" """
-    if result is not None:
-        craftable = result[0]
+    md = f"""<span class="item-image-drop-down-content"> <b>{item["name"]} &middot; {item["type"]} &middot; MR: {item["masteryReq"] if 'masteryReq' in item else 0}</b><br>"""
+
+    if 'damage' in item:
+        md = md + f"""<i>Status Chance: {item["procChance"]*100:.2f} % &middot; Firerate/Attack Speed: {item["fireRate"]:.2f}</i> <br>"""
+        md = md + f"""<i>Crit Chance: {item["criticalChance"]*100:.2f} % &middot; Crit Multiplier: {item["criticalMultiplier"]:.2f}x</i> <br>"""
         
-        if 'masteryReq' in craftable:
+    if 'components' in item:
+        md = md + f"""<b>Components</b>:<br>"""
+        for component in item["components"]:
             md = md + f"""
-                    <b>MR</b>: <i>{craftable["masteryReq"]}</i> <br/>
-                """
-        
-        if 'damage' in craftable:
-            md = md + f"""<b>Stats</b>: <br/><p style="padding-left: 20px;">"""
-            md = md + f"""<i>Status Chance: {craftable["procChance"]*100:.2f} %</i><br>"""
-            md = md + f"""<i>Crit Chance: {craftable["criticalChance"]*100:.2f} %</i><br>"""
-            md = md + f"""<i>Crit Multiplier: {craftable["criticalMultiplier"]:.2f}x</i><br>"""
-            md = md + f"""<i>Firerate/Attack Speed: {craftable["fireRate"]:.2f}</i><br>"""
-            md = md + "</p>"        
+                <img alt="{component["name"]}" style="width:30px;height:30px;" src="{component["imageName"]}" title="{component["name"]}"/>
+                <i>x {component["itemCount"]} {component["name"]} <br></i>"""
+    return md + """</span>"""
 
-        sub_md = f""" """
 
-        if 'components' in craftable:
-            sub_md = sub_md + f"""<b>Components</b>:<span>"""
-            for component in craftable["components"]:
-                sub_md = sub_md + f"""
-                    <img alt="{component["name"]}" style="width:30px;height:30px;" src="{component["imageName"]}" title="{component["name"]}"/>
-                    <i>x {component["itemCount"]} {component["name"]},</i>"""
-        
-        return md,sub_md+"""</span>"""
-    else:
-        return f"""
-                Undefined Data.
-                """
-
-def relic_info_md(item):
+def relic_rewards_info_md(item):
     """ Relic markdown custom web element. """
-    md = f""" """
+    md = f"""<span class="item-image-drop-down-content"> <b>{item["name"]} &middot; {item["type"]}<br>"""
     for reward in item["rewards"]:
         md = md + f"""
             <img alt="{reward["item"]["name"]}" style="width:30px;height:30px;" src="{reward["item"]["imageName"]}" title="{reward["rarity"]}: {reward["chance"]}%"/>
             {reward["item"]["name"]} <br/>"""
-    return md + """<br>"""
+    return md + """</span>"""
+
+
+def misc_info_md(item):
+    """ Craftable markdown custom web element. """
+    md = f"""<span class="item-image-drop-down-content"> <b>{item["name"]} &middot; {item["type"]}</b><br>"""
+
+    if 'damage' in item:
+        md = md + f"""<i>Status Chance: {item["procChance"]*100:.2f} % &middot; Firerate/Attack Speed: {item["fireRate"]:.2f}</i> <br>"""
+        md = md + f"""<i>Crit Chance: {item["criticalChance"]*100:.2f} % &middot; Crit Multiplier: {item["criticalMultiplier"]:.2f}x</i> <br>"""
+        
+    if 'description' in item:
+        md = md + f"""<i>{item["description"]}</i>"""
+    return md + """</span>"""
+
+
+def hover_md(image_md, info_md):
+    """Return relic markdown custom web element. """
+    md = f""" <div class="item-image-drop-down">"""
+    md = md + image_md
+    md = md + info_md
+    md = md + """</div>"""
+    return md
+
 
 def prime_component_info_md(item,rarity,chances,price,offers,lowest_ingame):
     """ Prime component markdown custom web element. """
@@ -81,33 +80,61 @@ def prime_component_info_md(item,rarity,chances,price,offers,lowest_ingame):
     <br/><br/>
     """
 
-def baro_ware_md(item,baro_info):
-    """ Baro wares markdown custom web element. """
-    if item is not None:
-        return f"""
-        Ducats: <font color="#FF4B4B">{baro_info["ducats"]:,}</font>
-            <img alt="{Warframe.DUCAT.value["name"]}" style="width:20px;height:20px;" src="{Warframe.DUCAT.value["image"]}"/> |
-        Credits: <font color="#FF4B4B">{baro_info["credits"]:,}</font>
-            <img alt="{Warframe.CREDITS.value["name"]}" style="width:20px;height:20px;" src="{Warframe.CREDITS.value["image"]}"/>
-        """
-    else:
-        return f"""
-        Ducats: <font color="#FF4B4B">{baro_info["ducats"]:,}</font>
-            <img alt="{Warframe.DUCAT.value["name"]}" style="width:20px;height:20px;" src="{Warframe.DUCAT.value["image"]}"/> |
-        Credits: <font color="#FF4B4B">{baro_info["credits"]:,}</font>
-            <img alt="{Warframe.CREDITS.value["name"]}" style="width:20px;height:20px;" src="{Warframe.CREDITS.value["image"]}"/>
-        """
 
-def image_md(url,alt,source, size="100%"):
+def price_overlay_md(price_info):
+    """ Baro wares markdown custom web element. """
+    return f"""
+        <p style="position: absolute;
+            bottom: 10px;
+            left: calc(60px + 0.5vw);
+            align-self: flex-end;
+            display: flex;
+            z-index: 10;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding-left: 10px;
+            padding-right: 10px;
+            padding-top: 3px;
+            padding-bottom: 3px;
+            border-radius: 10px;
+            background-opacity: 10%;
+            font-size: calc(12px + 0.5vw);
+            flex-direction: row;
+            align-items: center;
+            flex-wrap: nowrap;
+            ">{price_info["amount"]}<img alt="{price_info["type"]["name"]}" style="width:calc(20px + 0.5vw);height:auto;" src="{price_info["type"]["image"]}"/></p>
+        """
+def image_md(url,alt,source,caption:Literal["hidden", "collapse", "visible"], size="65%"):
     """Return image markdown custom web element. """
-    return f"""<a href="{url}">
-                <img alt="{alt}" 
-                    style="display: block;
+    md = f"""<a href="{url}" target="_blank" style="" class="tooltip-wrap">
+                <img alt="{alt}" class ="item-image" 
+                    style="
+                            position: relative;
+                            display: block;
+                            align-items: center;
                             margin-left: auto;
                             margin-right: auto;
                             height: auto;
-                            width: {size};"
-                    src="{source}"/></a>"""
+                            width: {size};
+                            border-radius: 10px;
+                            zoom: 150%;"
+                    src="{source}" title="{alt}"/></a>"""
+    if caption == "hidden" or caption == "visible":
+        md = md + f"""<p style="text-overflow: ellipsis;
+                                text-align: center;
+                                padding-top: 10px;
+                                font-size: 75%;
+                                white-space: nowrap;
+                                overflow: hidden;
+                                visibility: {caption};">{alt}</p>"""
+    return md
+
+def card_md(image_md,price_md):
+    """Return card markdown custom web element. """
+    md = f""" <div class="item-flex-content" style="display:flex;justify-content: space-between;flex-direction: column; ">"""
+    md = md + image_md
+    md = md + price_md 
+    md = md + """</div>"""
+    return md
 
 def hide_streamlit_header():
     """Hide the Streamlit header. """
@@ -115,6 +142,8 @@ def hide_streamlit_header():
             <style>
                 /* Hide the Streamlit header and menu */
                 header {visibility: hidden;}
+                div.block-container {padding-top:1rem;}
+                
             </style>
         """
 
