@@ -2,10 +2,9 @@ from datetime import datetime
 from millify import millify
 import streamlit as st
 from components import cards, custom
-from config import structures
 from utils import data_manage
 
-from config.constants import AppIcons, AppMessages, AppPages, Warframe
+from config.constants import AppMessages, AppPages, Warframe
 from utils.tools import filter_data, format_timedelta
 
 def store_baro():

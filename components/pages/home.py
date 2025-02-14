@@ -1,7 +1,6 @@
-import math
 import streamlit as st
 from components import custom
-from components.fragments import alert,baro,event,invasion,varzia,world 
+from components.fragments import alert,event,invasion,world 
 
 custom.sideNav(0)
 

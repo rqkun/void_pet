@@ -1,9 +1,8 @@
 import streamlit as st
 from components import cards, custom
-from config import structures
 from utils import data_manage
 from millify import millify
-from config.constants import AppIcons, Warframe
+from config.constants import Warframe
 
 from utils.tools import filter_data
 

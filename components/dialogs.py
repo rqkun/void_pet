@@ -1,28 +1,8 @@
 import streamlit as st
 from components import cards, markdowns
 from config.constants import AppIcons, AppLabels, AppMessages, Warframe
-from datasources import warframe_status
 from utils import data_manage, tools
 from utils.data_manage import call_market
-
-@st.dialog(AppLabels.DETAIL_MARKET.value)
-def baro_item_check(uniqueName):
-    """ Show item details with market lookup options. """
-    with st.spinner(AppMessages.LOAD_DATA.value):
-        item = warframe_status.get_item_data(uniqueName)
-        image_url = tools.get_item_image(uniqueName)
-    # cards.generic(item,image_url)
-
-@st.dialog(AppLabels.DETAIL_MARKET.value,width="large")
-def info(data,image_md):
-    """ Show item details with market lookup options. """
-    with st.spinner(AppMessages.LOAD_DATA.value,show_time=True):
-        st.markdown(f"""<h1>{data["name"]} &middot; {data["type"]} </h1>""",unsafe_allow_html=True)
-        left, right = st.columns([1,4],vertical_alignment="top")
-        with left:
-            st.container(border=True).markdown(f"""{image_md}<br>""",unsafe_allow_html=True)
-        with right:
-            cards.info(item=data)
 
 @st.dialog(AppLabels.DETAIL_MARKET.value)
 def market_check(item):

@@ -1,8 +1,8 @@
 import streamlit as st
 from PIL import Image
-from components import custom, dialogs
+from components import custom
 import components.markdowns
-from config.constants import AppIcons, AppLabels, AppMessages, Warframe
+from config.constants import Warframe
 from utils import api_services
 from utils import data_manage
 
@@ -61,15 +61,3 @@ def prep_image(enum):
     else:
         image = Image.open(enum.value["image"])
         st.image(image.resize((200, 200)),use_container_width=True)
-    
-    
-def relic(image_url: str,item):
-    """ Generic relic card. """
-    relic_container = st.container(border=False)
-    with relic_container:
-        wiki_url = Warframe.get_wiki_url(item["name"].replace(" Intact", "").replace(" ","_"))
-        label = item["name"].replace(" Intact","")
-        image_md = components.markdowns.image_md(wiki_url,label,image_url,caption="visible")
-        reward_md = components.markdowns.relic_rewards_info_md(item)
-        st.markdown(components.markdowns.hover_md(image_md,reward_md),unsafe_allow_html=True)
-        custom.hover_dialog()

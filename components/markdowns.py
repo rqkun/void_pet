@@ -1,7 +1,6 @@
 from config.constants import Warframe
 from utils import tools
 from utils import data_manage
-from utils.data_manage import get_craftable_info,get_frame_abilities_with_image
 from typing import Literal
 
 def ability_info_md(item,abilities):
