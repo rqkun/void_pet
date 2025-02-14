@@ -125,7 +125,7 @@ def get_min_status_plat(data,status):
     [order for order in data if (order["user"]["status"] == status and order['order_type'] == "sell") ],
     key=lambda x: x["platinum"]
     )
-    return filtered_sorted_orders[0]
+    return filtered_sorted_orders
 
 
 def remove_wf_color_codes(string):
@@ -180,3 +180,13 @@ def filter_data(items, types):
         if condition:
             filtered.append(item)
     return filtered
+
+
+def check_pattern_prime_set(s):
+    pattern = r"^(.+)_prime_(set|blueprint)$"
+    return bool(re.match(pattern, s))
+
+
+def check_pattern_set(s):
+    pattern = r"^(.+)_(set)$"
+    return bool(re.match(pattern, s))

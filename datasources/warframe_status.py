@@ -100,7 +100,7 @@ def item_request(unique_name, search_by_name=False):
         dict: Item's data.
     """
     if search_by_name:
-        encoded_name = urllib.parse.quote_plus(unique_name, safe="")
+        encoded_name = urllib.parse.quote(unique_name)
         request_ref = Warframe.STATUS.value["api"]+f"/items/search/{encoded_name}?by=name&remove=patchlogs"
     else:
         identifier = unique_name.split("/")

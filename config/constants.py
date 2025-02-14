@@ -98,6 +98,7 @@ class AppPages(Enum):
     HOME = "components/pages/home.py"
     ERROR = "components/pages/error.py"
     # AYA = "components/pages/aya.py"
+    MARKET = "components/pages/market.py"
     VARZIA = "components/pages/varzia.py"
     BARO = "components/pages/baro.py"
     ISSUE = "https://github.com/rqkun/void_pet/issues"
@@ -158,8 +159,9 @@ class Warframe(Enum):
     }
     MARKET = {
         "api" : "https://api.warframe.market/v1",
-        "static" : "https://warframe.market/static/assets",
-        "url" : "https://warframe.market/items"
+        "static" : "https://warframe.market/static/assets/",
+        "url" : "https://warframe.market/items/",
+        "base" : "https://warframe.market/"
     }
     PUBLIC_EXPORT ={
         "api": "http://content.warframe.com/PublicExport",

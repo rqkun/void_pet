@@ -238,7 +238,7 @@ def get_market_item(url_path):
     """
     piece_list = warframe_market.get_market_item(url_path)
     for item in piece_list["payload"]["item"]["items_in_set"]:
-        if item['en']['item_name'].lower().replace(" ","_") == url_path:
+        if item['en']['item_name'].lower().replace("(","").replace(")","").replace(" ","_") == url_path:
             return item
     return None
 
@@ -341,7 +341,6 @@ def get_item_name(unique_name):
         return ""
 
 
-@st.cache_data(show_spinner=False)
 def call_market(option):
     """ Call warframe.market API for market inspection.
 
@@ -465,10 +464,9 @@ def get_alert_reward(data):
 @st.cache_data(ttl="10m",show_spinner=False)
 def get_cached_items(item_ids):
     return asyncio.run(warframe_status.fetch_all_items(item_ids))
-@st.cache_data(ttl="10m",show_spinner=False)
-def get_cached_item(unique_name):
-    return asyncio.run(warframe_status.fetch_item_async(unique_name))
-@st.cache_data(ttl="7d",show_spinner=False)
+# @st.cache_data(ttl="10m",show_spinner=False)
+# def get_cached_item(unique_name):
+#     return asyncio.run(warframe_status.fetch_item_async(unique_name))
 def preload_data(data):
     items = {
             "types" : [],
@@ -495,3 +493,19 @@ def preload_data(data):
 
     progress.empty()
     return items
+
+def clear_cached_item_call():
+    get_cached_items.clear()
+
+def get_all_tradables():
+    return warframe_market.get_market_items()
+
+def get_item_by_name(name):
+    result = warframe_status.item_request(name,search_by_name=True)
+    if len(result)>0:
+        for item in result:
+            if name == item["name"]:
+                return item 
+        return result[0]
+    else:
+        return None

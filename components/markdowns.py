@@ -202,3 +202,42 @@ def invasions_reward_info_md(data):
             <img alt="{item}" style="width:30px;height:30px;" src="{image}" title="{item}"/>
             <span>{item}</span><br/> """
     return md
+
+def market_order_md(data):
+    img = "https://warframe.market/static/assets/user/default-avatar.png"
+    if data["user"]["avatar"] is not None:
+        img = Warframe.MARKET.value["static"]+data["user"]["avatar"]
+    md =f"""<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"><div class="row"> """
+    md = md+ f"""
+    <div class="listing-container">
+        <div class="listing-content">
+            <div class="tag-section">
+                <span class="wts-tag">wts</span>
+            </div>
+            <div class="profile-section">
+                <a class="profile-link" style="text-decoration: none;" href="{Warframe.MARKET.value["base"]}profile/{data["user"]["ingame_name"]}">
+                    <img class="profile-image" style="text-decoration: none;" alt="{data["user"]["ingame_name"]}" src="{img}">
+                    <span class="profile-name" style="text-decoration: none;" >{data["user"]["ingame_name"]}</span>
+                </a>
+            </div>
+            <div class="reputation-section">
+                <span class="reputation-score">{data["user"]["reputation"]} <i class="fa fa-heart-o"></i></span>
+            </div>
+            <div class="reputation-section">
+                <span class="reputation-score">{data["quantity"]} <i class="fa fa-inbox"></i></span>
+            </div>
+            <div class="price-section">
+                <span class="price-amount">{data["platinum"]} <img alt="{Warframe.PLATINUM.value["name"]}" style="width:20px;height:20px;" src="{Warframe.PLATINUM.value["image"]}"/></span>
+            </div>
+        </div>
+    </div>
+    <br>
+    """
+    return md
+
+def market_item_desc(data):
+    md = f"""<span> <b>{data["en"]["item_name"]} &middot;</b> {data["trading_tax"]:,} <img alt="{Warframe.CREDITS.value["name"]}" style="width:20px;height:20px;" src="{Warframe.CREDITS.value["image"]}"/><br>"""
+    
+    md = md + f"""
+        <i>{data["en"]["description"]}</i>"""
+    return md + """</span><br>"""

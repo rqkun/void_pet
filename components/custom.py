@@ -1,9 +1,7 @@
 import math
 import streamlit as st
-from PIL import Image
 import components.markdowns
-from config.constants import AppIcons, AppLabels, AppPages, Warframe
-from utils import data_manage
+from config.constants import AppIcons, AppPages, Warframe
 import streamlit_antd_components as sac
 import components
 
@@ -18,6 +16,7 @@ def sideNav(current_idx,logo=Warframe.AYA.value):
                 sac.MenuItem("Baro Ki'ter", icon='arrow-repeat'),
                 sac.MenuItem('Varzia', icon='droplet-fill'),
             ]),
+            sac.MenuItem('Market', icon='shop-window'),
             sac.MenuItem('rqkun', icon='github', href='https://github.com/rqkun/void_pet/')
         ], size='sm',variant='left-bar', return_index=True, open_all=True, index=current_idx)
         
@@ -34,6 +33,8 @@ def sideNav(current_idx,logo=Warframe.AYA.value):
             st.switch_page(AppPages.BARO.value)
         if selection == 3:
             st.switch_page(AppPages.VARZIA.value)
+        if selection == 4:
+            st.switch_page(AppPages.MARKET.value)
         
         
 def paginations(items,num_of_row=2):
@@ -50,10 +51,13 @@ def paginations(items,num_of_row=2):
     start_index = (page - 1) * items_per_page
     end_index = start_index + items_per_page
     paged_items = items[start_index:end_index]
-    return paged_items, page, items_per_row, num_of_row
+    return paged_items, items_per_row
 
 def hover_effect():
     st.html("components/htmls/hover.html")
 
 def hover_dialog():
     st.html("components/htmls/hover_dialog.html")
+    
+def market_item_style():
+    st.html("components/htmls/market.html")

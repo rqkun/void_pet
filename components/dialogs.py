@@ -32,7 +32,7 @@ def market_check(item):
         item = data_manage.get_market_item(relic_name_cleaned) 
         market_data = call_market(relic_name_cleaned)
         filtered_data = tools.market_filter(market_data,rep=rep, status=status,wtb=wtb)[:limit]
-        order = tools.get_min_status_plat(market_data,"ingame")
+        order = tools.get_min_status_plat(market_data,"ingame")[0]
         whisper = f"""/w {order["user"]["ingame_name"]} Hi! I want to buy: "{item["en"]["item_name"]}" for {order["platinum"]} platinum. (warframe.market)"""
         avg_plat = tools.get_average_plat_price(filtered_data)
 
