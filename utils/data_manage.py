@@ -237,10 +237,11 @@ def get_market_item(url_path):
         dict: Json of the Item found.
     """
     piece_list = warframe_market.get_market_item(url_path)
-    for item in piece_list["payload"]["item"]["items_in_set"]:
-        if item['en']['item_name'].lower().replace("(","").replace(")","").replace(" ","_") == url_path:
-            return item
-    return None
+    if len(piece_list["payload"]["item"]["items_in_set"]) >1:
+        for item in piece_list["payload"]["item"]["items_in_set"]:
+            if item['en']['item_name'].lower().replace("(Key)","").replace(" ","_").replace("-","_") == url_path:
+                return item
+    return piece_list["payload"]["item"]["items_in_set"][0]
 
 
 def get_craftable_info(name):

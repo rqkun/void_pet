@@ -7,7 +7,7 @@ st.set_page_config(page_title="Void Pet", page_icon=AppIcons.MAIN_APP.value, lay
 
 hide_streamlit_style = hide_streamlit_header()
 
-# st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
 if 'not_baro_time' in st.session_state:
     st.toast(st.session_state.not_baro_time)
