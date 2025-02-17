@@ -1,3 +1,4 @@
+from datetime import datetime
 from config.constants import Warframe
 from utils import tools
 from utils import data_manage
@@ -229,3 +230,11 @@ def market_item_desc(data):
     md = md + f"""
         <i>{data["en"]["description"]}</i>"""
     return md + """</span><br>"""
+
+def world_clock_md(data):
+    md = f"""<div> """
+    
+    for item in data:
+        md = md + f"""<div style="display:flex;flex-direction:row;gap:5px;justify-content:space-between;align-items:center;"><img alt="{item["name"]}" style="width:50px;height:50px;border-radius:10px;padding:5px;" src="{item["image"]}"/><b>{item["name"]} &middot; </b> {item["data"]["state"].upper()} &middot; <i>{tools.format_timedelta(datetime.strptime(item["data"]["expiry"]
+                        ,"%Y-%m-%dT%H:%M:%S.%fZ")-datetime.today(),day=False)}</i><br></div>"""
+    return md + """<br> </div>"""

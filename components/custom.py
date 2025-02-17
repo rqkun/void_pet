@@ -26,7 +26,7 @@ def sideNav(current_idx,logo=Warframe.AYA.value):
             sac.MenuItem('Market', icon='shop-window'),
             sac.MenuItem('News', icon='newspaper'),
             sac.MenuItem('Github', icon='github',description="rqkun/void_pet", href='https://github.com/rqkun/void_pet/')
-        ], size='sm',variant='left-bar', return_index=True, open_all=True, index=current_idx)
+        ], size='xs',variant='left-bar', return_index=True, open_all=True, index=current_idx)
         
         sac.divider(label='Settings', icon='gear', align='center', color='gray')
         
