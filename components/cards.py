@@ -33,14 +33,11 @@ def generic(image_url: str,package=None,price_info=None):
     generic_container = st.container(border=False)
     with generic_container:
         if item is not None:
-            if 'wikiaUrl' in item:
-                wiki_url = item["wikiaUrl"]
-            else:
-                wiki_url = Warframe.get_wiki_url(item["name"].replace(" Intact", "").replace(" ","_"))
+            wiki_url = Warframe.get_wiki_url(item["name"].replace(" Intact", "").replace(" ","_"),item["type"])
             if 'category' in item and item["category"] == "Mods":
                 image_url = item["wikiaThumbnail"].split(".png")[0] + ".png"
         elif price_info is not None:
-             wiki_url = Warframe.get_wiki_url(price_info["name"].replace("StoreItem", "").replace(" ","_"))
+            wiki_url = Warframe.get_wiki_url(price_info["name"].replace("StoreItem", "").replace(" ","_"),item["type"])
         
         hover_md = info(item)
                 

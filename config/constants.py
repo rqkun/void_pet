@@ -168,7 +168,15 @@ class Warframe(Enum):
         "index": "https://origin.warframe.com/PublicExport/index_en.txt.lzma"
     }
     @staticmethod
-    def get_wiki_url(string):
+    def get_wiki_url(string, type =None):
         """ Return the wiki url of a certain item. """
         wiki_url = string.replace(" ","_")
-        return f"https://warframe.fandom.com/wiki/{wiki_url}"
+        if type is not None:
+            if type == "Skin":
+                if "Syandana" in string:
+                    wiki_url = "Syandana"
+            if type == "Ship Decoration":
+                if "Noggle" in string:
+                    wiki_url = "Orbiter#Noggles"
+        
+        return f"https://wiki.warframe.com/w/{wiki_url}"
