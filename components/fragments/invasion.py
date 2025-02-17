@@ -22,6 +22,9 @@ def show():
 
         with st.container(border=True),st.spinner(AppMessages.LOAD_DATA.value):
             data=get_invasions_rewards(data_manage.get_world_state()["invasions"])
-            st.markdown(markdowns.invasions_reward_info_md(data),unsafe_allow_html=True)
+            if data is not None:
+                st.markdown(markdowns.invasions_reward_info_md(data),unsafe_allow_html=True)
+            else:
+                st.info('There are currently no invasion', icon=AppIcons.INFO.value)
             if invasion_state_reload:
                 st.rerun(scope="fragment")

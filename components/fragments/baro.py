@@ -2,9 +2,10 @@ from components import cards
 from config import structures
 from config.constants import AppIcons, AppLabels, AppMessages, AppPages, Warframe
 from utils import data_manage
+from utils import tools
 from utils.tools import check_disable, format_timedelta
 
-
+import streamlit_antd_components as sac
 import streamlit as st
 
 
@@ -49,3 +50,13 @@ def show():
         if baro_info.button(AppLabels.BROWSE.value,use_container_width=True,disabled=check_disable(data),help=AppMessages.BARO_LOCKED.value,key="baro_browse",type="primary"):
             st.session_state["baro_wares"] = structures.ware_object("baro",data["inventory"])
             st.switch_page(AppPages.BARO.value)
+@st.fragment(run_every="5m")
+def check():
+    full_data=data_manage.get_baro()
+    
+    if full_data["active"] is True:
+        date = datetime.strptime(full_data["expiry"],"%Y-%m-%dT%H:%M:%S.%fZ")-datetime.today()
+        sac.alert(label=f"Baro Ki'tier is leaving at {tools.format_timedelta(date)}", banner=True,size='xs',variant='outline', color='cyan', icon=True, closable=False)
+    else:
+        pass
+    

@@ -20,7 +20,7 @@ def store_baro():
     else: return None
 
 custom.sideNav(2,Warframe.DUCAT.value)
-    
+custom.hover_effect()
 items = store_baro()
 if items is None:
     st.error("Warframe Status API is current down!",icon=AppIcons.ERROR.value)

@@ -15,7 +15,7 @@ def store_regal():
     else: return None
 
 custom.sideNav(3,Warframe.REGAL_AYA.value)
-
+custom.hover_effect()
 items = store_regal()
 if items is None:
     st.error("Warframe Status API is current down!",icon=AppIcons.ERROR.value)
