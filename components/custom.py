@@ -14,7 +14,8 @@ def sideNav(current_idx,logo=Warframe.AYA.value):
     """
     with st.sidebar:
         
-        st.markdown(components.markdowns.image_md("https://github.com/rqkun/void_pet/","Void Pet",source=logo["image"],caption="visible",size="30%"),unsafe_allow_html=True)
+        st.markdown(components.markdowns.image_md("https://github.com/rqkun/void_pet/","Void Pet",source=logo["image"],caption="collapse",size="20%"),unsafe_allow_html=True)
+        st.write("")
         
         selection = sac.menu([
             sac.MenuItem('Home', icon='house-fill'),
@@ -23,7 +24,8 @@ def sideNav(current_idx,logo=Warframe.AYA.value):
                 sac.MenuItem('Varzia', icon='droplet-fill'),
             ]),
             sac.MenuItem('Market', icon='shop-window'),
-            sac.MenuItem('rqkun', icon='github', href='https://github.com/rqkun/void_pet/')
+            sac.MenuItem('News', icon='newspaper'),
+            sac.MenuItem('Github', icon='github',description="rqkun/void_pet", href='https://github.com/rqkun/void_pet/')
         ], size='sm',variant='left-bar', return_index=True, open_all=True, index=current_idx)
         
         sac.divider(label='Settings', icon='gear', align='center', color='gray')
@@ -41,6 +43,8 @@ def sideNav(current_idx,logo=Warframe.AYA.value):
             st.switch_page(AppPages.VARZIA.value)
         if selection == 4:
             st.switch_page(AppPages.MARKET.value)
+        if selection == 5:
+            st.switch_page(AppPages.NEWS.value)
         
         
 def paginations(items,num_of_row=2):

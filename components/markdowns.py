@@ -85,10 +85,14 @@ def price_overlay_md(price_info):
             flex-wrap: nowrap;
             ">{price_info["amount"]}<img alt="{price_info["type"]["name"]}" style="width:calc(20px + 0.5vw);height:auto;" src="{price_info["type"]["image"]}"/></p>
         """
-def image_md(url,alt,source,caption:Literal["hidden", "collapse", "visible"], size="65%"):
+def image_md(url,alt,source,caption:Literal["hidden", "collapse", "visible"],animation=True, size="65%"):
     """Return image markdown custom web element. """
+    if animation:
+        img_class = "item-image"
+    else:
+        img_class = "fake"
     md = f"""<a href="{url}" target="_blank" style="" class="tooltip-wrap">
-                <img alt="{alt}" class ="item-image" 
+                <img alt="{alt}" class ="{img_class}" 
                     style="
                             position: relative;
                             display: block;

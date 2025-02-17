@@ -94,9 +94,12 @@ def format_timedelta(delta,day=True):
     hours, remainder = divmod(remainder, 3600)
     minutes, _ = divmod(remainder, 60)
     if day:
-        return AppMessages.delta_datetime_message(days,hours,minutes)
+        message = AppMessages.delta_datetime_message(days,hours,minutes)
     else:
-        return AppMessages.delta_time_message(hours,minutes)
+        message = AppMessages.delta_time_message(hours,minutes)
+    if total_seconds < 0:
+        return message.replace("-","") + " ago"
+    else: return message
 
 
 def check_disable(data):

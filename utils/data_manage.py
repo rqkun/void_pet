@@ -582,3 +582,23 @@ def get_item_by_name(name):
         return result[0]
     else:
         return None
+
+def get_news():
+    world_state=warframe_status.world_state_request()
+    news = []
+    if 'news' in world_state:
+        if len(world_state["news"]) > 0:
+            for new in world_state["news"]:
+                if new["update"] == False and new["primeAccess"] == False and new["stream"] == False:
+                    continue
+                else:
+                    news.append(new)
+            
+            news = sorted(
+                [new for new in news ],
+                key=lambda x: x["date"],reverse=True
+                )
+            
+            return news
+        else: return None
+    

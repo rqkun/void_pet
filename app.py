@@ -15,8 +15,9 @@ if 'not_baro_time' in st.session_state:
 home_page = st.Page(AppPages.HOME.value)
 baro_page = st.Page(AppPages.BARO.value)
 regal_page = st.Page(AppPages.VARZIA.value)
+news_page = st.Page(AppPages.NEWS.value)
 market_page = st.Page(AppPages.MARKET.value)
-authenticated_pages = [home_page,baro_page,regal_page,market_page]
+authenticated_pages = [home_page,baro_page,regal_page,market_page,news_page]
 pg = st.navigation(authenticated_pages,position="hidden")
 st.html("<style>[data-testid='stHeaderActionElements'] {display: none;}</style>")
 pg.run()
