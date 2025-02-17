@@ -8,7 +8,7 @@ from config.constants import AppIcons, AppMessages, AppPages, Warframe
 from utils.tools import filter_data, format_timedelta
 
 def store_baro():
-    """ Loading data from session state. """
+    """ Loading data. """
     full_data=data_manage.get_baro()
     if full_data["active"] is False:
         date = datetime.strptime(full_data["activation"],"%Y-%m-%dT%H:%M:%S.%fZ")-datetime.today()

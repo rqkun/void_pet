@@ -8,7 +8,7 @@ from utils.tools import filter_data
 
 
 def store_regal():
-    """ Loading data from session state. """
+    """ Loading data. """
     data=data_manage.get_variza()
     if data is not None: 
         return data_manage.preload_data(data["inventory"])

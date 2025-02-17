@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 
 @st.fragment(run_every=timedelta(minutes=1))
 def show():
-    """ Show Sortie's info card. """
+    """ Show world state's info card. """
     world_state_card = st.container(border=True)
     with world_state_card:
 

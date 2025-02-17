@@ -7,6 +7,7 @@ from utils import api_services
 from utils import data_manage
 
 def info(item):
+    """ The info module for a card. """
     hover_md = ""
     if 'type' in item and 'category' in item:
         if item["type"] == "Warframe" or item["type"] == "Archwing":

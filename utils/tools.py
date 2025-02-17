@@ -129,16 +129,41 @@ def get_min_status_plat(data,status):
 
 
 def remove_wf_color_codes(string):
+    """ Remove Warframe color codes in strings.
+
+    Args:
+        string (string): target string.
+
+    Returns:
+        string: removed color string.
+    """
     return re.sub(r"<.*?>", "", string)
 
 
 def deforma_rewards(option_map):
+    """ Remove Forma Blueprint rewards for market checking.
+
+    Args:
+        option_map (list): list of rewards.
+
+    Returns:
+        list: non-forma list of rewards
+    """
     for item in option_map:
         if "Forma Blueprint" in item["item"]["name"]:
             option_map.remove(item)
     return option_map
 
-def calculate_percentage_time(start,end):
+def calculate_percentage_time(start,end) -> float:
+    """ Calculate time percentage base on start, end time.
+
+    Args:
+        start (string): Start timestamp string.
+        end (string): End timestamp string.
+
+    Returns:
+        float: calculated percentage completed.
+    """
     target_time = datetime.fromisoformat(end.replace("Z", "+00:00"))
     # Current time in UTC
     current_time = datetime.now(timezone.utc)
@@ -151,6 +176,15 @@ def calculate_percentage_time(start,end):
 
 
 def filter_data(items, types):
+    """ Filter for baro/varzia
+
+    Args:
+        items (list): list of items need filtered.
+        types (list): filter types.
+
+    Returns:
+        list: list of filtered items.
+    """
     filtered = []
 
     # If types is None or empty, set condition to True to keep all items
@@ -183,10 +217,26 @@ def filter_data(items, types):
 
 
 def check_pattern_prime_set(s):
+    """ Check for item with name 'x Prime Set/Blueprint'.
+
+    Args:
+        s (string): item name.
+
+    Returns:
+        boolean: whether if the item match or not.
+    """
     pattern = r"^(.+)_prime_(set|blueprint)$"
     return bool(re.match(pattern, s))
 
 
 def check_pattern_set(s):
+    """ Check for item with name 'x Set'.
+
+    Args:
+        s (string): item name.
+
+    Returns:
+        boolean: whether if the item match or not.
+    """
     pattern = r"^(.+)_(set)$"
     return bool(re.match(pattern, s))

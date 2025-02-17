@@ -4,6 +4,7 @@ from utils import data_manage
 from typing import Literal
 
 def ability_info_md(item,abilities):
+    """ Abilities markdown custom web element. """
     md = f"""<span class="item-image-drop-down-content"> <b>{item["name"]} &middot; {item["type"]} </b><br>"""
     if 'passiveDescription' in abilities:
         md = md + f"""<b>Passive</b>: <i>{abilities["passiveDescription"]}</i><br/>"""
@@ -32,7 +33,7 @@ def craftable_info_md(item):
 
 
 def relic_rewards_info_md(item):
-    """ Relic markdown custom web element. """
+    """ Relic rewards markdown custom web element. """
     md = f"""<span class="item-image-drop-down-content"> <b>{item["name"]} &middot; {item["type"]}<br>"""
     for reward in item["rewards"]:
         md = md + f"""
@@ -42,7 +43,7 @@ def relic_rewards_info_md(item):
 
 
 def misc_info_md(item):
-    """ Craftable markdown custom web element. """
+    """ Misc information markdown custom web element. """
     md = f"""<span class="item-image-drop-down-content"> <b>{item["name"]} &middot; {item["type"]}</b><br>"""
 
     if 'damage' in item:
@@ -55,33 +56,15 @@ def misc_info_md(item):
 
 
 def hover_md(image_md, info_md):
-    """Return relic markdown custom web element. """
+    """Return hover dialog markdown custom web element. """
     md = f""" <div class="item-image-drop-down">"""
     md = md + image_md
     md = md + info_md
     md = md + """</div>"""
     return md
 
-
-def prime_component_info_md(item,rarity,chances,price,offers,lowest_ingame):
-    """ Prime component markdown custom web element. """
-    return f"""
-    <div> Average: 
-    <font color="#FF4B4B">{price:,.2f}
-        <img alt="{Warframe.PLATINUM.value["name"]}" style="width:20px;height:20px;" src="{Warframe.PLATINUM.value["image"]}"/> 
-    </font> from <font color="#FF4B4B">{offers}</font> offer(s).<br>
-    <div> Lowest: 
-    <font color="#FF4B4B">{lowest_ingame:,}</font>
-        <img alt="{Warframe.PLATINUM.value["name"]}" style="width:20px;height:20px;" src="{Warframe.PLATINUM.value["image"]}"/><br>
-    Rarity: <font color="#FF4B4B">{rarity}</font> | <font color="#FF4B4B">{chances}</font> %<br/>
-    Ducats: <font color="#FF4B4B">{item["ducats"]:,}</font>
-        <img alt="{Warframe.DUCAT.value["name"]}" style="width:20px;height:20px;" src="{Warframe.DUCAT.value["image"]}"/> | MR: <font color="#FF4B4B">{item["mastery_level"]}</font>
-    <br/><br/>
-    """
-
-
 def price_overlay_md(price_info):
-    """ Baro wares markdown custom web element. """
+    """ Prices markdown custom web element. """
     return f"""
         <p style="position: absolute;
             bottom: 10px;
@@ -181,7 +164,7 @@ def mod_info_md(item):
     return md,sub_md
 
 def alerts_reward_info_md(data):
-    """ Relic markdown custom web element. """
+    """ Alert rewards markdown custom web element. """
     md = f""" """
     for reward in data:
         if reward["item"] != "Credits":
@@ -193,7 +176,7 @@ def alerts_reward_info_md(data):
     return md
 
 def invasions_reward_info_md(data):
-    """ Relic markdown custom web element. """
+    """ Invasion rewards markdown custom web element. """
     md = f""" """
     for item,amount in data.items():
         image = data_manage.get_reward_image(item)
@@ -204,6 +187,7 @@ def invasions_reward_info_md(data):
     return md
 
 def market_order_md(data):
+    """ Market order custom web element. """
     img = "https://warframe.market/static/assets/user/default-avatar.png"
     if data["user"]["avatar"] is not None:
         img = Warframe.MARKET.value["static"]+data["user"]["avatar"]

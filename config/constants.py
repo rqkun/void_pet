@@ -96,7 +96,7 @@ class AppLabels(Enum):
 class AppPages(Enum):
     """ The Web app pages locations. """
     HOME = "components/pages/home.py"
-    ERROR = "components/pages/error.py"
+    # ERROR = "components/pages/error.py"
     # AYA = "components/pages/aya.py"
     MARKET = "components/pages/market.py"
     VARZIA = "components/pages/varzia.py"

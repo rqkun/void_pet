@@ -6,6 +6,12 @@ import streamlit_antd_components as sac
 import components
 
 def sideNav(current_idx,logo=Warframe.AYA.value):
+    """ Custom Sidebar navigation.
+
+    Args:
+        current_idx (int): current page index.
+        logo (enum, optional): current page logo. Defaults to Warframe.AYA.value.
+    """
     with st.sidebar:
         
         st.markdown(components.markdowns.image_md("https://github.com/rqkun/void_pet/","Void Pet",source=logo["image"],caption="visible",size="30%"),unsafe_allow_html=True)
@@ -38,7 +44,15 @@ def sideNav(current_idx,logo=Warframe.AYA.value):
         
         
 def paginations(items,num_of_row=2):
-    
+    """ Pagination for pages.
+
+    Args:
+        items (list): item list.
+        num_of_row (int, optional): number of rows per page. Defaults to 2.
+
+    Returns:
+        list, int: item list for page, number of item per row.
+    """
     items_per_row = 5
     items_per_page = items_per_row * num_of_row
     total_items = len(items)
@@ -54,10 +68,13 @@ def paginations(items,num_of_row=2):
     return paged_items, items_per_row
 
 def hover_effect():
+    """ Import custom hover effect for images."""
     st.html("components/htmls/hover.html")
 
 def hover_dialog():
+    """ Import custom hover effect for dialog."""
     st.html("components/htmls/hover_dialog.html")
     
 def market_item_style():
+    """ Import custom styles for market page."""
     st.html("components/htmls/market.html")

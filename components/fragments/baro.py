@@ -52,6 +52,7 @@ def show():
             st.switch_page(AppPages.BARO.value)
 @st.fragment(run_every="5m")
 def check():
+    """ Run check for baro every 5m. """
     full_data=data_manage.get_baro()
     
     if full_data["active"] is True:

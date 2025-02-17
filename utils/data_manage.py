@@ -266,6 +266,14 @@ def get_craftable_info(name):
         return None
 
 def extract_craftable_components(json_data):
+    """ Getting components of a craftable items.
+
+    Args:
+        json_data (dict): main item data.
+
+    Returns:
+        dict: item data with components data attach to it.
+    """
     for component in json_data["components"]:
         component["imageName"] = get_image_url(component["uniqueName"])
     return json_data
@@ -289,6 +297,14 @@ def get_frame_abilities_with_image(frame):
         return None
 
 def extract_frame_abilities(json_data):
+    """ Get warframe abilities with the ability images.
+
+    Args:
+        json_data (dict): frame's data.
+
+    Returns:
+        dict: abilities data.
+    """
     for ability in json_data["abilities"]:
         ability["imageName"] = get_image_url(ability["uniqueName"])
     return {
@@ -390,6 +406,14 @@ def get_reward_image(name) -> str:
     return img
 
 def clean_event_data(data):
+    """ Cleaning missing data from event API.
+
+    Args:
+        data (dict): json data of the event.
+
+    Returns:
+        dict: the cleaned data.
+    """
     if 'currentScore' in data:
         pass
     else: 
@@ -407,6 +431,11 @@ def clean_event_data(data):
     return data
 
 def get_ongoing_events():
+    """ Call warframe status api for event data.
+
+    Returns:
+        dict: events data | None
+    """
     response = warframe_status.ongoing_event_request()
     events = []
     if len(response)>0:
@@ -422,6 +451,11 @@ def get_ongoing_events():
         return None
 
 def get_alerts_data():
+    """ Call warframe status api for alert data.
+
+    Returns:
+        dict: alerts data | None
+    """
     response = warframe_status.alert_request()
     if len(response) >0:
         sorted_alert = sorted(
@@ -434,6 +468,14 @@ def get_alerts_data():
 
 
 def get_alert_reward(data):
+    """ Getting alert rewards with their images.
+
+    Args:
+        data (dict): alert data.
+
+    Returns:
+        list: list of alert rewards.
+    """
     reward = []
     if 'mission' in data:
         if 'reward' in data['mission']:
@@ -464,11 +506,25 @@ def get_alert_reward(data):
 
 @st.cache_data(ttl="30d",show_spinner=False)
 def get_cached_items(item_ids):
+    """ Getting all of the items aync by uniqueNames.
+
+    Args:
+        item_ids (list): list of uniqueNames.
+
+    Returns:
+        list: list of items.
+    """
     return asyncio.run(warframe_status.fetch_all_items(item_ids))
-# @st.cache_data(ttl="10m",show_spinner=False)
-# def get_cached_item(unique_name):
-#     return asyncio.run(warframe_status.fetch_item_async(unique_name))
+
 def preload_data(data):
+    """ Getting all of the baro/varzia items.
+
+    Args:
+        data (dict): baro/varzia data for filtering.
+
+    Returns:
+        list: list of items.
+    """
     items = {
             "types" : [],
             "items" : []
@@ -496,12 +552,28 @@ def preload_data(data):
     return items
 
 def clear_cached_item_call():
+    """ 
+        Clear cache for the get_cached_items() function.
+    """
     get_cached_items.clear()
 
 def get_all_tradables():
+    """ Get all of the market items.
+
+    Returns:
+        dict: json response.
+    """
     return warframe_market.get_market_items()
 
 def get_item_by_name(name):
+    """ Get item by name.
+
+    Args:
+        name (string): name of an item.
+
+    Returns:
+        dict: json data of the found item | None
+    """
     result = warframe_status.item_request(name,search_by_name=True)
     if len(result)>0:
         for item in result:
