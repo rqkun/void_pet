@@ -177,26 +177,31 @@ async def fetch_item(client, item_id, retries=3, SEMAPHORE=None):
         for attempt in range(retries):
             try:
                 identifier = item_id["uniqueName"].split("/")
-                identifier = "/".join(identifier[len(identifier)-3:])
+                identifier = "/".join(identifier[-3:])
                 encoded_name = urllib.parse.quote_plus(identifier, safe="")
-                url = Warframe.STATUS.value["api"]+f"/items/search/{encoded_name}?by=uniqueName&remove=introduced,patchlogs"
+                url = Warframe.STATUS.value["api"] + f"/items/search/{encoded_name}?by=uniqueName&remove=introduced,patchlogs"
                 
                 response = await client.get(url, follow_redirects=True)
-                if response.status_code == 200 and len(response.json())>0:
-                    result = response.json()[0]
-                    result["ducats"] = item_id["ducats"]
-                    result["credits"] = item_id["credits"]
-                    return result
-            except httpx.HTTPStatusError as e:
-                if e.response.status_code in [429, 500]:  # Too many requests or server error
-                    wait_time = 2 ** attempt + random.uniform(0, 1)
-                    await asyncio.sleep(wait_time)
-    return None  # Return None if all retries fail
+                
+                if response.status_code == 200:
+                    json_data = response.json()
+                    if json_data:
+                        result = json_data[0]
+                        result["ducats"] = item_id["ducats"]
+                        result["credits"] = item_id["credits"]
+                        return result
+            
+            except (httpx.HTTPStatusError, httpx.ReadTimeout, httpx.PoolTimeout) as e:
+                wait_time = 2 ** attempt + random.uniform(0, 1)
+                await asyncio.sleep(wait_time)
+
+    return None # Return None if all retries fail
 
 async def fetch_all_items(item_ids):
     """Fetch multiple items concurrently with error handling."""
-    SEMAPHORE = asyncio.Semaphore(5)  # Semaphore to limit concurrency
-    async with httpx.AsyncClient() as client:
+    SEMAPHORE = asyncio.Semaphore(3)  # Reduce concurrency to ease API load
+    async with httpx.AsyncClient(timeout=10) as client:  # Set a timeout
         tasks = [fetch_item(client, item_id, SEMAPHORE=SEMAPHORE) for item_id in item_ids]
         results = await asyncio.gather(*tasks, return_exceptions=True)  # Continue on failure
+        
         return [res for res in results if res is not None] # Remove failed requests

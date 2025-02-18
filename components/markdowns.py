@@ -233,7 +233,14 @@ def market_item_desc(data):
 
 def world_clock_md(data):
     md = f"""<div> """
+    #justify-content: space-between;
     # &middot; <i>{tools.format_timedelta(datetime.strptime(item["data"]["expiry"],"%Y-%m-%dT%H:%M:%S.%fZ")-datetime.today(),day=False)}</i>
     for item in data:
-        md = md + f"""<div style="display:flex;flex-direction:row;gap:5px;justify-content:space-between;align-items:center;"><img alt="{item["name"]}" style="width:50px;height:50px;border-radius:10px;padding:5px;" src="{item["image"]}"/><b>{item["name"]} &middot; </b> {item["data"]["state"].upper()}<br></div>"""
+        md = md + f"""<div style="display:flex;flex-direction:row;align-items:center;justify-content: space-between;" class ="test">
+                        <div>
+                            <img alt="{item["name"]}" style="width:50px;height:50px;border-radius:10px;padding:5px;" src="{item["image"]}"/>
+                            <span><b>{item["name"]}:</b>
+                        </div>
+                        <div>{item["data"]["state"].upper()}</div>
+                    </div>"""
     return md + """<br> </div>"""

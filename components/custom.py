@@ -14,7 +14,7 @@ def sideNav(current_idx,logo=Warframe.AYA.value):
     """
     with st.sidebar:
         
-        st.markdown(components.markdowns.image_md("https://github.com/rqkun/void_pet/","Void Pet",source=logo["image"],caption="collapse",size="20%"),unsafe_allow_html=True)
+        st.markdown(components.markdowns.image_md("https://github.com/rqkun/void_pet/","Void Pet",source=logo["image"],caption="visible",size="20%"),unsafe_allow_html=True)
         st.write("")
         
         selection = sac.menu([
