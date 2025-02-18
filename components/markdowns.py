@@ -234,13 +234,17 @@ def market_item_desc(data):
 def world_clock_md(data):
     md = f"""<div> """
     #justify-content: space-between;
-    # &middot; <i>{tools.format_timedelta(datetime.strptime(item["data"]["expiry"],"%Y-%m-%dT%H:%M:%S.%fZ")-datetime.today(),day=False)}</i>
+    # &middot; 
     for item in data:
-        md = md + f"""<div style="display:flex;flex-direction:row;align-items:center;justify-content: space-between;" class ="test">
-                        <div>
+        md = md + f"""<div style="display:flex;flex-direction:row;align-items:center;justify-content: space-between;">
+                        <div style="display:flex;flex-direction:row;align-items:center;justify-content: space-between;">
                             <img alt="{item["name"]}" style="width:50px;height:50px;border-radius:10px;padding:5px;" src="{item["image"]}"/>
-                            <span><b>{item["name"]}:</b>
+                            <div style="display:flex;flex-direction:column;">
+                                <span><b>{item["name"]}:</b></span>
+                                <i style="color: gray;">{tools.format_timedelta(datetime.strptime(item["data"]["expiry"],"%Y-%m-%dT%H:%M:%S.%fZ")-datetime.today(),day=False)}</i>
+                            </div>
                         </div>
-                        <div>{item["data"]["state"].upper()}</div>
-                    </div>"""
+                        <div>{item["data"]["state"].title()}</div>
+                    </div>
+                    """
     return md + """<br> </div>"""

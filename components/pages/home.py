@@ -8,10 +8,9 @@ baro.check()
 custom.hover_effect()
 left_col,right_col = st.columns(2)
 with left_col:
-    world.show()
-    invasion.show()   
-        
-with right_col:
     alert.show()
+    world.show()
+
+with right_col:
     event.show()
-    
+    invasion.show()

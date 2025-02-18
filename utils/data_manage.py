@@ -601,4 +601,34 @@ def get_news():
             
             return news
         else: return None
-    
+
+def get_cycles():
+    world_state=warframe_status.world_state_request()
+    cycles = [
+                {
+                    "name":"Cetus",
+                    "data": world_state["cetusCycle"],
+                    "image": get_image_url("/Lotus/Types/Items/MiscItems/PhotoboothTileEidolonLandscape",True)
+                },
+                {
+                    "name":"Deimos",
+                    "data": world_state["cambionCycle"],
+                    "image": get_image_url("/Lotus/Types/Items/MiscItems/PhotoboothTileDeimosLandscape",True)
+                },
+                {
+                    "name":"Zariman",
+                    "data": world_state["zarimanCycle"],
+                    "image": get_image_url("/Lotus/Types/Items/PhotoBooth/Zariman/PhotoboothTileZarAmphitheatre",True)
+                },
+                {
+                    "name":"Fortuna",
+                    "data": world_state["vallisCycle"],
+                    "image": get_image_url("/Lotus/Types/Items/MiscItems/PhotoboothTileVenusLandscape",True)
+                },
+                {
+                    "name":"Duviri",
+                    "data": world_state["duviriCycle"],
+                    "image": get_image_url("/Lotus/Types/Items/MiscItems/PhotoboothTileDuviriTeshinsCave",True)
+                },
+            ]
+    return cycles
