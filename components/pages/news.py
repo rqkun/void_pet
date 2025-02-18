@@ -7,12 +7,13 @@ from utils.tools import format_timedelta
 
 custom.sideNav(5)
 custom.hover_effect()
+_,middle,_ = st.columns([3,2,3],vertical_alignment="center")
 
-news = data_manage.get_news()
+with middle,st.spinner("",show_time=True,_cache=False):
+    news = data_manage.get_news()
 
 for item in news:
     left,right = st.container(border=True).columns([1,2],vertical_alignment="top")
-    
     left.markdown(markdowns.image_md(item["link"],item["message"],item["imageLink"],caption="hidden",size="100%",animation=False),unsafe_allow_html=True)
     right.markdown(f"""##### {item["message"]}""")
     date = datetime.strptime(item["date"],"%Y-%m-%dT%H:%M:%S.%fZ")-datetime.today()
