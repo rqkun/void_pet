@@ -57,7 +57,7 @@ reroll_max = right.number_input("Reroll max",min_value=0,step=1,value=100)
 
 
 if submit:
-    st.json(weapon)
+    # st.json(weapon)
     if len(weapon) ==0:
         status_placeholder.warning("Please select a weapon.",icon=AppIcons.WARNING.value)
     else:
