@@ -1,7 +1,7 @@
 
 import streamlit as st
 from components import custom, markdowns
-from config.constants import AppIcons
+from config.constants import AppIcons, AppMessages
 from utils import data_manage
 import streamlit_antd_components as sac
 
@@ -9,12 +9,13 @@ import streamlit_antd_components as sac
 custom.sideNav(6)
 custom.hover_effect()
 
+
 _,middle,_ = st.columns([3,2,3],vertical_alignment="center")
 
-with middle,st.spinner("",show_time=True,_cache=False):
+with middle,st.spinner(AppMessages.LOAD_DATA.value,show_time=True,_cache=False):
     riven_items, riven_attributes = data_manage.get_rivens_settings()
 status_placeholder = st.empty()
-search_form = st.form("riven_search_form",clear_on_submit=False)
+search_form = st.expander("Search",expanded=True,icon=AppIcons.INSPECT.value).form("riven_search_form",clear_on_submit=False,border=False)
 container = st.container(border=False)
 left,right=search_form.columns([1,1],vertical_alignment="top")
 weapon = left.multiselect(
@@ -39,9 +40,14 @@ pos_atr = left_top.multiselect(
     placeholder="Choose up to 3 attributes"
 )
 
-left,right=search_form.columns([4,1],vertical_alignment="center")
+left,right=search_form.columns([4,1],vertical_alignment="bottom")
 
 submit = right.form_submit_button("Search",use_container_width=True,icon=AppIcons.INSPECT.value,type="primary")
+status = left.segmented_control("Status",
+                                ["ingame","offline","online"],
+                                selection_mode="single",
+                                default="ingame",
+                                format_func= lambda x: x.title())
 adv_setting = right_top.popover(":material/settings:",use_container_width=True)
 
 left,right=adv_setting.columns([1,1],vertical_alignment="top")
@@ -79,7 +85,7 @@ if submit:
                                                 operation=None,
                                                 re_rolls_min=reroll_min,
                                                 re_rolls_max=reroll_max,
-                                                polarity=polarity)
+                                                polarity=polarity,status=status)
             if rivens is not None:
                 st.session_state.rivens = {
                     "auctions": rivens,
