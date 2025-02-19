@@ -217,8 +217,8 @@ def get_weapon_by_name(name):
     raise_detailed_error(request_object)
     if len(request_object.json()) < 1:
         return None
-    if len(request_object.json()) > 1:
+    else:
         for item in request_object.json():
             if item["name"].lower() == name:
                 return item
-    return request_object.json()[0]
+        return request_object.json()[0]

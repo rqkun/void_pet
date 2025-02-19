@@ -584,6 +584,11 @@ def get_item_by_name(name):
         return None
 
 def get_news():
+    """ API get news data.
+
+    Returns:
+        list: list of json data for news.
+    """
     world_state=warframe_status.world_state_request()
     news = []
     if 'news' in world_state:
@@ -603,6 +608,11 @@ def get_news():
         else: return None
 
 def get_cycles():
+    """ API get cycles for open worlds.
+
+    Returns:
+        list: list of json data for open worlds.
+    """
     world_state=warframe_status.world_state_request()
     cycles = [
                 {
@@ -634,9 +644,29 @@ def get_cycles():
     return cycles
 
 def get_rivens_settings():
+    """ API for riven attribute list and item list
+
+    Returns:
+        tuple(list,list): combined data of riven default informations.
+    """
     return warframe_market.get_market_riven_items(), warframe_market.get_market_riven_attributes()
 
 def get_rivens(weapon_url_name, buyout_policy=None, positive_stats=None, negative_stats=None,operation=None,re_rolls_min=None,re_rolls_max=None,polarity=None):
+    """_summary_
+
+    Args:
+        weapon_url_name (string): weapon url path.
+        buyout_policy (string, optional): buyout policy. Defaults to None.
+        positive_stats (list, optional): list positive attributes. Defaults to None.
+        negative_stats (_type_, optional): list negative attributes. Defaults to None.
+        operation (string, optional): not implemented. Defaults to None.
+        re_rolls_min (int, optional): min reroll stat. Defaults to None.
+        re_rolls_max (int, optional): max reroll stat. Defaults to None.
+        polarity (string, optional): polarity of the riven. Defaults to None.
+
+    Returns:
+        list: list of riven | None.
+    """
     if buyout_policy == "Buyout":
         buyout_policy = "direct"
     elif buyout_policy == "Auction":
@@ -647,5 +677,38 @@ def get_rivens(weapon_url_name, buyout_policy=None, positive_stats=None, negativ
     return rivens
 
 def get_weapon_by_name(name):
+    """ API for weapon data search by name.
+
+    Args:
+        name (string): weapon's name.
+
+    Returns:
+        dict: json data of weapon.
+    """
     name = name.replace("_", " ")
     return warframe_status.get_weapon_by_name(name)
+
+def get_event_rewards(data):
+    """ Get event rewards.
+
+    Args:
+        data (dict): event json data.
+
+    Returns:
+        list: list of reward names.
+    """
+    rewards = []
+    if "interimSteps" in data and len(data["interimSteps"])>0:
+        for step in data["interimSteps"]:
+            if "reward" in step:
+                if "items" in step["reward"] and len(step["reward"]["items"])>0:
+                    for item in step["reward"]["items"]:
+                        rewards.append(item)
+
+    if "rewards" in data and len(data["rewards"])>0:
+        for reward in data["rewards"]:
+            if "items" in reward and len(reward["items"])>0:
+                for item in reward["items"]:
+                    rewards.append(item)
+
+    return rewards

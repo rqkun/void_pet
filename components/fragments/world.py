@@ -16,5 +16,8 @@ def show():
     with world_state_card:
         st.subheader("""World""")
         with st.container(border=True), st.spinner(AppMessages.LOAD_DATA.value):
-            data=data_manage.get_cycles()
-            st.markdown(markdowns.world_clock_md(data),unsafe_allow_html=True)
+            try:
+                data=data_manage.get_cycles()
+                st.markdown(markdowns.world_clock_md(data),unsafe_allow_html=True)
+            except:
+                        st.warning(f"Error occured",icon=AppIcons.ERROR.value)

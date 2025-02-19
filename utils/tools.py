@@ -23,22 +23,6 @@ def market_filter(data, rep=0, status="All",wtb=""):
     if status != "All" and status is not None:
         data =[entry for entry in data if (entry['user']['status'] == status.lower())]
     return [entry for entry in data if entry['user']['reputation'] >= rep]
- 
- 
-def get_average_plat_price(orders) -> float:
-    """ Return median price of a list of orders. 
-        By doing it this way, we can avoid large deviation between prices.
-
-    Args:
-        orders (list): list of orders.
-
-    Returns:
-        float: the median price of input orders.
-    """
-    prices = []
-    for order in orders:
-        prices.append(order["platinum"])
-    return median(prices) if len(orders) > 0 else 0
 
 
 def parse_item_string(item_string):
@@ -100,18 +84,6 @@ def format_timedelta(delta,day=True):
     if total_seconds < 0:
         return message.replace("-","") + " ago"
     else: return message
-
-
-def check_disable(data):
-    """ Check the button should be disable or not
-
-    Args:
-        data (obj): Button's condition
-
-    Returns:
-        bool: Button's disable state
-    """
-    return False if data["active"] else True
 
 
 def get_min_status_plat(data,status):

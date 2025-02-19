@@ -24,17 +24,18 @@ def show():
             data=data_manage.get_alerts_data()
             if data is not None:
                 for alert in data:
-                    if alert["active"] == True:
+                    try:
+                        if alert["active"] == True:
 
-                        percentage_completed = tools.calculate_percentage_time(start=alert["activation"],end=alert["expiry"])
-                        if percentage_completed < 1:
-                            left,right = alert_info.columns([3,1],vertical_alignment="bottom")
-                            with right.popover(AppIcons.INFO.value,use_container_width=True):
-                                st.markdown(f"""##### {alert["mission"]["type"]} \
-                                    - `{format_timedelta(datetime.strptime(alert["expiry"],"%Y-%m-%dT%H:%M:%S.%fZ")-datetime.today(),day=False)}`\
-                                        """)
-                                st.markdown(f"""<span><i> Reminder, Steelpath rewards might be different.</i></span>""",unsafe_allow_html=True)
-                                st.container(border=True).markdown(markdowns.alerts_reward_info_md(data_manage.get_alert_reward(alert)),unsafe_allow_html=True)
-                            left.progress(percentage_completed,f"""{alert["mission"]["node"]}""")
+                            percentage_completed = tools.calculate_percentage_time(start=alert["activation"],end=alert["expiry"])
+                            if percentage_completed < 1:
+                                left,right = alert_info.columns([3,1],vertical_alignment="bottom")
+                                with right.popover(AppIcons.INFO.value,use_container_width=True):
+                                    time = format_timedelta(datetime.strptime(alert["expiry"],"%Y-%m-%dT%H:%M:%S.%fZ")-datetime.today(),day=False)
+                                    info_md = markdowns.alerts_reward_info_md(data_manage.get_alert_reward(alert))
+                                    st.markdown(markdowns.stats_info_md(alert["mission"]["type"],time,info_md),unsafe_allow_html=True)
+                                left.progress(percentage_completed,f"""{alert["mission"]["node"]}""")
+                    except:
+                        st.warning(f"Error occured",icon=AppIcons.ERROR.value)
             else:
                 alert_info.info('There are currently no alerts', icon=AppIcons.INFO.value)

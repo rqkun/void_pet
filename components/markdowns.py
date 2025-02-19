@@ -173,15 +173,14 @@ def mod_info_md(item):
 
 def alerts_reward_info_md(data):
     """ Alert rewards markdown custom web element. """
-    md = f""" """
+    md = f"""<div><span><b>Reward:<b/> <i style="color:#a3a3a3;"> Reminder, Steelpath rewards might be different.</i></span><br>"""
     for reward in data:
         if reward["item"] != "Credits":
             reward["image"] = data_manage.get_reward_image(reward["image"])
         md = md + f"""
-            {reward["amount"]:,}
             <img alt="{reward["item"]}" style="width:30px;height:30px;" src="{reward["image"]}" title="{reward["item"]}"/>
-            <span>{reward["item"]}</span><br/> """
-    return md
+            <span>{reward["amount"]:,} {reward["item"]}</span><br/> """
+    return md +"</div>"
 
 def invasions_reward_info_md(data):
     """ Invasion rewards markdown custom web element. """
@@ -306,8 +305,8 @@ def riven_auction_md(data,image):
     
     if data["owner"]["avatar"] is not None:
         avatar_img = Warframe.MARKET.value["static"]+data["owner"]["avatar"]
-    md =f""" """
-    md = md+f"""
+
+    md = f"""
         <div class="card" >
             <img class="aunction-item-img" src="{image}" alt="{name}">
             <a class="title" href="{Warframe.MARKET.value["base"]}auction/{data["id"]}">{name} {data["item"]["name"].replace("-"," ").title().replace(" ","-")}</a>
@@ -342,3 +341,43 @@ def riven_auction_md(data,image):
     """
 
     return md
+
+def stats_info_md(name, time,info_md):
+    md = f"""<div class="event-alert-card" style="display:flex;flex-direction:column;padding-bottom:10px;">
+                <div class="name-time-container" style="display:flex;flex-direction:row;align-items: center;justify-content: flex-start;margin-top:-20px;margin-bottom:-20px;">
+                    <h4>{name} &middot;</h4>
+                    <span><i style="color:#a3a3a3;">&nbsp; {time}</i></span>
+                </div>
+                <div class="event-alert-info">{info_md}</div></div>"""
+    return md
+
+def event_info_md(data,step_rewards):
+    jobs = """<div style="display:flex;flex-direction:column;padding-bottom:10px;gap:1rem;">"""
+    if data["jobs"] is not None and len(data["jobs"]) > 0:
+        for item in data["jobs"]:
+            jobs = jobs + f"""<div style="border: 1px solid rgba(250, 250, 250, 0.2);border-radius: 0.5rem;padding: calc(-1px + 1rem);">"""
+            rewards = ", ".join(item["rewardPool"])
+            jobs = jobs + f"""<details><summary>{item["type"]} &middot; Enemies: {item["enemyLevels"][0]} - {item["enemyLevels"][1]}</summary><b>Rewards: </b><font style="color:#a3a3a3;">{rewards}</font></details></div>"""
+    jobs = jobs + "</div>"
+    if step_rewards is not None and len(step_rewards)>0:
+        step_rewards_md = f"""<details><summary><b>Rewards</b></summary><font style="color:#a3a3a3;">{"<br>".join(step_rewards)}</font></details>"""
+    else:
+        step_rewards_md =""
+    md = f"""<div>
+                <div style="display:flex;"><i style="color:#a3a3a3;max-width:300px;">{data["tooltip"]}</i></div>{jobs}{step_rewards_md}
+        </div>
+    """
+    return md
+# def progress_bar_md(data,percentage):
+#     node = data["victimNode"] if "victimNode" in data else data["node"]
+#     md = f"""<div class="event-card"> 
+#                 <div>
+#                     <span>{data["description"]} &middot; {node}</span>
+#                 </div>
+#                 <div class="event-progress-container">
+#                     <progress id="{data["description"]}" value="{percentage*100}" max="100" style="width:100%; color:#FF4B4B;"> {percentage*100}% </progress>
+#                     <div></div>
+#                 </div>
+#                 <div> 
+#                 </div>"""
+#     return md +"</div>"
