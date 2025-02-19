@@ -337,7 +337,6 @@ def riven_auction_md(data,image):
                 <span class="status" {status}>{data["owner"]["status"].title()} <b>&middot; {data["owner"]["region"].upper()}</b></span>
             </div>
         </div>
-        <br>
     """
 
     return md
@@ -368,16 +367,3 @@ def event_info_md(data,step_rewards):
         </div>
     """
     return md
-# def progress_bar_md(data,percentage):
-#     node = data["victimNode"] if "victimNode" in data else data["node"]
-#     md = f"""<div class="event-card"> 
-#                 <div>
-#                     <span>{data["description"]} &middot; {node}</span>
-#                 </div>
-#                 <div class="event-progress-container">
-#                     <progress id="{data["description"]}" value="{percentage*100}" max="100" style="width:100%; color:#FF4B4B;"> {percentage*100}% </progress>
-#                     <div></div>
-#                 </div>
-#                 <div> 
-#                 </div>"""
-#     return md +"</div>"

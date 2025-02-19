@@ -99,6 +99,9 @@ if 'rivens' in st.session_state:
     for idx, auction in enumerate(iterable=paged_items):
         if auction is not None:
             st.markdown(markdowns.riven_auction_md(auction,image),unsafe_allow_html=True)
+            name = f"""{st.session_state['rivens']['item_name']} {auction["item"]["name"].replace("-"," ").title().replace(" ","-")}"""
+            whisper = f"""/w {auction["owner"]["ingame_name"]} Hi! I want to buy: "{name}" riven. """
+            st.code(whisper,language="md",wrap_lines=True)
 
 
 
