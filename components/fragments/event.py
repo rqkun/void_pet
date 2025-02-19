@@ -1,5 +1,5 @@
 from config.constants import AppIcons, AppMessages, Warframe
-from utils import data_manage
+from utils import data_manage, tools
 
 
 import streamlit as st
@@ -25,7 +25,10 @@ def show():
                 for event in data:
                     left,right = events_info.columns([8,1],vertical_alignment="bottom")
                     right.link_button(AppIcons.EXTERNAL.value,url=Warframe.get_wiki_url(event["description"]),use_container_width=True,type="tertiary")
-                    left.progress(event["currentScore"],f"""{event["description"]} | {event["node"]}""")
+                    node = event["victimNode"] if "victimNode" in event else event["node"]
+                    percentage = tools.calculate_percentage_time(event["activation"],event["expiry"])
+                    left.progress(percentage,f"""{event["description"]} | {node}""")
+                        
             else:
                 events_info.info('There are currently no events', icon=AppIcons.INFO.value)
             if event_state_reload:
