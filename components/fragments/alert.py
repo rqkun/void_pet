@@ -31,7 +31,7 @@ def show():
                             if percentage_completed < 1:
                                 left,right = alert_info.columns([3,1],vertical_alignment="bottom")
                                 with right.popover(AppIcons.INFO.value,use_container_width=True):
-                                    time = format_timedelta(datetime.strptime(alert["expiry"],"%Y-%m-%dT%H:%M:%S.%fZ")-datetime.today(),day=False)
+                                    time = format_timedelta(datetime.strptime(alert["expiry"],"%Y-%m-%dT%H:%M:%S.%fZ")-datetime.today(),day=True)
                                     info_md = markdowns.alerts_reward_info_md(data_manage.get_alert_reward(alert))
                                     st.markdown(markdowns.stats_info_md(alert["mission"]["type"],time,info_md),unsafe_allow_html=True)
                                 left.progress(percentage_completed,f"""{alert["mission"]["node"]}""")

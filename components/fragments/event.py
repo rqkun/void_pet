@@ -26,7 +26,7 @@ def show():
                         # right.link_button(AppIcons.EXTERNAL.value,url=Warframe.get_wiki_url(event["description"]),use_container_width=True,type="tertiary")
                         node = event["victimNode"] if "victimNode" in event else event["node"]
                         percentage = tools.calculate_percentage_time(event["activation"],event["expiry"])
-                        time = tools.format_timedelta(datetime.strptime(event["expiry"],"%Y-%m-%dT%H:%M:%S.%fZ")-datetime.today(),day=False)
+                        time = tools.format_timedelta(datetime.strptime(event["expiry"],"%Y-%m-%dT%H:%M:%S.%fZ")-datetime.today(),day=True)
                         # info_md = markdowns.alerts_reward_info_md(data_manage.get_alert_reward(alert))
                         rewards = data_manage.get_event_rewards(event)
                         event["description"] = event["description"].replace("Operation: ", "")
