@@ -14,13 +14,7 @@ def show():
     """ Show world state's info card. """
     world_state_card = st.container(border=True)
     with world_state_card:
-
-        top_left,top_right = st.columns([5,1],vertical_alignment="center")
-        top_left.markdown(f"""### World""",unsafe_allow_html=True)
-        world_state_reload = top_right.button(AppIcons.SYNC.value,use_container_width=True,type="tertiary",key="world_state_reload")
+        st.subheader("""World""")
         with st.container(border=True), st.spinner(AppMessages.LOAD_DATA.value):
             data=data_manage.get_cycles()
             st.markdown(markdowns.world_clock_md(data),unsafe_allow_html=True)
-
-            if world_state_reload:
-                st.rerun(scope="fragment")

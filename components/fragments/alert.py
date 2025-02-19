@@ -13,12 +13,11 @@ from datetime import datetime, timedelta
 @st.fragment(run_every=timedelta(minutes=1))
 def show():
     """ Show alert's card that update every minute. """
-    alert_state_card = st.container(border=True)
+    alert_state_card = st.container(border=False)
     with alert_state_card:
 
-        top_left,top_right = st.columns([5,1],vertical_alignment="center")
-        top_left.markdown(f"""### Alerts """,unsafe_allow_html=True)
-        alert_state_reload = top_right.button(AppIcons.SYNC.value,use_container_width=True,type="tertiary",key="alert_state_reload")
+        
+        st.subheader("""Alerts """)
 
         alert_info = st.container(border=True)
         with alert_info, st.spinner(AppMessages.LOAD_DATA.value):
@@ -39,5 +38,3 @@ def show():
                             left.progress(percentage_completed,f"""{alert["mission"]["node"]}""")
             else:
                 alert_info.info('There are currently no alerts', icon=AppIcons.INFO.value)
-            if alert_state_reload:
-                st.rerun(scope="fragment")

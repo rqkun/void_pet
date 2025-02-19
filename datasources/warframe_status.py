@@ -208,7 +208,6 @@ async def fetch_all_items(item_ids):
         return [res for res in results if res is not None] # Remove failed requests
 
 def get_weapon_by_name(name):
-    print(name)
     if " and " in name:
         name = name.replace(" and ", " & ")
     name = re.sub(r'\s*\(.*?\)', '', name)
@@ -216,7 +215,6 @@ def get_weapon_by_name(name):
     request_ref = Warframe.STATUS.value["api"]+f"/weapons/search/{encoded_name}?by=name&remove=patchlogs"
     request_object = requests.get(request_ref)
     raise_detailed_error(request_object)
-    print(request_ref)
     if len(request_object.json()) < 1:
         return None
     if len(request_object.json()) > 1:

@@ -17,7 +17,6 @@
         flex-wrap: wrap;
         gap: 5px;
         margin-top: 10px;
-        width: 75%;
         align-items: start;
     }
     .stat-pos {
@@ -63,17 +62,26 @@
         margin-left: 10px;
     }
     .price {
+        display: flex;
         align-self:center;
         color: #a3a3a3;
         margin-top: 10px;
         text-align: right;
-        flex-wrap: nowrap;
-        gap: 5px;
+        flex-direction: row;
+        flex-wrap: wrap;
+        width: 100%;
+        justify-content: space-between;
+        min-width: max-content;
+        max-width: 100%;
+        flex-shrink: 1;
     }
     .price-amount-text{
         margin-left:5px;
         font-weight:bold;
         color: #ffffff;
+        overflow:wrap;
+        max-width: 100%;
+        white-space:nowrap;
     }
     .auction-tag {
         background-color: #FF4B4B;
@@ -85,5 +93,26 @@
         display: inline-block;
         transform-origin: center;
         margin-right: 10px;
+    }
+    .aunction-item-img {
+        margin-right:10px;
+        rotate: 30deg;
+        width:50px;
+        height:50px;
+    }
+    .price-details{
+        display:flex;
+        justify-content:space-between;
+    }
+    .stat-details{
+        display:flex;
+        flex-direction: column;
+        width: 69%;
+    }
+    .price-container{
+        display:flex;
+        align-items:flex-start;
+        flex-direction: column;
+        justify-content:center;
     }
 </style>

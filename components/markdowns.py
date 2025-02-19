@@ -1,5 +1,7 @@
 import base64
 from datetime import datetime
+
+from millify import millify
 from config.constants import Warframe
 from utils import tools
 from utils import data_manage
@@ -233,24 +235,21 @@ def market_item_desc(data):
     return md + """</span><br>"""
 
 def world_clock_md(data):
-    md = f"""<div> """
+    md = f"""<div style="display:flex;flex-direction:row;align-items:baseline;justify-content:space-evenly;flex-wrap:wrap;gap:10px;margin-left:15px;"> """
     for item in data:
         span = datetime.strptime(item["data"]["expiry"],"%Y-%m-%dT%H:%M:%S.%fZ")-datetime.today()
         if span.total_seconds() >0:
             time = tools.format_timedelta(span,day=False)
         else: time = tools.format_timedelta(datetime.today()-datetime.today(),day=False)
-        md = md + f"""<div style="display:flex;flex-direction:row;align-items:center;justify-content: space-between;">
-                        <div style="display:flex;flex-direction:row;align-items:center;justify-content: space-between;">
-                            <img alt="{item["name"]}" style="width:50px;height:50px;border-radius:10px;padding:5px;" src="{item["image"]}"/>
-                            <div style="display:flex;flex-direction:column;">
+        md = md + f"""<div style="display:flex;flex-direction:column;align-items:center;">
+                            <img alt="{item["name"]}" style="width:100px;height:100px;border-radius:10px;padding:5px;justify-self:center;" src="{item["image"]}"/>
+                            <div style="display:flex;flex-direction:column;padding-bottom:10px;align-items:center;">
                                 <span><b>{item["name"]}:</b></span>
-                                <i style="color: gray;">{time}</i>
+                                <span>{item["data"]["state"].title()} &middot; <i style="color: gray;">{time}</i></span>
                             </div>
-                        </div>
-                        <div>{item["data"]["state"].title()}</div>
-                    </div>
+                       </div>
                     """
-    return md + """<br> </div>"""
+    return md + """<br></div>"""
 
 
 def render_svg(svg,size):
@@ -276,6 +275,9 @@ def riven_auction_md(data,image):
         status = """style="color: #62e579;" """
     else:
         status = """style="color: #b387d9;" """
+        
+    data["item"]["attributes"] = sorted(data["item"]["attributes"],key=lambda x: (x['positive'] == False, len(x['url_name'])))
+        
     for item in data["item"]["attributes"]:
         if item["positive"]:
             sign = "+"
@@ -296,10 +298,10 @@ def riven_auction_md(data,image):
     else: direct_auction = "Buyout"
     price = ""
     if data["buyout_price"] is not None:
-        price = price + f"""<div class="price"> Buyout Price:<span class="price-amount-text">{data["buyout_price"]}{plat_icon}</span></div>"""
+        price = price + f"""<div class="price"> Buyout Price: <span class="price-amount-text">{data["buyout_price"]}{plat_icon}</span></div>"""
     if data["is_direct_sell"] == False:
         price = price + f"""<div class="price"> Starting Price:<span class="price-amount-text">{data["starting_price"]}{plat_icon}</span></div>"""
-    if data["top_bid"] is not None:
+    if data["top_bid"] is not None: 
         price = price + f"""<div class="price"> Top Bid:<span class="price-amount-text">{data["top_bid"]} {plat_icon}</span></div>"""
     
     if data["owner"]["avatar"] is not None:
@@ -307,19 +309,24 @@ def riven_auction_md(data,image):
     md =f""" """
     md = md+f"""
         <div class="card" >
-            <img style="margin-right:10px;rotate: 30deg;" width=50 height=50 src="{image}" alt="{name}">
-            <a class="title" style="color: #ffffff;text-decoration: none;"; href="{Warframe.MARKET.value["base"]}auction/{data["id"]}">{name} {data["item"]["name"].replace("-"," ").title().replace(" ","-")}</a>
+            <img class="aunction-item-img" src="{image}" alt="{name}">
+            <a class="title" href="{Warframe.MARKET.value["base"]}auction/{data["id"]}">{name} {data["item"]["name"].replace("-"," ").title().replace(" ","-")}</a>
             <hr class="solid" style="margin-top:10px;margin-bottom:10px;">
-            <div style="display:flex;justify-content:space-between;">
-                <div class="stats">
-                    {attribute}
+            <div class="price-details">
+                <div class="stat-details">
+                    <div class="stats">
+                        {attribute}
+                    </div>
+                    <div class="details">
+                        MR:<span class="price-amount-text">{data["item"]["mastery_level"]}</span> &nbsp; 
+                        Ranks:<span class="price-amount-text">{data["item"]["mod_rank"]}</span> &nbsp; 
+                        Re-rolls:<span class="price-amount-text">{data["item"]["re_rolls"]}</span> &nbsp; 
+                        Polarity: {polarity}
+                    </div>
                 </div>
-                <div style="align-items:center;">
+                <div class="price-container">
                     {price}
                 </div>
-            </div>
-            <div class="details">
-                MR:<span class="price-amount-text">{data["item"]["mastery_level"]}</span> &nbsp; Ranks:<span class="price-amount-text">{data["item"]["mod_rank"]}</span> &nbsp; Re-rolls:<span class="price-amount-text">{data["item"]["re_rolls"]}</span> &nbsp; Polarity: {polarity}
             </div>
             <hr class="solid" style="margin-top:10px;margin-bottom:10px;">
             <div class="seller">
