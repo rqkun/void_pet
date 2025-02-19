@@ -632,3 +632,20 @@ def get_cycles():
                 },
             ]
     return cycles
+
+def get_rivens_settings():
+    return warframe_market.get_market_riven_items(), warframe_market.get_market_riven_attributes()
+
+def get_rivens(weapon_url_name, buyout_policy=None, positive_stats=None, negative_stats=None,operation=None,re_rolls_min=None,re_rolls_max=None,polarity=None):
+    if buyout_policy == "Buyout":
+        buyout_policy = "direct"
+    elif buyout_policy == "Auction":
+        buyout_policy = "with"
+    else:
+        buyout_policy = None
+    rivens = warframe_market.riven_search(weapon_url_name, buyout_policy, positive_stats, negative_stats,operation,re_rolls_min,re_rolls_max,polarity)
+    return rivens
+
+def get_weapon_by_name(name):
+    name = name.replace("_", " ")
+    return warframe_status.get_weapon_by_name(name)

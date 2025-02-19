@@ -1,3 +1,4 @@
+import base64
 from datetime import datetime
 from config.constants import Warframe
 from utils import tools
@@ -233,18 +234,104 @@ def market_item_desc(data):
 
 def world_clock_md(data):
     md = f"""<div> """
-    #justify-content: space-between;
-    # &middot; 
     for item in data:
+        span = datetime.strptime(item["data"]["expiry"],"%Y-%m-%dT%H:%M:%S.%fZ")-datetime.today()
+        if span.total_seconds() >0:
+            time = tools.format_timedelta(span,day=False)
+        else: time = tools.format_timedelta(datetime.today()-datetime.today(),day=False)
         md = md + f"""<div style="display:flex;flex-direction:row;align-items:center;justify-content: space-between;">
                         <div style="display:flex;flex-direction:row;align-items:center;justify-content: space-between;">
                             <img alt="{item["name"]}" style="width:50px;height:50px;border-radius:10px;padding:5px;" src="{item["image"]}"/>
                             <div style="display:flex;flex-direction:column;">
                                 <span><b>{item["name"]}:</b></span>
-                                <i style="color: gray;">{tools.format_timedelta(datetime.strptime(item["data"]["expiry"],"%Y-%m-%dT%H:%M:%S.%fZ")-datetime.today(),day=False)}</i>
+                                <i style="color: gray;">{time}</i>
                             </div>
                         </div>
                         <div>{item["data"]["state"].title()}</div>
                     </div>
                     """
     return md + """<br> </div>"""
+
+
+def render_svg(svg,size):
+    """Renders the given svg string."""
+    b64 = base64.b64encode(svg.encode('utf-8')).decode("utf-8")
+    html = f"""<img style="filter:invert(100%);" width={size} height={size} """
+    part2 = r'src="data:image/svg+xml;base64,%s"/>' % b64
+    html = html + part2
+    return html
+
+
+def riven_auction_md(data,image):
+    """ Market order custom web element. """
+    if "_and_" in data["item"]["weapon_url_name"]:
+        data["item"]["weapon_url_name"] = data["item"]["weapon_url_name"].replace("_and_", "_&_")
+    plat_icon = f"""<img alt="{Warframe.PLATINUM.value["name"]}" style="width:20px;height:20px;" src="{Warframe.PLATINUM.value["image"]}"/>"""
+    name = data["item"]["weapon_url_name"].replace("_"," ").title()
+    attribute = ""
+    polarity = render_svg(open(f"""components/svgs/{data["item"]["polarity"]}.svg""").read(),20)
+    if data["owner"]["status"] == "offline":
+        status = """style="color: #e44a36;" """
+    elif data["owner"]["status"] == "online":
+        status = """style="color: #62e579;" """
+    else:
+        status = """style="color: #b387d9;" """
+    for item in data["item"]["attributes"]:
+        if item["positive"]:
+            sign = "+"
+            class_c = "pos"
+        else: 
+            sign = "-"
+            class_c = "neg"
+        if "Damage Vs" in item["url_name"].replace("_"," ").title():
+            value = f"""{abs(item["value"]) }x"""
+        else:
+            value = f"""{sign}{abs(item["value"]) }%"""
+        
+        attribute = attribute + f"""<div class="stat-{class_c}">{value} {item["url_name"].replace("_"," ").title()}</div>"""
+    avatar_img = "https://warframe.market/static/assets/user/default-avatar.png"
+    
+    if not data["is_direct_sell"]:
+        direct_auction = "Auction"
+    else: direct_auction = "Buyout"
+    price = ""
+    if data["buyout_price"] is not None:
+        price = price + f"""<div class="price"> Buyout Price:<span class="price-amount-text">{data["buyout_price"]}{plat_icon}</span></div>"""
+    if data["is_direct_sell"] == False:
+        price = price + f"""<div class="price"> Starting Price:<span class="price-amount-text">{data["starting_price"]}{plat_icon}</span></div>"""
+    if data["top_bid"] is not None:
+        price = price + f"""<div class="price"> Top Bid:<span class="price-amount-text">{data["top_bid"]} {plat_icon}</span></div>"""
+    
+    if data["owner"]["avatar"] is not None:
+        avatar_img = Warframe.MARKET.value["static"]+data["owner"]["avatar"]
+    md =f""" """
+    md = md+f"""
+        <div class="card" >
+            <img style="margin-right:10px;rotate: 30deg;" width=50 height=50 src="{image}" alt="{name}">
+            <a class="title" style="color: #ffffff;text-decoration: none;"; href="{Warframe.MARKET.value["base"]}auction/{data["id"]}">{name} {data["item"]["name"].replace("-"," ").title().replace(" ","-")}</a>
+            <hr class="solid" style="margin-top:10px;margin-bottom:10px;">
+            <div style="display:flex;justify-content:space-between;">
+                <div class="stats">
+                    {attribute}
+                </div>
+                <div style="align-items:center;">
+                    {price}
+                </div>
+            </div>
+            <div class="details">
+                MR:<span class="price-amount-text">{data["item"]["mastery_level"]}</span> &nbsp; Ranks:<span class="price-amount-text">{data["item"]["mod_rank"]}</span> &nbsp; Re-rolls:<span class="price-amount-text">{data["item"]["re_rolls"]}</span> &nbsp; Polarity: {polarity}
+            </div>
+            <hr class="solid" style="margin-top:10px;margin-bottom:10px;">
+            <div class="seller">
+                <div class="tag-section">
+                    <span class="auction-tag">{direct_auction}</span>
+                </div>
+                <img src="{avatar_img}" alt="{data["owner"]["ingame_name"]}">
+                <span class="seller-name">{data["owner"]["ingame_name"]}</span>
+                <span class="status" {status}>{data["owner"]["status"].title()} <b>&middot; {data["owner"]["region"].upper()}</b></span>
+            </div>
+        </div>
+        <br>
+    """
+
+    return md

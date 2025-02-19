@@ -25,6 +25,7 @@ def sideNav(current_idx,logo=Warframe.AYA.value):
             ]),
             sac.MenuItem('Market', icon='shop-window'),
             sac.MenuItem('News', icon='newspaper'),
+            sac.MenuItem('Riven', icon='dice-6'),
             sac.MenuItem('Github', icon='github',description="rqkun/void_pet", href='https://github.com/rqkun/void_pet/')
         ], size='xs',variant='left-bar', return_index=True, open_all=True, index=current_idx)
         
@@ -45,9 +46,11 @@ def sideNav(current_idx,logo=Warframe.AYA.value):
             st.switch_page(AppPages.MARKET.value)
         if selection == 5:
             st.switch_page(AppPages.NEWS.value)
+        if selection == 6:
+            st.switch_page(AppPages.RIVENS.value)
         
         
-def paginations(items,num_of_row=2):
+def paginations(items,num_of_row=2,items_per_row = 5):
     """ Pagination for pages.
 
     Args:
@@ -57,7 +60,6 @@ def paginations(items,num_of_row=2):
     Returns:
         list, int: item list for page, number of item per row.
     """
-    items_per_row = 5
     items_per_page = items_per_row * num_of_row
     total_items = len(items)
 

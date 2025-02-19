@@ -99,6 +99,7 @@ class AppPages(Enum):
     # ERROR = "components/pages/error.py"
     # AYA = "components/pages/aya.py"
     NEWS = "components/pages/news.py"
+    RIVENS = "components/pages/riven.py"
     MARKET = "components/pages/market.py"
     VARZIA = "components/pages/varzia.py"
     BARO = "components/pages/baro.py"

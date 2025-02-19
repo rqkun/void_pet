@@ -1,6 +1,7 @@
 
 import asyncio
 import random
+import re
 import requests
 import urllib
 from config.constants import Warframe
@@ -205,3 +206,21 @@ async def fetch_all_items(item_ids):
         results = await asyncio.gather(*tasks, return_exceptions=True)  # Continue on failure
         
         return [res for res in results if res is not None] # Remove failed requests
+
+def get_weapon_by_name(name):
+    print(name)
+    if " and " in name:
+        name = name.replace(" and ", " & ")
+    name = re.sub(r'\s*\(.*?\)', '', name)
+    encoded_name = urllib.parse.quote(name)
+    request_ref = Warframe.STATUS.value["api"]+f"/weapons/search/{encoded_name}?by=name&remove=patchlogs"
+    request_object = requests.get(request_ref)
+    raise_detailed_error(request_object)
+    print(request_ref)
+    if len(request_object.json()) < 1:
+        return None
+    if len(request_object.json()) > 1:
+        for item in request_object.json():
+            if item["name"].lower() == name:
+                return item
+    return request_object.json()[0]
