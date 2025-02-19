@@ -188,9 +188,8 @@ def invasions_reward_info_md(data):
     for item,amount in data.items():
         image = data_manage.get_reward_image(item)
         md = md + f"""
-            {amount:,}
             <img alt="{item}" style="width:30px;height:30px;" src="{image}" title="{item}"/>
-            <span>{item}</span><br/> """
+            <span>{amount:,}x {item}</span><br/> """
     return md
 
 def market_order_md(data):
