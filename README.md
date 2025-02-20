@@ -11,7 +11,9 @@ Checkout the website [here](https://rqkun-voidpet.streamlit.app/)
 
 - **In-Game Event Tracking**: Stay updated with current and upcoming events in Warframe.
 - **Vendor Inventory Lookup**: View the latest inventory of in-game vendors like Baro Ki'Teer.
-- **Market Price Analysis**: Check real-time market prices for items, including seller information and availability.
+- **Market Price Checkup**: Check real-time market prices for items, including seller information and availability.
+- **News Updates**: Check news, stream announcements, updates.
+- **Riven mods Auction Checkup**: Check real-time market prices for rivens, including auctions and buyouts.
 - **User-Friendly Interface**: Built with Streamlit for an intuitive, lightweight, and responsive user experience.
 
 ---
