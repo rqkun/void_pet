@@ -96,9 +96,13 @@ def get_min_status_plat(data,status):
     Returns:
         object: The lowest price order object.
     """
+    if status is None or status == "":
+        status = ["offline","ingame","online"]
+    status_priority = {"ingame": 0, "online": 1, "offline": 2}
+    
     filtered_sorted_orders = sorted(
-    [order for order in data if (order["user"]["status"] == status and order['order_type'] == "sell") ],
-    key=lambda x: x["platinum"]
+        [order for order in data if ((order["user"]["status"] in status) and order['order_type'] == "sell")],
+        key=lambda x: (status_priority.get(x["user"]["status"], 3), x["platinum"])
     )
     return filtered_sorted_orders
 

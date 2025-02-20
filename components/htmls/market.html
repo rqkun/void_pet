@@ -8,34 +8,34 @@
 .listing-container {
     width: 100%;
     border-radius: 5px;
-    align-items: center;
-    margin-top: -30px;
+    align-items: flex-start;
 }
 
 .listing-content {
     display: grid;
-    grid-template-columns: auto 1fr 1fr auto auto auto;
+    grid-template-columns: auto 1fr auto 0.5fr auto auto;
     align-items: center;
     background-color: #262730;
     border-radius: 0.5rem;
-    margin-top: 1rem;
-    height: 38px;
+    min-height: 38px;
     gap: 8px;
-    padding: 1px;
-
+    padding: 4px;
 }
 /* Profile section */
 .profile-section {
     display: flex;
     align-items: center;
     text-decoration: none;
+    justify-self: flex-start;
 }
+
 
 .profile-link {
     display: flex;
     align-items: center;
     gap: 8px;
-    text-decoration: none;  /* Remove underline */
+    text-decoration: none; 
+    flex-wrap: nowrap; /* Remove underline */
 }
 
 .profile-link:hover {
@@ -55,23 +55,43 @@
     gap: 8px;
 }
 
-/* Status section */
-.status-text {
-    color: #b387d9;
-    font-size: 14px;
+.quantity-section {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    justify-self: right;
 }
-
+.reputation-section {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    justify-self: right;
+    
+}
+.rank-section {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    justify-self: right;
+    
+}
 /* Reputation section */
 .reputation-score {
     color: #ffffff;
-    font-size: 14px;
 }
 
+.quantity-amount {
+    color: #ffffff;
+}
+.rank-amount {
+    color: #8d8d8d;
+}
 /* Price section */
 .price-section {
     display: flex;
     align-items: center;
     gap: 4px;
+    justify-self: flex-end;
 }
 
 .price-amount {
@@ -86,18 +106,22 @@
 }
 
 /* WTS tag */
-.wts-tag {
-    background-color: #FF4B4B;
-    color: #ffffff;
-    padding: 4px 8px;
-    border-radius: 4px;
+.status-tag {
+    padding-bottom: 4px;
     text-transform: uppercase;
     font-size: 12px;
     display: inline-block;
-    /* transform: rotate(-90deg);  Counter-clockwise rotation */
-    transform-origin: center;
 }
 
+.online-tag {
+    color: #62e579;
+}
+.offline-tag {
+    color: #FF4B4B;
+}
+.ingame-tag {
+    color: #b387d9;
+}
 /* Spacing between sections */
 .profile-section,
 .status-section,
@@ -107,5 +131,52 @@
 .tag-section {
     margin: 0 8px;
 }
+/* Smartphones (Android & iPhone) */
+@media (max-width: 480px) {
+    .flex-font {
+        font-size: 12px; /* Smaller text for small screens */
+    }
+    .platinum-icon {
+        width: 10px;
+        height: 10px;
+    }
+    .profile-name {
+        display: none;
+    }
+    .status-tag{
+        width: 3ch;
+        overflow: hidden;
+        white-space: nowrap;
+        margin-top: 0.6rem;
+    }
+    .listing-content {
+        grid-template-columns: auto 0.4fr auto 0.5fr auto auto;
+        padding: 1px;
+    }
+}
 
+/* Tablets (iPads, some Android tablets) */
+@media (min-width: 481px) and (max-width: 1024px) {
+    .flex-font {
+        font-size: 14px; /* Slightly larger for tablets */
+    }
+    .platinum-icon {
+        width: 10px;
+        height: 10px;
+    }
+}
+
+/* Laptops & Small Desktops */
+@media (min-width: 1025px) and (max-width: 1440px) {
+    .flex-font {
+        font-size: 14px; /* Default size */
+    }
+}
+
+/* Large Screens (4K, ultrawide monitors) */
+@media (min-width: 1441px) {
+    .flex-font {
+        font-size: 16px; /* Bigger text for large screens */
+    }
+}
 </style>

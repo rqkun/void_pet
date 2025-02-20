@@ -78,7 +78,7 @@ class AppLabels(Enum):
     WIKI = "Wiki"
     REPORT = "Report"
     REPUTATION = "Reputation threshold: "
-    NUMBER_OF_TRADES = "Number of Trades: "
+    NUMBER_OF_TRADES = "Number of trades per page: "
     PRIME_SELECT = "Choose up to 2 Primes."
     RELIC_SELECT = "Choose a relic. "
     REWARD_SELECT = "Choose a reward to inspect: "

@@ -1,4 +1,5 @@
 import math
+import uuid
 import streamlit as st
 from config.constants import AppIcons, AppPages, Warframe
 import streamlit_antd_components as sac
@@ -100,3 +101,7 @@ def varzia_style():
 
 def market_style():
     inject_style("market")
+
+
+def set_divider():
+    sac.divider(label='item', icon='diagram-2-fill', align='center', color='gray')

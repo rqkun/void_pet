@@ -192,9 +192,15 @@ def invasions_reward_info_md(data):
             <span>{amount:,} {item}</span><br/> """
     return md
 
-def market_order_md(data):
+def market_order_md(data,item):
     """ Market order custom web element. """
     img = "https://warframe.market/static/assets/user/default-avatar.png"
+
+    if "mod_rank" in data:
+        if "mod_max_rank" in item:
+            rank = f"""of {item["mod_max_rank"]}"""
+        mod_rank = f"""<span class="rank-amount flex-font">  Rank {data["mod_rank"]} {rank}</span>"""
+    else: mod_rank = ""
     if data["user"]["avatar"] is not None:
         img = Warframe.MARKET.value["static"]+data["user"]["avatar"]
     md =f"""<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"><div class="row"> """
@@ -202,22 +208,23 @@ def market_order_md(data):
     <div class="listing-container">
         <div class="listing-content">
             <div class="tag-section">
-                <span class="wts-tag">wts</span>
+                <span class="status-tag {data["user"]["status"]}-tag">{data["user"]["status"].title()}</span>
             </div>
             <div class="profile-section">
                 <a class="profile-link" style="text-decoration: none;" href="{Warframe.MARKET.value["base"]}profile/{data["user"]["ingame_name"]}">
                     <img class="profile-image" style="text-decoration: none;" alt="{data["user"]["ingame_name"]}" src="{img}">
-                    <span class="profile-name" style="text-decoration: none;" >{data["user"]["ingame_name"]}</span>
+                    <span class="profile-name flex-font" style="text-decoration: none;" ><b>{data["user"]["ingame_name"]}</b></span>
                 </a>
             </div>
+            <div class="rank-section">{mod_rank}</div>
             <div class="reputation-section">
-                <span class="reputation-score">{data["user"]["reputation"]} <i class="fa fa-smile-o"></i></span>
+                <span class="reputation-score flex-font">{data["user"]["reputation"]} <i class="fa fa-smile-o"></i></span>
             </div>
-            <div class="reputation-section">
-                <span class="reputation-score">{data["quantity"]} <i class="fa fa-cubes"></i></span>
+            <div class="quantity-section">
+                <span class="quantity-amount flex-font">{data["quantity"]} <i class="fa fa-cubes"></i></span>
             </div>
             <div class="price-section">
-                <span class="price-amount">{data["platinum"]} <img alt="{Warframe.PLATINUM.value["name"]}" style="width:20px;height:20px;" src="{Warframe.PLATINUM.value["image"]}"/></span>
+                <span class="price-amount flex-font">{data["platinum"]} <img alt="{Warframe.PLATINUM.value["name"]}" style="width:20px;height:20px;" src="{Warframe.PLATINUM.value["image"]}"/></span>
             </div>
         </div>
     </div>
