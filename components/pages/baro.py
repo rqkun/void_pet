@@ -9,24 +9,35 @@ from utils.tools import filter_data, format_timedelta
 
 def store_baro():
     """ Loading data. """
-    full_data=data_manage.get_baro()
+    _,middle,_ = st.columns([2,3,2],vertical_alignment="center")
+    with middle,st.spinner(AppMessages.LOAD_DATA.value,show_time=True,_cache=False):
+        full_data=data_manage.get_baro()
     if full_data["active"] is False:
         date = datetime.strptime(full_data["activation"],"%Y-%m-%dT%H:%M:%S.%fZ")-datetime.today()
-        st.session_state.not_baro_time = AppMessages.baro_time_message(format_timedelta(date))
-        st.switch_page(AppPages.HOME.value)
-    elif full_data is not None:
+        items= None
+        alert_message = AppMessages.baro_time_message(format_timedelta(date))
+    else:
         items = data_manage.preload_data(full_data["inventory"])
-        return items
-    else: return None
+        date = datetime.strptime(full_data["expiry"],"%Y-%m-%dT%H:%M:%S.%fZ")-datetime.today()
+        alert_message = f"""Baro will leave in {format_timedelta(date)}"""
 
-custom.sideNav(2,Warframe.DUCAT.value)
+    st.session_state.baro_alert = {
+        "active" : full_data["active"],
+        "message" : alert_message
+    }
+    
+    return items
+
+custom.sideNav(2)
+custom.reject_url_param()
 custom.hover_effect()
-items = store_baro()
-if items is None:
-    st.error("Warframe Status API is current down!",icon=AppIcons.ERROR.value)
-else:
-    left,mid,right =st.columns([1,7,1],vertical_alignment="center")
 
+items = store_baro()
+if 'baro_alert' in st.session_state:
+    custom.baro_time_alert(st.session_state.baro_alert["message"])
+
+if items is not None:
+    left,mid,right =st.columns([1,7,1],vertical_alignment="center")
     with left.popover(":material/filter_list:",use_container_width=True):
         categories = ["Warframe", "Weapon", "Relic", "Others"]
         selected_categories= st.pills("Pick the desired item type.",categories,selection_mode="multi")
@@ -59,3 +70,7 @@ else:
         with list_col[idx%items_per_row]:
             if item is not None:
                 st.markdown(item["html"],unsafe_allow_html=True)
+else:
+    with st.container(border=False):
+        st.html("<br><br>")
+        custom.empty_result(f"""items.""")

@@ -14,6 +14,10 @@ def raise_detailed_error(request_object):
         request_object.raise_for_status()
     except requests.exceptions.HTTPError as error:
         raise requests.exceptions.HTTPError(error, request_object.text)
+    except requests.exceptions.Timeout as error:
+        raise requests.exceptions.Timeout("The request timed out")
+    except requests.exceptions.ConnectionError as erro:
+        raise requests.exceptions.ConnectionError(error, request_object.text)
 
 
 def get_image(path) -> bytes:
@@ -31,3 +35,5 @@ def get_image(path) -> bytes:
         return BytesIO(request_object.content)
     except requests.exceptions.HTTPError as err:
         return None
+
+    

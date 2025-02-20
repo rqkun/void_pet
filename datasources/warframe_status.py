@@ -17,7 +17,7 @@ def world_state_request():
         dict: World state data
     """
     request_ref = Warframe.STATUS.value["api"]+"/pc?language=en"
-    request_object = requests.get(request_ref)
+    request_object = requests.get(request_ref,timeout=5)
     raise_detailed_error(request_object)
     return request_object.json()
 

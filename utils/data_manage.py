@@ -684,12 +684,12 @@ def get_rivens(weapon_url_name,
     rivens = warframe_market.riven_search(weapon_url_name, buyout_policy, positive_stats, negative_stats,operation,re_rolls_min,re_rolls_max,polarity)
     filtered_list =[]
     if status is not None:
-        
-        if len(rivens) >0:
-            for item in rivens:
-                if status in item["owner"]["status"]:
-                    filtered_list.append(item)
-            return filtered_list
+        if rivens is not None:
+            if len(rivens) >0:
+                for item in rivens:
+                    if status in item["owner"]["status"]:
+                        filtered_list.append(item)
+                return filtered_list
     return rivens
 
 def get_weapon_by_name(name):

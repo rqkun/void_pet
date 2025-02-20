@@ -1,3 +1,4 @@
+import requests
 import streamlit as st
 from components.markdowns import hide_streamlit_header
 from config.constants import AppIcons, AppPages
@@ -8,17 +9,21 @@ hide_streamlit_style = hide_streamlit_header()
 
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
-if 'not_baro_time' in st.session_state:
-    st.toast(st.session_state.not_baro_time)
-    del st.session_state.not_baro_time
-
 home_page = st.Page(AppPages.HOME.value)
 baro_page = st.Page(AppPages.BARO.value)
 regal_page = st.Page(AppPages.VARZIA.value)
 news_page = st.Page(AppPages.NEWS.value)
 rivens_page = st.Page(AppPages.RIVENS.value)
 market_page = st.Page(AppPages.MARKET.value)
-authenticated_pages = [home_page,baro_page,regal_page,market_page,news_page,rivens_page]
+error_page = st.Page(AppPages.ERROR.value,url_path="/500")
+notfound_page = st.Page(AppPages.NOTFOUND.value,url_path="/404")
+authenticated_pages = [home_page,baro_page,regal_page,market_page,news_page,rivens_page,error_page,notfound_page]
 pg = st.navigation(authenticated_pages,position="hidden")
 st.html("<style>[data-testid='stHeaderActionElements'] {display: none;}</style>")
-pg.run()
+try:
+    pg.run()
+except (requests.exceptions.HTTPError,requests.exceptions.Timeout,requests.exceptions.ConnectionError) as error:
+    #requests.exceptions.HTTPError
+    if "rivens" in st.session_state:
+        del st.session_state.rivens
+    st.switch_page(AppPages.ERROR.value)

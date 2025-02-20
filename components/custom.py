@@ -1,11 +1,9 @@
 import math
 import streamlit as st
-import components.markdowns
 from config.constants import AppIcons, AppPages, Warframe
 import streamlit_antd_components as sac
-import components
 
-def sideNav(current_idx,logo=Warframe.AYA.value):
+def sideNav(current_idx):
     """ Custom Sidebar navigation.
 
     Args:
@@ -13,9 +11,6 @@ def sideNav(current_idx,logo=Warframe.AYA.value):
         logo (enum, optional): current page logo. Defaults to Warframe.AYA.value.
     """
     with st.sidebar:
-        
-        # st.markdown(components.markdowns.image_md("https://github.com/rqkun/void_pet/","Void Pet",source=logo["image"],caption="collapse",size="20%"),unsafe_allow_html=True)
-        # st.write("")
         
         selection = sac.menu([
             sac.MenuItem('Home', icon='house-fill'),
@@ -84,3 +79,14 @@ def hover_dialog():
 def market_item_style():
     """ Import custom styles for market page."""
     st.html("components/htmls/market.html")
+    
+def reject_url_param():
+    """ Redirect to 404 page when there's query_params. """
+    if len(st.query_params.to_dict())>0:
+        st.switch_page(AppPages.NOTFOUND.value)
+
+def empty_result(item):
+    sac.result(label='Empty', description=f"""Currently there's no {item}""", status='empty')
+
+def baro_time_alert(message):
+    sac.alert(label=f"{message}", banner=True,size='xs',variant='outline', color='#4682b4', icon=True, closable=True)

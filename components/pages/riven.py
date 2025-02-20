@@ -7,6 +7,7 @@ import streamlit_antd_components as sac
 
 
 custom.sideNav(6)
+custom.reject_url_param()
 custom.hover_effect()
 
 
@@ -58,7 +59,7 @@ reroll_min = left.number_input("Reroll min",min_value=0,value="min",step=1)
 reroll_max = right.number_input("Reroll max",min_value=0,step=1,value=100)
 
 container = search_form.container(border=False)
-
+result_container = st.container(border=False)
 
 
 if submit:
@@ -77,6 +78,8 @@ if submit:
         
             if "rivens" in st.session_state:
                 del st.session_state.rivens
+            item = data_manage.get_weapon_by_name(weapon[0]['item_name'])
+            image = data_manage.get_image_url(item["uniqueName"],True)
             rivens = data_manage.get_rivens(weapon[0]["url_name"],
                                                 buyout_policy=None,
                                                 positive_stats=positive_stats, 
@@ -88,23 +91,21 @@ if submit:
             if rivens is not None:
                 st.session_state.rivens = {
                     "auctions": rivens,
-                    "item_name": weapon[0]["item_name"],
+                    "item": item,
+                    "image": image,
                     }
             else:
-                status_placeholder.warning("No Rivens found.",icon=AppIcons.WARNING.value)
+                with result_container:
+                    st.html("<br><br>")
+                    custom.empty_result(f"""{weapon[0]['item_name']} Riven with current filters.""")
 
 if 'rivens' in st.session_state:
     st.html("components/htmls/auction.html")
     paged_items, items_per_row = custom.paginations(st.session_state.rivens['auctions'],10,items_per_row=1)
-    # st.json(paged_items)
-    with container, st.spinner("",show_time=True):
-        if 'item_name' in st.session_state['rivens']:
-            item = data_manage.get_weapon_by_name(st.session_state['rivens']['item_name'])
-            image = data_manage.get_image_url(item["uniqueName"],True)
     for idx, auction in enumerate(iterable=paged_items):
         if auction is not None:
-            st.markdown(markdowns.riven_auction_md(auction,image),unsafe_allow_html=True)
-            name = f"""{st.session_state['rivens']['item_name']} {auction["item"]["name"].replace("-"," ").title().replace(" ","-")}"""
+            st.markdown(markdowns.riven_auction_md(auction,st.session_state['rivens']['image']),unsafe_allow_html=True)
+            name = f"""{st.session_state['rivens']['item']["name"]} {auction["item"]["name"].replace("-"," ").title().replace(" ","-")}"""
             whisper = f"""/w {auction["owner"]["ingame_name"]} Hi! I want to buy: "{name}" riven. """
             st.code(whisper,language="md",wrap_lines=True)
 

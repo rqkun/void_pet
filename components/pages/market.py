@@ -7,7 +7,8 @@ from utils import data_manage, tools
 from utils.tools import check_pattern_prime_set
 from utils.tools import check_pattern_set
 
-custom.sideNav(4,Warframe.PLATINUM.value)
+custom.sideNav(4)
+custom.reject_url_param()
 custom.hover_effect()
 _,middle,_ = st.columns([2,3,2],vertical_alignment="center")
 
@@ -50,13 +51,17 @@ if option != None and len(option)>0:
         market_data = tools.market_filter(data_manage.call_market(option[0]["url_name"]),rep,status="ingame")
         filtered_data = tools.get_min_status_plat(market_data,"ingame")[:limit]
 
+    if len(filtered_data) >0:
         for order in filtered_data:
             left,right = st.columns([4,1],vertical_alignment="center")
             left.markdown(markdowns.market_order_md(order),unsafe_allow_html=True)
             with right.popover("Copy",use_container_width=True,icon=":material/content_copy:"):
                 whisper = f"""/w {order["user"]["ingame_name"]} Hi! I want to buy: "{option[0]["item_name"]}" for {order["platinum"]} platinum. (warframe.market)"""
                 st.code(whisper,language="md",wrap_lines=True)
-        
+    else:
+        with st.container(border=False):
+            st.html("<br>")
+            custom.empty_result(f"""{option[0]["item_name"]} with current filters.""")
             
 
         
