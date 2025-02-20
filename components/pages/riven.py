@@ -3,12 +3,11 @@ import streamlit as st
 from components import custom, markdowns
 from config.constants import AppIcons, AppMessages
 from utils import data_manage
-import streamlit_antd_components as sac
 
 
 custom.sideNav(6)
 custom.reject_url_param()
-custom.hover_effect()
+custom.hover_style()
 
 
 _,middle,_ = st.columns([2,3,2],vertical_alignment="center")
@@ -63,7 +62,6 @@ result_container = st.container(border=False)
 
 
 if submit:
-    # st.json(weapon)
     if len(weapon) ==0:
         status_placeholder.warning("Please select a weapon.",icon=AppIcons.WARNING.value)
     else:
@@ -100,7 +98,7 @@ if submit:
                     custom.empty_result(f"""{weapon[0]['item_name']} Riven with current filters.""")
 
 if 'rivens' in st.session_state:
-    st.html("components/htmls/auction.html")
+    custom.auction_style()
     paged_items, items_per_row = custom.paginations(st.session_state.rivens['auctions'],10,items_per_row=1)
     for idx, auction in enumerate(iterable=paged_items):
         if auction is not None:

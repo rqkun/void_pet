@@ -7,7 +7,7 @@ from utils.tools import format_timedelta
 
 custom.sideNav(5)
 custom.reject_url_param()
-custom.hover_effect()
+custom.hover_style()
 _,middle,_ = st.columns([2,3,2],vertical_alignment="center")
 
 with middle,st.spinner(AppMessages.LOAD_DATA.value,show_time=True,_cache=False):

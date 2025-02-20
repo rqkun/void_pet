@@ -18,7 +18,7 @@ def store_regal():
 
 custom.sideNav(3)
 custom.reject_url_param()
-custom.hover_effect()
+custom.hover_style()
 items = store_regal()
 
 left,mid,right =st.columns([1,7,1],vertical_alignment="center")
@@ -50,7 +50,7 @@ with middle,st.spinner("",show_time=True,_cache=False):
 
 list_col = st.columns(items_per_row)
 start_idx = 0
-custom.hover_dialog()
+custom.varzia_style()
 for idx, item in enumerate(iterable=paged_items[start_idx:]):
     with list_col[idx%items_per_row]:
         if item is not None:

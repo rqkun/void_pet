@@ -43,8 +43,8 @@ def sideNav(current_idx):
             st.switch_page(AppPages.NEWS.value)
         if selection == 6:
             st.switch_page(AppPages.RIVENS.value)
-        
-        
+
+
 def paginations(items,num_of_row=2,items_per_row = 5):
     """ Pagination for pages.
 
@@ -68,25 +68,35 @@ def paginations(items,num_of_row=2,items_per_row = 5):
     paged_items = items[start_index:end_index]
     return paged_items, items_per_row
 
-def hover_effect():
-    """ Import custom hover effect for images."""
-    st.html("components/htmls/hover.html")
 
-def hover_dialog():
-    """ Import custom hover effect for dialog."""
-    st.html("components/htmls/hover_dialog.html")
-    
-def market_item_style():
-    """ Import custom styles for market page."""
-    st.html("components/htmls/market.html")
-    
 def reject_url_param():
     """ Redirect to 404 page when there's query_params. """
     if len(st.query_params.to_dict())>0:
         st.switch_page(AppPages.NOTFOUND.value)
 
+
 def empty_result(item):
     sac.result(label='Empty', description=f"""Currently there's no {item}""", status='empty')
 
+
 def baro_time_alert(message):
     sac.alert(label=f"{message}", banner=True,size='xs',variant='outline', color='#4682b4', icon=True, closable=True)
+
+
+def inject_style(filename):
+    st.html(f"""components/htmls/{filename}.html""")
+
+def auction_style():
+    inject_style("auction")
+
+
+def hover_style():
+    inject_style("hover")
+
+
+def varzia_style():
+    inject_style("varzia")
+
+
+def market_style():
+    inject_style("market")

@@ -30,7 +30,7 @@ def store_baro():
 
 custom.sideNav(2)
 custom.reject_url_param()
-custom.hover_effect()
+custom.hover_style()
 
 items = store_baro()
 if 'baro_alert' in st.session_state:
@@ -65,7 +65,7 @@ if items is not None:
 
     list_col = st.columns(items_per_row)
     start_idx = 0
-    custom.hover_dialog()
+    custom.varzia_style()
     for idx, item in enumerate(iterable=paged_items[start_idx:]):
         with list_col[idx%items_per_row]:
             if item is not None:
