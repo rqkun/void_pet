@@ -9,9 +9,9 @@ Checkout the website [here](https://rqkun-voidpet.streamlit.app/)
 
 ## Features
 
-- **In-Game Event Tracking**: Stay updated with current and upcoming events in Warframe. (WIP)
+- **In-Game Event Tracking**: Stay updated with current and upcoming events in Warframe.
 - **Vendor Inventory Lookup**: View the latest inventory of in-game vendors like Baro Ki'Teer.
-- **Market Price Analysis**: Check real-time market prices for items, including trends and availability.
+- **Market Price Analysis**: Check real-time market prices for items, including seller information and availability.
 - **User-Friendly Interface**: Built with Streamlit for an intuitive, lightweight, and responsive user experience.
 
 ---
@@ -61,7 +61,7 @@ Ensure you have the following installed:
 3. Use the provided interface to:
    - View live in-game events.
    - Check vendor inventories.
-   - From vendor inventories, check out item details and view their market prices.
+   - Check out items market prices.
 
 ---
 
@@ -72,7 +72,7 @@ void-pet/
 ├── app.py              # Main application file
 ├── components/         # Reusable UI components
 ├── config/             # Constants
-├── datasources/        # Static Files
+├── datasources/        # Data related files 
     ├── images/         # Static image files
     └── exports/        # Downloaded JSON Exports
 ├── utils/              # Utility functions
@@ -85,9 +85,9 @@ void-pet/
 ## APIs Used
 
 1. **[Warframe Status API](https://docs.warframestat.us/)**:
-   - Provides data on in-game events, alerts, and fissures.
+   - Provides data on in-game events, alerts and vendors.
 
-2. **[Warframe.market API](https://warframe.market/)**:
+2. **[Warframe.market API](https://warframe.market/api_docs/)**:
    - Enables retrieval of real-time item prices and market trends.
 
 ---
