@@ -66,4 +66,5 @@ if __name__ == "__main__":
     for item in file_list:
         item = item.replace(" ","")
         write_manifest(item)
+    print(f"Successfully completed task.")
     
