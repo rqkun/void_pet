@@ -1,15 +1,15 @@
 import streamlit as st
 from components import custom,markdowns
 from datetime import datetime
-from config.constants import AppIcons
+from config.constants import AppIcons, AppMessages
 from utils import data_manage
 from utils.tools import format_timedelta
 
 custom.sideNav(5)
 custom.hover_effect()
-_,middle,_ = st.columns([3,2,3],vertical_alignment="center")
+_,middle,_ = st.columns([2,3,2],vertical_alignment="center")
 
-with middle,st.spinner("",show_time=True,_cache=False):
+with middle,st.spinner(AppMessages.LOAD_DATA.value,show_time=True,_cache=False):
     news = data_manage.get_news()
 
 for item in news:

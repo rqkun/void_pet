@@ -211,10 +211,10 @@ def market_order_md(data):
                 </a>
             </div>
             <div class="reputation-section">
-                <span class="reputation-score">{data["user"]["reputation"]} <i class="fa fa-heart-o"></i></span>
+                <span class="reputation-score">{data["user"]["reputation"]} <i class="fa fa-smile-o"></i></span>
             </div>
             <div class="reputation-section">
-                <span class="reputation-score">{data["quantity"]} <i class="fa fa-inbox"></i></span>
+                <span class="reputation-score">{data["quantity"]} <i class="fa fa-cubes"></i></span>
             </div>
             <div class="price-section">
                 <span class="price-amount">{data["platinum"]} <img alt="{Warframe.PLATINUM.value["name"]}" style="width:20px;height:20px;" src="{Warframe.PLATINUM.value["image"]}"/></span>
@@ -319,7 +319,7 @@ def riven_auction_md(data,image):
                         MR:<span class="price-amount-text">{data["item"]["mastery_level"]}</span> &nbsp; 
                         Ranks:<span class="price-amount-text">{data["item"]["mod_rank"]}</span> &nbsp; 
                         Re-rolls:<span class="price-amount-text">{data["item"]["re_rolls"]}</span> &nbsp; 
-                        Polarity: {polarity}
+                        Polarity: {polarity} {data["item"]["polarity"].title()}
                     </div>
                 </div>
                 <div class="price-container">

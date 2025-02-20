@@ -9,7 +9,10 @@ from utils.tools import check_pattern_set
 
 custom.sideNav(4,Warframe.PLATINUM.value)
 custom.hover_effect()
-options = data_manage.get_all_tradables()["payload"]["items"]
+_,middle,_ = st.columns([2,3,2],vertical_alignment="center")
+
+with middle,st.spinner(AppMessages.LOAD_DATA.value,show_time=True,_cache=False):
+    options = data_manage.get_all_tradables()["payload"]["items"]
 left,mid,right = st.columns([1,5,1],vertical_alignment="center")
 with left.popover(":material/settings:",use_container_width=True):
     rep = st.number_input(AppLabels.REPUTATION.value,0,step=1)

@@ -10,13 +10,12 @@ custom.sideNav(6)
 custom.hover_effect()
 
 
-_,middle,_ = st.columns([3,2,3],vertical_alignment="center")
+_,middle,_ = st.columns([2,3,2],vertical_alignment="center")
 
 with middle,st.spinner(AppMessages.LOAD_DATA.value,show_time=True,_cache=False):
     riven_items, riven_attributes = data_manage.get_rivens_settings()
 status_placeholder = st.empty()
 search_form = st.expander("Search",expanded=True,icon=AppIcons.INSPECT.value).form("riven_search_form",clear_on_submit=False,border=False)
-container = st.container(border=False)
 left,right=search_form.columns([1,1],vertical_alignment="top")
 weapon = left.multiselect(
     "Select a weapon",
@@ -58,7 +57,7 @@ left,right=adv_setting.columns([1,1],vertical_alignment="center")
 reroll_min = left.number_input("Reroll min",min_value=0,value="min",step=1)
 reroll_max = right.number_input("Reroll max",min_value=0,step=1,value=100)
 
-
+container = search_form.container(border=False)
 
 
 
