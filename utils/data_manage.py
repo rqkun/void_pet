@@ -742,6 +742,9 @@ def get_relics():
         for item in relics:
             if item["tradable"] == False or "Intact" not in item["name"]:
                 continue
+            item = extract_relic_rewards(item)
+            if item is None:
+                continue
             relic_list.append(item)
         return relic_list
 
@@ -769,9 +772,6 @@ def filter_relic(data,rewards,types,tags,resurgent_data=None):
     is_vaulted = None if ignore_vaulted else (True if tags[0] else False)
 
     for item in data:
-        item = extract_relic_rewards(item)
-        if item is None:
-            continue
         conditions = []
 
         # Apply vaulted filter if not ignored
@@ -788,6 +788,7 @@ def filter_relic(data,rewards,types,tags,resurgent_data=None):
             continue
 
         # Filter by type
+        print(item)
         if item["name"].startswith(type_map):
             filtered_relics.append(item)
 

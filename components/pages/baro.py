@@ -48,7 +48,7 @@ if items is not None:
 
     if right.button(AppIcons.SYNC.value,type="primary",use_container_width=True, help="Force reload data."):
         data_manage.clear_cached_item_call()
-        st.switch_page(AppPages.VARZIA.value)
+        st.switch_page(AppPages.BARO.value)
 
     _,middle,_ = st.columns([3,2,3],vertical_alignment="center")
 
