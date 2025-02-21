@@ -7,7 +7,7 @@ from utils import data_manage
 
 custom.sideNav(6)
 custom.reject_url_param()
-custom.hover_style()
+custom.image_style()
 
 
 _,middle,_ = st.columns([2,3,2],vertical_alignment="center")
@@ -86,26 +86,27 @@ if submit:
                                                 re_rolls_min=reroll_min,
                                                 re_rolls_max=reroll_max,
                                                 polarity=polarity,status=status)
-            if rivens is not None:
-                st.session_state.rivens = {
-                    "auctions": rivens,
-                    "item": item,
-                    "image": image,
-                    }
-            else:
-                with result_container:
-                    st.html("<br><br>")
-                    custom.empty_result(f"""{weapon[0]['item_name']} Riven with current filters.""")
+
+            st.session_state.rivens = {
+                "auctions": rivens,
+                "item": item,
+                "image": image,
+                }
 
 if 'rivens' in st.session_state:
-    custom.auction_style()
-    paged_items, items_per_row = custom.paginations(st.session_state.rivens['auctions'],10,items_per_row=1)
-    for idx, auction in enumerate(iterable=paged_items):
-        if auction is not None:
-            st.markdown(markdowns.riven_auction_md(auction,st.session_state['rivens']['image']),unsafe_allow_html=True)
-            name = f"""{st.session_state['rivens']['item']["name"]} {auction["item"]["name"].replace("-"," ").title().replace(" ","-")}"""
-            whisper = f"""/w {auction["owner"]["ingame_name"]} Hi! I want to buy: "{name}" riven. """
-            st.code(whisper,language="md",wrap_lines=True)
+    if st.session_state.rivens['auctions'] is None or len(st.session_state.rivens['auctions']) ==0:
+        st.write(" ")
+        custom.empty_result(f"""Riven with current filters.""")
+    else:
+        custom.auction_style()
+        paged_items, items_per_row = custom.paginations(st.session_state.rivens['auctions'],10,items_per_row=1)
+        
+        for idx, auction in enumerate(iterable=paged_items):
+            if auction is not None:
+                st.markdown(markdowns.riven_auction_md(auction,st.session_state['rivens']['image']),unsafe_allow_html=True)
+                name = f"""{st.session_state['rivens']['item']["name"]} {auction["item"]["name"].replace("-"," ").title().replace(" ","-")}"""
+                whisper = f"""/w {auction["owner"]["ingame_name"]} Hi! I want to buy: "{name}" riven. """
+                st.code(whisper,language="md",wrap_lines=True)
 
 
 

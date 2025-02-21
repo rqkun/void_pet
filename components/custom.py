@@ -91,8 +91,8 @@ def auction_style():
     inject_style("auction")
 
 
-def hover_style():
-    inject_style("hover")
+def image_style():
+    inject_style("image")
 
 
 def varzia_style():

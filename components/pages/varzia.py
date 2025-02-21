@@ -18,7 +18,7 @@ def store_regal():
 
 custom.sideNav(3)
 custom.reject_url_param()
-custom.hover_style()
+custom.image_style()
 items = store_regal()
 
 left,mid,right =st.columns([1,7,1],vertical_alignment="center")

@@ -19,22 +19,19 @@
         margin-top: 10px;
         align-items: start;
     }
-    .stat-pos {
+    .stat-card {
         display: flex; /* Make it only as wide as its content */
         width: fit-content;
-        background-color: rgba(57,165,126,.1);
         padding: 5px 10px;
         border-radius: 4px;
         font-size: 14px;
+    }
+    .stat-pos {
+        background-color: rgba(57,165,126,.1);
         color: #62e579;
     }
     .stat-neg {
-        display: flex;
         color: #e44a36;
-        padding: 5px 10px;
-        border-radius: 4px;
-        font-size: 14px;
-        width: fit-content;
         background-color: rgba(152, 57, 45, 0.301);
     }
     .details {
@@ -60,6 +57,7 @@
     .status {
         font-size: 14px;
         margin-left: 10px;
+        justify-self:flex-end;
     }
     .price {
         display: flex;
@@ -115,4 +113,50 @@
         flex-direction: column;
         justify-content:center;
     }
+@media (max-width: 480px) {
+    .flex-font {
+        font-size: 12px; /* Smaller text for small screens */
+    }
+    .platinum-icon {
+        width: 10px;
+        height: 10px;
+    }
+    .stat-card {
+        display: flex; /* Make it only as wide as its content */
+        width: 80%;
+        padding: 4px 8px;
+        border-radius: 4px;
+    }
+    .auction-tag {
+        background-color: #FF4B4B;
+        color: #ffffff;
+        padding: 4px 8px;
+        border-radius: 4px;
+    }
+}
+
+/* Tablets (iPads, some Android tablets) */
+@media (min-width: 481px) and (max-width: 1024px) {
+    .flex-font {
+        font-size: 14px; /* Slightly larger for tablets */
+    }
+    .platinum-icon {
+        width: 10px;
+        height: 10px;
+    }
+}
+
+/* Laptops & Small Desktops */
+@media (min-width: 1025px) and (max-width: 1440px) {
+    .flex-font {
+        font-size: 14px; /* Default size */
+    }
+}
+
+/* Large Screens (4K, ultrawide monitors) */
+@media (min-width: 1441px) {
+    .flex-font {
+        font-size: 16px; /* Bigger text for large screens */
+    }
+}
 </style>

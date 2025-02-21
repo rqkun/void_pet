@@ -30,7 +30,7 @@ def store_baro():
 
 custom.sideNav(2)
 custom.reject_url_param()
-custom.hover_style()
+custom.image_style()
 
 items = store_baro()
 if 'baro_alert' in st.session_state:

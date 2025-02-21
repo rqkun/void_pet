@@ -70,52 +70,18 @@ def hover_md(image_md, info_md):
 def price_overlay_md(price_info):
     """ Prices markdown custom web element. """
     return f"""
-        <p style="position: absolute;
-            bottom: 10px;
-            left: calc(60px + 0.5vw);
-            align-self: flex-end;
-            display: flex;
-            z-index: 10;
-            background-color: rgba(0, 0, 0, 0.5);
-            padding-left: 10px;
-            padding-right: 10px;
-            padding-top: 3px;
-            padding-bottom: 3px;
-            border-radius: 10px;
-            background-opacity: 10%;
-            font-size: calc(12px + 0.5vw);
-            flex-direction: row;
-            align-items: center;
-            flex-wrap: nowrap;
-            ">{price_info["amount"]}<img alt="{price_info["type"]["name"]}" style="width:calc(20px + 0.5vw);height:auto;" src="{price_info["type"]["image"]}"/></p>
+        <div class="price-tag" >{price_info["amount"]}<img class="price-img" alt="{price_info["type"]["name"]}" src="{price_info["type"]["image"]}"/></div>
         """
 def image_md(url,alt,source,caption:Literal["hidden", "collapse", "visible"],animation=True, size="65%"):
     """Return image markdown custom web element. """
     if animation:
         img_class = "item-image"
     else:
-        img_class = "fake"
+        img_class = "item-image-fake"
     md = f"""<a href="{url}" target="_blank" style="" class="tooltip-wrap">
-                <img alt="{alt}" class ="{img_class}" 
-                    style="
-                            position: relative;
-                            display: block;
-                            align-items: center;
-                            margin-left: auto;
-                            margin-right: auto;
-                            height: auto;
-                            width: {size};
-                            border-radius: 10px;
-                            zoom: 150%;"
-                    src="{source}" title="{alt}"/></a>"""
+                <img alt="{alt}" class ="{img_class}" style="width={size};" src="{source}" title="{alt}"/></a>"""
     if caption == "hidden" or caption == "visible":
-        md = md + f"""<p style="text-overflow: ellipsis;
-                                text-align: center;
-                                padding-top: 10px;
-                                font-size: 75%;
-                                white-space: nowrap;
-                                overflow: hidden;
-                                visibility: {caption};">{alt}</p>"""
+        md = md + f"""<p class="image-caption" style="visibility: {caption};">{alt}</p>"""
     return md
 
 def card_md(image_md,price_md):
@@ -295,7 +261,7 @@ def riven_auction_md(data,image):
         else:
             value = f"""{sign}{abs(item["value"]) }%"""
         
-        attribute = attribute + f"""<div class="stat-{class_c}">{value} {item["url_name"].replace("_"," ").title()}</div>"""
+        attribute = attribute + f"""<div class="stat-{class_c} flex-font stat-card">{value} {item["url_name"].replace("_"," ").title()}</div>"""
     avatar_img = "https://warframe.market/static/assets/user/default-avatar.png"
     
     if not data["is_direct_sell"]:
@@ -303,11 +269,11 @@ def riven_auction_md(data,image):
     else: direct_auction = "Buyout"
     price = ""
     if data["buyout_price"] is not None:
-        price = price + f"""<div class="price"> Buyout Price: <span class="price-amount-text">{data["buyout_price"]}{plat_icon}</span></div>"""
+        price = price + f"""<div class="price flex-font"> Buyout Price: <span class="price-amount-text">{data["buyout_price"]} {plat_icon}</span></div>"""
     if data["is_direct_sell"] == False:
-        price = price + f"""<div class="price"> Starting Price:<span class="price-amount-text">{data["starting_price"]}{plat_icon}</span></div>"""
+        price = price + f"""<div class="price flex-font"> Starting Price:<span class="price-amount-text">{data["starting_price"]} {plat_icon}</span></div>"""
     if data["top_bid"] is not None: 
-        price = price + f"""<div class="price"> Top Bid:<span class="price-amount-text">{data["top_bid"]} {plat_icon}</span></div>"""
+        price = price + f"""<div class="price flex-font"> Top Bid:<span class="price-amount-text">{data["top_bid"]} {plat_icon}</span></div>"""
     
     if data["owner"]["avatar"] is not None:
         avatar_img = Warframe.MARKET.value["static"]+data["owner"]["avatar"]
@@ -316,22 +282,18 @@ def riven_auction_md(data,image):
         <div class="card" >
             <img class="aunction-item-img" src="{image}" alt="{name}">
             <a class="title" href="{Warframe.MARKET.value["base"]}auction/{data["id"]}">{name} {data["item"]["name"].replace("-"," ").title().replace(" ","-")}</a>
-            <hr class="solid" style="margin-top:10px;margin-bottom:10px;">
+            <hr class="solid" style="margin-top:5px;margin-bottom:5px;">
             <div class="price-details">
                 <div class="stat-details">
-                    <div class="stats">
-                        {attribute}
-                    </div>
-                    <div class="details">
+                    <div class="stats">{attribute}</div>
+                    <div class="details flex-font">
                         MR:<span class="price-amount-text">{data["item"]["mastery_level"]}</span> &nbsp; 
                         Ranks:<span class="price-amount-text">{data["item"]["mod_rank"]}</span> &nbsp; 
                         Re-rolls:<span class="price-amount-text">{data["item"]["re_rolls"]}</span> &nbsp; 
                         Polarity: {polarity} {data["item"]["polarity"].title()}
                     </div>
                 </div>
-                <div class="price-container">
-                    {price}
-                </div>
+                <div class="price-container">{price}</div>
             </div>
             <hr class="solid" style="margin-top:10px;margin-bottom:10px;">
             <div class="seller">
@@ -339,8 +301,8 @@ def riven_auction_md(data,image):
                     <span class="auction-tag">{direct_auction}</span>
                 </div>
                 <img src="{avatar_img}" alt="{data["owner"]["ingame_name"]}">
-                <span class="seller-name">{data["owner"]["ingame_name"]}</span>
-                <span class="status" {status}>{data["owner"]["status"].title()} <b>&middot; {data["owner"]["region"].upper()}</b></span>
+                <span class="seller-name flex-font">{data["owner"]["ingame_name"]}</span>
+                <span class="status flex-font" {status}>{data["owner"]["status"].title()} <b>&middot; {data["owner"]["region"].upper()}</b></span>
             </div>
         </div>
     """

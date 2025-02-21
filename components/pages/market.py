@@ -9,7 +9,7 @@ from utils.tools import check_pattern_set
 
 custom.sideNav(4)
 custom.reject_url_param()
-custom.hover_style()
+custom.image_style()
 
 _,middle,_ = st.columns([2,3,2],vertical_alignment="center")
 
