@@ -1,8 +1,7 @@
 import math
-import uuid
 import streamlit as st
 from components import dialogs
-from config.constants import AppIcons, AppPages, Warframe
+from config.constants import AppIcons, AppPages
 import streamlit_antd_components as sac
 
 def sideNav(current_idx):
