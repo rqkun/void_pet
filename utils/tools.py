@@ -1,6 +1,5 @@
 from datetime import datetime, timezone
 import re
-from statistics import median
 
 from config.constants import AppMessages
 

@@ -7,7 +7,7 @@ from utils import data_manage, tools
 from utils.tools import check_pattern_prime_set
 from utils.tools import check_pattern_set
 
-custom.sideNav(4)
+custom.sideNav(5)
 custom.reject_url_param()
 custom.image_style()
 

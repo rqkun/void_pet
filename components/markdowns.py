@@ -67,11 +67,14 @@ def hover_md(image_md, info_md):
     md = md + """</div>"""
     return md
 
+
 def price_overlay_md(price_info):
     """ Prices markdown custom web element. """
     return f"""
         <div class="price-tag" >{price_info["amount"]}<img class="price-img" alt="{price_info["type"]["name"]}" src="{price_info["type"]["image"]}"/></div>
         """
+
+
 def image_md(url,alt,source,caption:Literal["hidden", "collapse", "visible"],animation=True, size="65%"):
     """Return image markdown custom web element. """
     if animation:
@@ -84,6 +87,7 @@ def image_md(url,alt,source,caption:Literal["hidden", "collapse", "visible"],ani
         md = md + f"""<p class="image-caption" style="visibility: {caption};">{alt}</p>"""
     return md
 
+
 def card_md(image_md,price_md):
     """Return card markdown custom web element. """
     md = f""" <div class="item-flex-content">"""
@@ -91,17 +95,6 @@ def card_md(image_md,price_md):
     md = md + price_md 
     md = md + """</div>"""
     return md
-
-def hide_streamlit_header():
-    """Hide the Streamlit header. """
-    return """
-            <style>
-                /* Hide the Streamlit header and menu */
-                header {visibility: hidden;}
-                div.block-container {padding-top:1rem;}
-                [data-testid='stHeaderActionElements'] {display: none;}
-            </style>
-        """
 
 
 def mod_info_md(item):
@@ -137,6 +130,7 @@ def mod_info_md(item):
         sub_md = sub_md + """<b>Drop Locations:</b> <br><div style="padding-left: 20px;"><i>None</i></div>"""
     return md,sub_md
 
+
 def alerts_reward_info_md(data):
     """ Alert rewards markdown custom web element. """
     md = f"""<div><span><b>Reward:<b/> <i style="color:#a3a3a3;"> Reminder, Steelpath rewards might be different.</i></span><br>"""
@@ -148,6 +142,7 @@ def alerts_reward_info_md(data):
             <span>{reward["amount"]:,} {reward["item"]}</span><br/> """
     return md +"</div>"
 
+
 def invasions_reward_info_md(data):
     """ Invasion rewards markdown custom web element. """
     md = f""" """
@@ -157,6 +152,7 @@ def invasions_reward_info_md(data):
             <img alt="{item}" style="width:30px;height:30px;" src="{image}" title="{item}"/>
             <span>{amount:,} {item}</span><br/> """
     return md
+
 
 def market_order_md(data,item):
     """ Market order custom web element. """
@@ -198,14 +194,18 @@ def market_order_md(data,item):
     """
     return md
 
+
 def market_item_desc(data):
+    """Market item description custom web element."""
     md = f"""<span> <b>{data["en"]["item_name"]} &middot;</b> {data["trading_tax"]:,} <img alt="{Warframe.CREDITS.value["name"]}" style="width:20px;height:20px;" src="{Warframe.CREDITS.value["image"]}"/><br>"""
     
     md = md + f"""
         <i>{data["en"]["description"]}</i>"""
     return md + """</span><br>"""
 
+
 def world_clock_md(data):
+    """Open world clocks custom web element."""
     md = f"""<div class ="world-clock-container"> """
     for item in data:
         span = datetime.strptime(item["data"]["expiry"],"%Y-%m-%dT%H:%M:%S.%fZ")-datetime.today()
@@ -233,7 +233,7 @@ def render_svg(svg,size):
 
 
 def riven_auction_md(data,image):
-    """ Market order custom web element. """
+    """ Market riven auctions custom web element. """
     if "_and_" in data["item"]["weapon_url_name"]:
         data["item"]["weapon_url_name"] = data["item"]["weapon_url_name"].replace("_and_", "_&_")
     plat_icon = f"""<img alt="{Warframe.PLATINUM.value["name"]}" style="width:20px;height:20px;" src="{Warframe.PLATINUM.value["image"]}"/>"""
@@ -309,7 +309,9 @@ def riven_auction_md(data,image):
 
     return md
 
-def stats_info_md(name, time,info_md):
+
+def event_alert_card_md(name, time,info_md):
+    """ Events and Alerts container custom web element."""
     md = f"""<div class="event-alert-card">
                 <div class="event-alert-name-time-container">
                     <h4>{name} &middot;</h4>
@@ -318,7 +320,9 @@ def stats_info_md(name, time,info_md):
                 <div class="event-alert-info">{info_md}</div></div>"""
     return md
 
+
 def event_info_md(data,step_rewards):
+    """ Event info custom element. """
     jobs = """<div class="event-info-popup">"""
     if data["jobs"] is not None and len(data["jobs"]) > 0:
         for item in data["jobs"]:

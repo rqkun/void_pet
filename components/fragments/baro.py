@@ -3,7 +3,6 @@ from config.constants import AppMessages
 from utils import data_manage
 from utils import tools
 
-import streamlit_antd_components as sac
 import streamlit as st
 
 

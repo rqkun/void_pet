@@ -1,13 +1,11 @@
 import requests
 import streamlit as st
-from components.markdowns import hide_streamlit_header
+from components import custom
 from config.constants import AppIcons, AppPages
 
 st.set_page_config(page_title="Void Pet", page_icon=AppIcons.MAIN_APP.value, layout="centered")
 
-hide_streamlit_style = hide_streamlit_header()
-
-st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+custom.app_style()
 
 home_page = st.Page(AppPages.HOME.value)
 baro_page = st.Page(AppPages.BARO.value)
@@ -23,7 +21,8 @@ pg = st.navigation(authenticated_pages,position="hidden")
 try:
     pg.run()
 except (requests.exceptions.HTTPError,requests.exceptions.Timeout,requests.exceptions.ConnectionError) as error:
-    #requests.exceptions.HTTPError
     if "rivens" in st.session_state:
         del st.session_state.rivens
+    if "orders" in st.session_state:
+        del st.session_state.orders
     st.switch_page(AppPages.ERROR.value)

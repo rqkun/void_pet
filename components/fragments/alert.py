@@ -33,7 +33,7 @@ def show():
                                 with right.popover(AppIcons.INFO.value,use_container_width=True):
                                     time = format_timedelta(datetime.strptime(alert["expiry"],"%Y-%m-%dT%H:%M:%S.%fZ")-datetime.today(),day=True)
                                     info_md = markdowns.alerts_reward_info_md(data_manage.get_alert_reward(alert))
-                                    st.markdown(markdowns.stats_info_md(alert["mission"]["type"],time,info_md),unsafe_allow_html=True)
+                                    st.markdown(markdowns.event_alert_card_md(alert["mission"]["type"],time,info_md),unsafe_allow_html=True)
                                 left.progress(percentage_completed,f"""{alert["mission"]["node"]}""")
                     except:
                         st.warning(f"Error occured",icon=AppIcons.ERROR.value)

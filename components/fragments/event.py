@@ -1,5 +1,5 @@
 from components import markdowns
-from config.constants import AppIcons, AppMessages, Warframe
+from config.constants import AppIcons, AppMessages
 from utils import data_manage, tools
 
 
@@ -32,7 +32,7 @@ def show():
                         event["description"] = event["description"].replace("Operation: ", "")
                         left.progress(percentage,f"""{event["description"]}""")
                         pop = right.popover(AppIcons.INFO.value,use_container_width=True)
-                        pop.markdown(markdowns.stats_info_md(node,time,markdowns.event_info_md(event,rewards)),unsafe_allow_html=True)
+                        pop.markdown(markdowns.event_alert_card_md(node,time,markdowns.event_info_md(event,rewards)),unsafe_allow_html=True)
                     except Exception as err:
                         st.warning(f"Error occured",icon=AppIcons.ERROR.value)
             else:
