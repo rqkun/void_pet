@@ -40,7 +40,7 @@ def generic(image_url: str,package=None,price_info=None):
             wiki_url = Warframe.get_wiki_url(price_info["name"].replace("StoreItem", "").replace(" ","_"),item["type"])
         
         hover_md = info(item)
-                
+             
         image_md = components.markdowns.image_md(wiki_url,item["name"],image_url,caption="visible")
         info_md = components.markdowns.hover_md(image_md,hover_md)
         ducat_md = components.markdowns.price_overlay_md(price_info) if price_info is not None else ""

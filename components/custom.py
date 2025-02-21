@@ -103,5 +103,13 @@ def market_style():
     inject_style("market")
 
 
+def world_style():
+    inject_style("world")
+
+
+def card_style():
+    inject_style("card")
+
+
 def set_divider():
     sac.divider(label='item', icon='diagram-2-fill', align='center', color='gray')

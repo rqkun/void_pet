@@ -19,7 +19,7 @@ error_page = st.Page(AppPages.ERROR.value,url_path="/500")
 notfound_page = st.Page(AppPages.NOTFOUND.value,url_path="/404")
 authenticated_pages = [home_page,baro_page,regal_page,market_page,news_page,rivens_page,error_page,notfound_page]
 pg = st.navigation(authenticated_pages,position="hidden")
-st.html("<style>[data-testid='stHeaderActionElements'] {display: none;}</style>")
+
 try:
     pg.run()
 except (requests.exceptions.HTTPError,requests.exceptions.Timeout,requests.exceptions.ConnectionError) as error:

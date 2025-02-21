@@ -33,7 +33,7 @@ def show():
                         left.progress(percentage,f"""{event["description"]}""")
                         pop = right.popover(AppIcons.INFO.value,use_container_width=True)
                         pop.markdown(markdowns.stats_info_md(node,time,markdowns.event_info_md(event,rewards)),unsafe_allow_html=True)
-                    except:
+                    except Exception as err:
                         st.warning(f"Error occured",icon=AppIcons.ERROR.value)
             else:
                 events_info.info('There are currently no events', icon=AppIcons.INFO.value)

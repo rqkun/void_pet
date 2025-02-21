@@ -31,7 +31,7 @@ def store_baro():
 custom.sideNav(2)
 custom.reject_url_param()
 custom.image_style()
-
+custom.card_style()
 items = store_baro()
 if 'baro_alert' in st.session_state:
     custom.baro_time_alert(st.session_state.baro_alert["message"])

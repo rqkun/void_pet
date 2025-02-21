@@ -78,7 +78,7 @@ def image_md(url,alt,source,caption:Literal["hidden", "collapse", "visible"],ani
         img_class = "item-image"
     else:
         img_class = "item-image-fake"
-    md = f"""<a href="{url}" target="_blank" style="" class="tooltip-wrap">
+    md = f"""<a href="{url}" target="_blank" class="tooltip-wrap">
                 <img alt="{alt}" class ="{img_class}" style="width={size};" src="{source}" title="{alt}"/></a>"""
     if caption == "hidden" or caption == "visible":
         md = md + f"""<p class="image-caption" style="visibility: {caption};">{alt}</p>"""
@@ -86,7 +86,7 @@ def image_md(url,alt,source,caption:Literal["hidden", "collapse", "visible"],ani
 
 def card_md(image_md,price_md):
     """Return card markdown custom web element. """
-    md = f""" <div class="item-flex-content" style="display:flex;justify-content: space-between;flex-direction: column; ">"""
+    md = f""" <div class="item-flex-content">"""
     md = md + image_md
     md = md + price_md 
     md = md + """</div>"""
@@ -99,7 +99,7 @@ def hide_streamlit_header():
                 /* Hide the Streamlit header and menu */
                 header {visibility: hidden;}
                 div.block-container {padding-top:1rem;}
-                
+                [data-testid='stHeaderActionElements'] {display: none;}
             </style>
         """
 
@@ -178,8 +178,8 @@ def market_order_md(data,item):
             </div>
             <div class="profile-section">
                 <a class="profile-link" style="text-decoration: none;" href="{Warframe.MARKET.value["base"]}profile/{data["user"]["ingame_name"]}">
-                    <img class="profile-image" style="text-decoration: none;" alt="{data["user"]["ingame_name"]}" src="{img}">
-                    <span class="profile-name flex-font" style="text-decoration: none;" ><b>{data["user"]["ingame_name"]}</b></span>
+                    <img class="profile-image" alt="{data["user"]["ingame_name"]}" src="{img}">
+                    <span class="profile-name flex-font"><b>{data["user"]["ingame_name"]}</b></span>
                 </a>
             </div>
             <div class="rank-section">{mod_rank}</div>
@@ -206,15 +206,15 @@ def market_item_desc(data):
     return md + """</span><br>"""
 
 def world_clock_md(data):
-    md = f"""<div style="display:flex;flex-direction:row;align-items:baseline;justify-content:space-evenly;flex-wrap:wrap;gap:10px;margin-left:15px;"> """
+    md = f"""<div class ="world-clock-container"> """
     for item in data:
         span = datetime.strptime(item["data"]["expiry"],"%Y-%m-%dT%H:%M:%S.%fZ")-datetime.today()
         if span.total_seconds() >0:
             time = tools.format_timedelta(span,day=False)
         else: time = tools.format_timedelta(datetime.today()-datetime.today(),day=False)
-        md = md + f"""<div style="display:flex;flex-direction:column;align-items:center;">
-                            <img alt="{item["name"]}" style="width:100px;height:100px;border-radius:10px;padding:5px;justify-self:center;" src="{item["image"]}"/>
-                            <div style="display:flex;flex-direction:column;padding-bottom:10px;align-items:center;">
+        md = md + f"""<div class= "world-clock-content">
+                            <img class = "world-clock-img" alt="{item["name"]}" src="{item["image"]}"/>
+                            <div class = "world-clock-txt">
                                 <span><b>{item["name"]}:</b></span>
                                 <span>{item["data"]["state"].title()} &middot; <i style="color: gray;">{time}</i></span>
                             </div>
@@ -310,8 +310,8 @@ def riven_auction_md(data,image):
     return md
 
 def stats_info_md(name, time,info_md):
-    md = f"""<div class="event-alert-card" style="display:flex;flex-direction:column;padding-bottom:10px;">
-                <div class="name-time-container" style="display:flex;flex-direction:row;align-items: center;justify-content: flex-start;margin-top:-20px;margin-bottom:-20px;">
+    md = f"""<div class="event-alert-card">
+                <div class="event-alert-name-time-container">
                     <h4>{name} &middot;</h4>
                     <span><i style="color:#a3a3a3;">&nbsp; {time}</i></span>
                 </div>
@@ -319,10 +319,10 @@ def stats_info_md(name, time,info_md):
     return md
 
 def event_info_md(data,step_rewards):
-    jobs = """<div style="display:flex;flex-direction:column;padding-bottom:10px;gap:1rem;">"""
+    jobs = """<div class="event-info-popup">"""
     if data["jobs"] is not None and len(data["jobs"]) > 0:
         for item in data["jobs"]:
-            jobs = jobs + f"""<div style="border: 1px solid rgba(250, 250, 250, 0.2);border-radius: 0.5rem;padding: calc(-1px + 1rem);">"""
+            jobs = jobs + f"""<div class="event-bounty-info">"""
             rewards = ", ".join(item["rewardPool"])
             jobs = jobs + f"""<details><summary>{item["type"]} &middot; Enemies: {item["enemyLevels"][0]} - {item["enemyLevels"][1]}</summary><b>Rewards: </b><font style="color:#a3a3a3;">{rewards}</font></details></div>"""
     jobs = jobs + "</div>"
