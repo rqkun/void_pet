@@ -98,7 +98,7 @@ class AppPages(Enum):
     HOME = "components/pages/home.py"
     ERROR = "components/pages/error.py"
     NOTFOUND = "components/pages/not_found.py"
-    # AYA = "components/pages/aya.py"
+    RELICS = "components/pages/relics.py"
     NEWS = "components/pages/news.py"
     RIVENS = "components/pages/riven.py"
     MARKET = "components/pages/market.py"

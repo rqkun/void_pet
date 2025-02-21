@@ -14,7 +14,7 @@ def sideNav(current_idx):
     with st.sidebar:
         st.markdown("""<style>.st-emotion-cache-kgpedg {padding: calc(1.375rem) 1.5rem 0rem; margin:-1rem 0 -1rem 0;}</style>""",unsafe_allow_html=True)
         selection = sac.menu([
-            sac.MenuItem('Home', icon='house-fill'),
+            sac.MenuItem('Home', icon='house-fill',),
             sac.MenuItem('Vendors', icon='box-fill', children=[
                 sac.MenuItem("Baro Ki'ter", icon='arrow-repeat'),
                 sac.MenuItem('Varzia', icon='droplet-fill'),
@@ -23,6 +23,7 @@ def sideNav(current_idx):
                 sac.MenuItem('Orders', icon='cart3'),
                 sac.MenuItem('Rivens', icon='dice-6'),
             ]),
+            sac.MenuItem('Relics', icon='browser-firefox'),
             sac.MenuItem('News', icon='newspaper'),
             sac.MenuItem('Github', icon='github',description="rqkun/void_pet", href='https://github.com/rqkun/void_pet/')
         ], size='xs',variant='left-bar', return_index=True, open_all=True, index=current_idx)
@@ -44,6 +45,8 @@ def sideNav(current_idx):
         if selection == 6:
             st.switch_page(AppPages.RIVENS.value)
         if selection == 7:
+            st.switch_page(AppPages.RELICS.value)
+        if selection == 8:
             st.switch_page(AppPages.NEWS.value)
 
 

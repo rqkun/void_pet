@@ -106,6 +106,8 @@ def extract_relic_rewards(relic):
     
     relic_export = export_relic(relic["uniqueName"],"uniqueName")
     for i,item in enumerate(relic["rewards"]):
+        if relic_export is None:
+            return None
         item["item"]["uniqueName"] = relic_export["relicRewards"][i]["rewardName"]
         item["item"]["imageName"] = get_image_url(relic_export["relicRewards"][i]["rewardName"])
     return relic
@@ -759,30 +761,34 @@ def get_resurgent_relics():
 
 
 def filter_relic(data,rewards,types,tags,resurgent_data=None):
-    fitered_relics = []
-    type_map = tuple(types) if len(types) >0 else ("Axi","Neo","Meso","Lith","Requiem")
-    
-    if all(tags):
-        is_vaulted = None
-    else:
-        if tags[0]:
-            is_vaulted = True
-        elif tags[1]:
-            is_vaulted = False
-        else:
-            is_vaulted = None
+    filtered_relics = []
+    type_map = tuple(types) if types else ("Axi", "Neo", "Meso", "Lith", "Requiem")
+
+    # Determine if the vaulted filter should be applied
+    ignore_vaulted = (tags[0] and tags[1]) or (not tags[0] and not tags[1])
+    is_vaulted = None if ignore_vaulted else (True if tags[0] else False)
 
     for item in data:
-        condition =[]
-        if type_map is not None:
-            condition.append(item["name"].startswith(type_map) == False)
-        if is_vaulted is not None:
-            condition.append(item["vaulted"] == is_vaulted)
+        item = extract_relic_rewards(item)
+        if item is None:
+            continue
+        conditions = []
+
+        # Apply vaulted filter if not ignored
+        if not ignore_vaulted:
+            conditions.append(item.get("vaulted", False) == is_vaulted)
+
+        # Apply resurgent data filter if not ignored
         if resurgent_data is not None:
             unique_name = item["uniqueName"].split("/")[-1]
-            flag = any(unique_name in x for x in resurgent_data)
-            condition.append(flag)
-        
-        if any(condition):
-            fitered_relics.append(item)
-    return fitered_relics
+            conditions.append(any(unique_name in x for x in resurgent_data))
+
+        # If any condition is False, skip this relic
+        if not all(conditions):
+            continue
+
+        # Filter by type
+        if item["name"].startswith(type_map):
+            filtered_relics.append(item)
+
+    return filtered_relics

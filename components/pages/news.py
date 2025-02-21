@@ -5,7 +5,7 @@ from config.constants import AppIcons, AppMessages
 from utils import data_manage
 from utils.tools import format_timedelta
 
-custom.sideNav(7)
+custom.sideNav(8)
 custom.reject_url_param()
 custom.image_style()
 _,middle,_ = st.columns([2,3,2],vertical_alignment="center")

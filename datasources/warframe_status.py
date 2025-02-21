@@ -204,10 +204,10 @@ async def fetch_all_items(item_ids):
     async with httpx.AsyncClient(timeout=10) as client:  # Set a timeout
         tasks = [fetch_item(client, item_id, SEMAPHORE=SEMAPHORE) for item_id in item_ids]
         results = await asyncio.gather(*tasks, return_exceptions=True)  # Continue on failure
-        
         return [res for res in results if res is not None] # Remove failed requests
 
 def get_weapon_by_name(name):
+    """ Search weapon by name """
     if " and " in name:
         name = name.replace(" and ", " & ")
     name = re.sub(r'\s*\(.*?\)', '', name)
@@ -222,3 +222,10 @@ def get_weapon_by_name(name):
             if item["name"].lower() == name:
                 return item
         return request_object.json()[0]
+
+def relics_request():
+    """ Search weapon by name """
+    request_ref = Warframe.STATUS.value["api"]+"/items/search/Relic?by=type&remove=patchlogs"
+    request_object = requests.get(request_ref)
+    raise_detailed_error(request_object)
+    return request_object.json()
