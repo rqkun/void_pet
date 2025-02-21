@@ -274,8 +274,9 @@ def extract_craftable_components(json_data):
     Returns:
         dict: item data with components data attach to it.
     """
-    for component in json_data["components"]:
-        component["imageName"] = get_image_url(component["uniqueName"])
+    if 'components' in json_data:
+        for component in json_data["components"]:
+            component["imageName"] = get_image_url(component["uniqueName"])
     return json_data
 
 def get_frame_abilities_with_image(frame):
@@ -728,3 +729,60 @@ def get_event_rewards(data):
                     rewards.append(item)
 
     return rewards
+
+@st.cache_data(ttl="10d",show_spinner=False)
+def get_relics():
+    relic_list = []
+    relics = warframe_status.relics_request()
+    if len(relics) < 1:
+        return None
+    else:
+        for item in relics:
+            if item["tradable"] == False or "Intact" not in item["name"]:
+                continue
+            relic_list.append(item)
+        return relic_list
+
+@st.cache_data(ttl="10d",show_spinner=False)
+def get_resurgent_relics():
+    relic_list = []
+    items = get_variza()["inventory"]
+    
+    if len(items) < 1:
+        return None
+    else:
+        for item in items:
+            if "Projections" not in item["uniqueName"]:
+                continue
+            relic_list.append(item["uniqueName"])
+        return relic_list
+
+
+def filter_relic(data,rewards,types,tags,resurgent_data=None):
+    fitered_relics = []
+    type_map = tuple(types) if len(types) >0 else ("Axi","Neo","Meso","Lith","Requiem")
+    
+    if all(tags):
+        is_vaulted = None
+    else:
+        if tags[0]:
+            is_vaulted = True
+        elif tags[1]:
+            is_vaulted = False
+        else:
+            is_vaulted = None
+
+    for item in data:
+        condition =[]
+        if type_map is not None:
+            condition.append(item["name"].startswith(type_map) == False)
+        if is_vaulted is not None:
+            condition.append(item["vaulted"] == is_vaulted)
+        if resurgent_data is not None:
+            unique_name = item["uniqueName"].split("/")[-1]
+            flag = any(unique_name in x for x in resurgent_data)
+            condition.append(flag)
+        
+        if any(condition):
+            fitered_relics.append(item)
+    return fitered_relics

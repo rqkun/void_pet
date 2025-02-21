@@ -75,14 +75,14 @@ def price_overlay_md(price_info):
         """
 
 
-def image_md(url,alt,source,caption:Literal["hidden", "collapse", "visible"],animation=True, size="65%"):
+def image_md(url,alt,source,caption:Literal["hidden", "collapse", "visible"],animation=True, size="65%",border=1):
     """Return image markdown custom web element. """
     if animation:
         img_class = "item-image"
     else:
         img_class = "item-image-fake"
     md = f"""<a href="{url}" target="_blank" class="tooltip-wrap">
-                <img alt="{alt}" class ="{img_class}" style="width={size};" src="{source}" title="{alt}"/></a>"""
+                <img alt="{alt}" class ="{img_class}" style="border-radius: {border}rem;" src="{source}" title="{alt}"/></a>"""
     if caption == "hidden" or caption == "visible":
         md = md + f"""<p class="image-caption" style="visibility: {caption};">{alt}</p>"""
     return md

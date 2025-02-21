@@ -1,6 +1,5 @@
 import streamlit as st
 from PIL import Image
-from components import custom
 import components.markdowns
 from config.constants import Warframe
 from utils import api_services
@@ -38,10 +37,9 @@ def generic(image_url: str,package=None,price_info=None):
                 image_url = item["wikiaThumbnail"].split(".png")[0] + ".png"
         elif price_info is not None:
             wiki_url = Warframe.get_wiki_url(price_info["name"].replace("StoreItem", "").replace(" ","_"),item["type"])
-        
         hover_md = info(item)
-             
-        image_md = components.markdowns.image_md(wiki_url,item["name"],image_url,caption="visible")
+        
+        image_md = components.markdowns.image_md(wiki_url,item["name"],image_url,caption="visible",size="50px",border=0.5)
         info_md = components.markdowns.hover_md(image_md,hover_md)
         ducat_md = components.markdowns.price_overlay_md(price_info) if price_info is not None else ""
         md = components.markdowns.card_md(info_md,ducat_md)
