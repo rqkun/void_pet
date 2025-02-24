@@ -1,5 +1,6 @@
 import asyncio
 from collections import defaultdict
+import re
 import streamlit as st
 from config import structures
 from config.constants import AppIcons, AppMessages, Warframe
@@ -734,15 +735,25 @@ def get_event_rewards(data):
 
 @st.cache_data(ttl="10d",show_spinner=False)
 def get_relics():
+    """ Return all relics.
+
+    Returns:
+        list: relic list.
+    """
     relic_list = []
     relics = warframe_status.relics_request()
+
     if len(relics) < 1:
         return None
     else:
+        
         for item in relics:
             if item["tradable"] == False or "Intact" not in item["name"]:
                 continue
-            item = extract_relic_rewards(item)
+            if len(item["rewards"])>0:
+                item = extract_relic_rewards(item)
+            else: 
+                continue
             if item is None:
                 continue
             relic_list.append(item)
@@ -750,6 +761,11 @@ def get_relics():
 
 @st.cache_data(ttl="10d",show_spinner=False)
 def get_resurgent_relics():
+    """ Return list of resurgent relic.
+
+    Returns:
+        list: list of resurgent relic.
+    """
     relic_list = []
     items = get_variza()["inventory"]
     
@@ -764,9 +780,20 @@ def get_resurgent_relics():
 
 
 def filter_relic(data,rewards,types,tags,resurgent_data=None):
+    """ Relic filter function.
+
+    Args:
+        data (list): relic list.
+        rewards (list): reward keywords.
+        types (list): relic eras.
+        tags (list): relic vault tags.
+        resurgent_data (list, optional): list of resurgent relics. Defaults to None.
+
+    Returns:
+        list: list of filtered relic.
+    """
     filtered_relics = []
     type_map = tuple(types) if types else ("Axi", "Neo", "Meso", "Lith", "Requiem")
-
     # Determine if the vaulted filter should be applied
     ignore_vaulted = (tags[0] and tags[1]) or (not tags[0] and not tags[1])
     is_vaulted = None if ignore_vaulted else (True if tags[0] else False)
@@ -783,13 +810,39 @@ def filter_relic(data,rewards,types,tags,resurgent_data=None):
             unique_name = item["uniqueName"].split("/")[-1]
             conditions.append(any(unique_name in x for x in resurgent_data))
 
+        if rewards:
+            reward_names = [reward["item"]["name"] for reward in item.get("rewards", [])]
+
+            # Check if any keyword exists as a whole word in any reward name
+            reward_match = any(
+                any(re.search(rf"\b{re.escape(keyword)}\b", name, re.IGNORECASE) for keyword in rewards)
+                for name in reward_names
+            )
+            conditions.append(reward_match)
+
         # If any condition is False, skip this relic
         if not all(conditions):
             continue
 
         # Filter by type
-        print(item)
         if item["name"].startswith(type_map):
             filtered_relics.append(item)
 
     return filtered_relics
+
+def get_relic_rewards():
+    """ Relic list of relic rewards, requiems included.
+
+    Returns:
+        list: list of rewards.
+    """
+    requiems = warframe_status.requiem_request()
+    requiems_rewards =[]
+    if len(requiems)> 0:
+        for item in requiems:
+            if "rewards" in item and len(item["rewards"])>0:
+                requiems_rewards.extend(item["rewards"])
+    requiems_rewards = list({reward["item"]["name"] for reward in requiems_rewards})
+    rewards = get_prime_list()
+    rewards.extend(requiems_rewards)
+    return rewards

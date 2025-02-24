@@ -10,7 +10,7 @@ def store_relics():
     return data_manage.get_relics()
 
 def store_primes():
-    rewards = data_manage.get_prime_list()
+    rewards = data_manage.get_relic_rewards()
     return rewards
 
 custom.sideNav(7)
@@ -33,10 +33,9 @@ rewards = left_top.multiselect(
     "Select",
     options= primes,
     label_visibility="collapsed",
-    placeholder="Select up to 3 reward(s) (WIP)",
+    placeholder="Select up to 3 reward(s)",
     max_selections=3,
     format_func= lambda x: x.replace(" Prime",""),
-    disabled=True
 )
 
 left,right=search_form.columns([4,1],vertical_alignment="bottom")
@@ -77,7 +76,6 @@ if "relics" in st.session_state:
                 item["name"] = item["name"].replace(" Intact","")
                 item["image"] = data_manage.get_image_url(item["uniqueName"])
                 item["html"] = cards.generic(package=item, image_url=item["image"])
-        # st.json(paged_items)
         list_col = st.columns(items_per_row)
         start_idx = 0
         custom.varzia_style()

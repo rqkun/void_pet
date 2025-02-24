@@ -229,3 +229,10 @@ def relics_request():
     request_object = requests.get(request_ref)
     raise_detailed_error(request_object)
     return request_object.json()
+
+def requiem_request():
+    """ Search requiem relics. """
+    request_ref = Warframe.STATUS.value["api"]+"/items/search/Requiem?by=name&remove=patchlogs"
+    request_object = requests.get(request_ref)
+    raise_detailed_error(request_object)
+    return request_object.json()
