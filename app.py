@@ -26,4 +26,5 @@ except (requests.exceptions.HTTPError,requests.exceptions.Timeout,requests.excep
         del st.session_state.rivens
     if "orders" in st.session_state:
         del st.session_state.orders
+    print(error.args)
     st.switch_page(AppPages.ERROR.value)

@@ -4,181 +4,72 @@ import random
 import re
 import requests
 import urllib
+from config.classes import WarframeStatusSearchParams
 from config.constants import Warframe
 from utils.api_services import raise_detailed_error
 import streamlit as st
 import httpx
 
-@st.cache_data(ttl="1m",show_spinner=False)
-def world_state_request():
-    """ API request to get current world state data.
+from utils.tools import hash_func
 
+@st.cache_data(ttl="1m",show_spinner=False)
+def world(path=None):
+    """ API request to get current world state data.
+    Args:
+        path(str):
+            "events": "Current events",
+            "alerts": "Active alerts",
+            "news": "Active news",
+            "voidTrader": "Baro Ki'Teer's inventory",
+            "vaultTrader": "Varzia's prime vault",
+            "invasions": "Ongoing invasions",
+            "sortie": "Daily sortie mission",
+            "cetusCycle": "Cetus day/night cycle",
+            "vallisCycle": "Orb Vallis warm/cold cycle",
+            "cambionCycle": "Cambion Drift Fass/Vome cycle",
+            "zarimanCycle": "Zariman Grineer/Corpus cycle",
+            "duviriCycle": "Duviri Joy/Anger/Envy/Sorrow/Fear cycle"
     Returns:
         dict: World state data
     """
-    request_ref = Warframe.STATUS.value["api"]+"/pc?language=en"
-    request_object = requests.get(request_ref,timeout=5)
-    raise_detailed_error(request_object)
-    return request_object.json()
+    base_url = Warframe.STATUS.value["api"]
+    route = f"/{path}" if path is not None else ""
+    request_url = f"{base_url}/pc{route}?language=en"
+    headers = {"accept": "application/json"}
+    response = requests.get(request_url,headers=headers)
+    raise_detailed_error(response)
+    return response.json()
 
 
-@st.cache_data(ttl="1m",show_spinner=False)
-def void_traider_request():
-    """ API request to get current baro's data.
-
-    Returns:
-        dict: Baro's data
-    """
-    request_ref = Warframe.STATUS.value["api"]+"/pc/voidTrader?language=en"
-    request_object = requests.get(request_ref)
-    raise_detailed_error(request_object)
-    return request_object.json()
-
-
-@st.cache_data(ttl="1d",show_spinner=False)
-def vault_traider_request():
-    """ API request to get current varzia's data.
-
-    Returns:
-        dict: Varzia's data
-    """
-    request_ref = Warframe.STATUS.value["api"]+"/pc/vaultTrader?language=en"
-    request_object = requests.get(request_ref)
-    raise_detailed_error(request_object)
-    return request_object.json()
-
-@st.cache_data(ttl="1d",show_spinner=False)
-def prime_warframes_request():
-    """ API request to get all prime warframes data.
-
-    Returns:
-        dict: Prime Warframes data,
-    """
-    request_ref = Warframe.STATUS.value["api"]+"/warframes/search/prime?only=name,category"
-    request_object = requests.get(request_ref)
-    raise_detailed_error(request_object)
-    
-    return request_object.json()
-
-@st.cache_data(ttl="1d",show_spinner=False)
-def prime_weapons_request():
-    """ API request to get all prime weapons data.
-
-    Returns:
-        dict: Prime Weapons data,
-    """
-    request_ref = Warframe.STATUS.value["api"]+"/weapons/search/prime?only=name,category"
-    request_object = requests.get(request_ref)
-    raise_detailed_error(request_object)
-    
-    return request_object.json()
-
-def relic_request(name, is_unique):
-    """ API request to get a relic's data.
-    Args:
-        name (str): relic uniqueName or name.
-        is_unique (bool): is name arg uniqueName.
-
-    Returns:
-        dict: Relic's data.
-    """
-    encoded_name = urllib.parse.quote(name, safe="")
-    field = "name"
-    if is_unique:
-        field = "uniqueName"
-    request_ref = Warframe.STATUS.value["api"]+f"/items/search/{encoded_name}?by={field}&only=type,category,rewards,name,uniqueName,description,vaulted"
-    request_object = requests.get(request_ref)
-    raise_detailed_error(request_object)
-    return request_object.json()
-
-def item_request(unique_name, search_by_name=False):
-    """ API request to get all matching item data.
+@st.cache_data(hash_funcs={WarframeStatusSearchParams: hash_func},ttl="1d",show_spinner=False)
+def items(params:WarframeStatusSearchParams):
+    """ API request to get item searchable data.
 
     Args:
-        unique_name (str): Item's uniqueName
+        params (WarframeStatusSearchParams): The search parameters.
 
     Returns:
-        dict: Item's data.
+        list: List of items if found, otherwise empty.
     """
-    if search_by_name:
-        encoded_name = urllib.parse.quote(unique_name)
-        request_ref = Warframe.STATUS.value["api"]+f"/items/search/{encoded_name}?by=name&remove=patchlogs"
-    else:
-        identifier = unique_name.split("/")
-        identifier = "/".join(identifier[len(identifier)-3:])
-        encoded_name = urllib.parse.quote_plus(identifier, safe="")
-        request_ref = Warframe.STATUS.value["api"]+f"/items/search/{encoded_name}?by=uniqueName&remove=patchlogs"
-        
-    request_object = requests.get(request_ref)
-    raise_detailed_error(request_object)
-    return request_object.json()
+    if " and " in params.identifier:
+        params.identifier = params.identifier.replace(" and ", " & ")
+    name = re.sub(r'\s*\(.*?\)', '', params.identifier)
+    encoded_key = urllib.parse.quote_plus(name, safe="")
+    base_url = Warframe.STATUS.value["api"]
+    query_string = params.to_query_string()
+    request_url = f"{base_url}/{params.type}/search/{encoded_key}?{query_string}"
+    headers = {"accept": "application/json"}
+    response = requests.get(request_url, headers=headers)
+    raise_detailed_error(response)
+    return response.json()
 
 
-def abilities_request(frame_name):
-    """ API request to get frame's abilities.
-
-    Args:
-        frame_name (str): Frame's name
-
-    Returns:
-        dict: Frame's data.
-    """
-    encoded_name = urllib.parse.quote(frame_name, safe="")
-    request_ref = Warframe.STATUS.value["api"]+f"/warframes/search/{encoded_name}?by=name&only=abilities,uniqueName,passiveDescription"
-    request_object = requests.get(request_ref)
-    raise_detailed_error(request_object)
-    return request_object.json()
-
-
-def craftable_request(item_name):
-    """ API request to get craftable's component.
-
-    Args:
-        item_name (str): item's name
-
-    Returns:
-        dict: Item's data.
-    """
-
-    encoded_name = urllib.parse.quote(item_name, safe="")
-    request_ref = Warframe.STATUS.value["api"]+f"/items/search/{encoded_name}?by=name"
-    request_object = requests.get(request_ref)
-    raise_detailed_error(request_object)
-    return request_object.json()
-
-
-@st.cache_data(ttl="1h",show_spinner=False)
-def ongoing_event_request():
-    """ API request to get current events data.
-
-    Returns:
-        dict: Event state data
-    """
-    request_ref = Warframe.STATUS.value["api"]+"/pc/events?language=en"
-    request_object = requests.get(request_ref)
-    raise_detailed_error(request_object)
-    return request_object.json()
-
-@st.cache_data(ttl="5m",show_spinner=False)
-def alert_request():
-    """ API request to get current alerts data.
-
-    Returns:
-        dict: Alert state data
-    """
-    request_ref = Warframe.STATUS.value["api"]+"/pc/alerts?language=en"
-    request_object = requests.get(request_ref)
-    raise_detailed_error(request_object)
-    return request_object.json()
-
-
-async def fetch_item(client, item_id, retries=3, SEMAPHORE=None):
+async def items_async(client, item_id, retries=3, SEMAPHORE=None):
     """Fetch item asynchronously with retries and concurrency limit."""
     async with SEMAPHORE:
         for attempt in range(retries):
             try:
-                identifier = item_id["uniqueName"].split("/")
-                identifier = "/".join(identifier[-3:])
+                identifier = item_id["uniqueName"].split("/")[-1]
                 encoded_name = urllib.parse.quote_plus(identifier, safe="")
                 url = Warframe.STATUS.value["api"] + f"/items/search/{encoded_name}?by=uniqueName&remove=introduced,patchlogs"
                 
@@ -202,37 +93,6 @@ async def fetch_all_items(item_ids):
     """Fetch multiple items concurrently with error handling."""
     SEMAPHORE = asyncio.Semaphore(3)  # Reduce concurrency to ease API load
     async with httpx.AsyncClient(timeout=10) as client:  # Set a timeout
-        tasks = [fetch_item(client, item_id, SEMAPHORE=SEMAPHORE) for item_id in item_ids]
+        tasks = [items_async(client, item_id, SEMAPHORE=SEMAPHORE) for item_id in item_ids]
         results = await asyncio.gather(*tasks, return_exceptions=True)  # Continue on failure
         return [res for res in results if res is not None] # Remove failed requests
-
-def get_weapon_by_name(name):
-    """ Search weapon by name """
-    if " and " in name:
-        name = name.replace(" and ", " & ")
-    name = re.sub(r'\s*\(.*?\)', '', name)
-    encoded_name = urllib.parse.quote(name)
-    request_ref = Warframe.STATUS.value["api"]+f"/weapons/search/{encoded_name}?by=name&remove=patchlogs"
-    request_object = requests.get(request_ref)
-    raise_detailed_error(request_object)
-    if len(request_object.json()) < 1:
-        return None
-    else:
-        for item in request_object.json():
-            if item["name"].lower() == name:
-                return item
-        return request_object.json()[0]
-
-def relics_request():
-    """ Search weapon by name """
-    request_ref = Warframe.STATUS.value["api"]+"/items/search/Relic?by=type&remove=patchlogs"
-    request_object = requests.get(request_ref)
-    raise_detailed_error(request_object)
-    return request_object.json()
-
-def requiem_request():
-    """ Search requiem relics. """
-    request_ref = Warframe.STATUS.value["api"]+"/items/search/Requiem?by=name&remove=patchlogs"
-    request_object = requests.get(request_ref)
-    raise_detailed_error(request_object)
-    return request_object.json()

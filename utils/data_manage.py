@@ -3,6 +3,7 @@ from collections import defaultdict
 import re
 import streamlit as st
 from config import structures
+from config.classes import RivenSearchParams, WarframeStatusSearchParams
 from config.constants import AppIcons, AppMessages, Warframe
 from datasources import warframe_export,warframe_market,warframe_status
 from utils import tools
@@ -58,50 +59,6 @@ def export_relic(name,field):
             return item
     return None
 
-def get_relic_reward(relic) -> dict:
-    """ Return relic's rewards dictionary.
-
-    Args:
-        relic (dict): relic data
-
-    Returns:
-        dict: Dictionary of options in the relic's reward
-    """
-    relic_option={}
-
-    if relic is None:
-        return None
-    for item in relic["rewards"]:
-        value = structures.relic_reward_object(item["chance"],item["rarity"],item["item"]["name"],item["item"]["imageName"])
-        if 'Forma Blueprint' not in item["item"]["name"]:
-            relic_option[item["item"]["name"]] = value
-    return relic_option
-
-def get_relic(name, is_unique) -> dict:
-    """ Return relic's data using name or uniqueName
-
-    Args:
-        name (str): name or uniqueName of the relic
-        is_unique (bool): check wheter if the name arg is uniqueName or name
-
-    Returns:
-        dict: Json of relic's data
-    """
-    field = "name"
-    relic ={}
-
-    if is_unique:
-        identifier = name.split("/")
-        identifier = "/".join(identifier[len(identifier)-3:])
-        field = "uniqueName"
-        
-    relic = warframe_status.relic_request(identifier, is_unique)[0]
-    
-    relic_export = export_relic(identifier,field)
-    for i,item in enumerate(relic["rewards"]):
-        item["item"]["uniqueName"] = relic_export["relicRewards"][i]["rewardName"]
-        item["item"]["imageName"] = get_image_url(relic_export["relicRewards"][i]["rewardName"])
-    return relic
 
 def extract_relic_rewards(relic):
     
@@ -119,7 +76,7 @@ def get_variza():
     Returns:
         dict: Json data of the api response.
     """
-    return warframe_status.vault_traider_request()
+    return warframe_status.world("vaultTrader")
 
 def get_baro():
     """ Call the warframe status api for baro data.
@@ -127,7 +84,7 @@ def get_baro():
     Returns:
         dict: Json data of the api response.
     """
-    return warframe_status.void_traider_request()
+    return warframe_status.world("voidTrader")
 
 def get_world_state():
     """ Call the warframe status api for world state data.
@@ -135,7 +92,7 @@ def get_world_state():
     Returns:
         dict: Json data of the api response.
     """
-    return warframe_status.world_state_request()
+    return warframe_status.world()
 
 def get_prime_list() -> list:
     """ Call the warframe status api for list of primes.
@@ -143,51 +100,11 @@ def get_prime_list() -> list:
     Returns:
         list: A clean prime names list.
     """
-    p_frame = warframe_status.prime_warframes_request()
-    p_weapon = warframe_status.prime_weapons_request()
+    p_frame = warframe_status.items(WarframeStatusSearchParams("prime","name",type="warframes",only=["name","category"]))
+    p_weapon = warframe_status.items(WarframeStatusSearchParams("prime","name",type="weapons",only=["name","category"]))
     
     return tools.clean_prime_names(p_frame, p_weapon)
 
-def get_prime_resurgent_list(primes,relics_list) -> list:
-    """ Get all of the current resurgent primes list using varzia data.
-
-    Args:
-        primes (list): List of prime
-        relics_list (list): List of relics
-
-    Returns:
-        list: List of current resurgent primes
-    """
-    result = []
-    prime = get_prime_list()
-    for prime in primes:
-        rewards = search_rewards([prime],relics_list)
-        if len(rewards)>0:
-            result.append(prime)
-    return result
-
-def search_rewards(search_keys,relics) -> dict:
-    """ Return relic that have search_key as reward(s).
-
-    Args:
-        search_key (str): Key word for searching.
-        relics (list): List of relics
-
-    Returns:
-        dict: Result of the search.
-    """
-    result = {}
-    if len(search_keys) > 0 != "" and len(relics) :
-        for item in relics:
-            if 'rewards' in item:
-                for reward in item['rewards']: 
-                    if any( "_"+search_key.lower().replace(" ", "_") in "_" + reward["item"]["name"].lower().replace(" ", "_") for search_key in search_keys):
-                        result[item["name"]] = item["uniqueName"]
-    else:
-        for item in relics:
-            result[item["name"]] = item["uniqueName"]
-    
-    return result
 
 def get_sortie_missions(data) -> dict:
     """ Get sortie's info
@@ -239,34 +156,13 @@ def get_market_item(url_path):
     Returns:
         dict: Json of the Item found.
     """
-    piece_list = warframe_market.get_market_item(url_path)
+    piece_list = warframe_market.items(url_path,False)
     if len(piece_list["payload"]["item"]["items_in_set"]) >1:
         for item in piece_list["payload"]["item"]["items_in_set"]:
             if item['en']['item_name'].lower().replace("(Key)","").replace(" ","_").replace("-","_") == url_path:
                 return item
     return piece_list["payload"]["item"]["items_in_set"][0]
 
-
-def get_craftable_info(name):
-    """ Get craftable item and it's components.
-
-    Args:
-        unique_name (str): Item uniqueName
-
-    Returns:
-        dict: Full item and it's images location.
-    """
-    if "QuestKey" in name:
-        name=name.replace("Blueprint","")
-    result = warframe_status.craftable_request(name)
-
-    if len(result)>0:
-        if 'components' in result[0]:
-            for component in result[0]["components"]:
-                component["imageName"] = get_image_url(component["uniqueName"])
-        return result[0]
-    else:
-        return None
 
 def extract_craftable_components(json_data):
     """ Getting components of a craftable items.
@@ -282,23 +178,6 @@ def extract_craftable_components(json_data):
             component["imageName"] = get_image_url(component["uniqueName"])
     return json_data
 
-def get_frame_abilities_with_image(frame):
-    """ Get warframe abilities with the ability images.
-
-    Args:
-        frame (str): Frame's name.
-
-    Returns:
-        dict: Full frame data and it's ability images location.
-    """
-    result = warframe_status.abilities_request(frame)
-
-    if len(result)>0:
-        for ability in result[0]["abilities"]:
-            ability["imageName"] = get_image_url(ability["uniqueName"])
-        return result[0]
-    else:
-        return None
 
 def extract_frame_abilities(json_data):
     """ Get warframe abilities with the ability images.
@@ -316,51 +195,6 @@ def extract_frame_abilities(json_data):
         "abilities": json_data["abilities"]
         }
 
-def get_item(unique_name):
-    """ Get item data using warframe status API.
-
-    Args:
-        unique_name (str): Item uniqueName
-
-    Returns:
-        dict: Full item and it's images location.
-    """
-    if "QuestKey" in unique_name:
-        unique_name = unique_name.split("/")[-1]
-        unique_name=unique_name.replace("Blueprint","")
-    
-    result = warframe_status.item_request(unique_name)
-    others_item = warframe_export.open_other()
-    
-    if len(result)>0:
-        item = result[0]
-        if item["category"] == "Relics":
-            return get_relic(unique_name,True)
-        else: 
-            return item
-    else:
-        for export_item in others_item:
-            if unique_name in export_item["uniqueName"]:
-                return export_item
-        return None
-    
-
-def get_item_name(unique_name):
-    """ Get item name from uniqueName
-
-    Args:
-        unique_name (str): Item uniqueName
-
-    Returns:
-        str: Item name
-    """ 
-
-    result = get_item(unique_name)
-    if result is not None:
-        return result["name"]
-    else:
-        return ""
-
 
 def call_market(option):
     """ Call warframe.market API for market inspection.
@@ -371,7 +205,7 @@ def call_market(option):
     Returns:
         dict: Item's market data.
     """
-    result = warframe_market.get_market_orders(option)['payload']['orders']
+    result = warframe_market.items(option,order=True)['payload']['orders']
     sorted_orders = sorted(result, key=lambda x: x["platinum"])
     return sorted_orders
 
@@ -403,7 +237,7 @@ def get_reward_image(name) -> str:
         img = get_image_url(unique_name,False)
     
     if img == AppIcons.NO_IMAGE_DATA_URL.value:
-        unique_name = warframe_status.item_request(name.replace(" Blueprint", ""),True)
+        unique_name = warframe_status.items(WarframeStatusSearchParams(identifier=name.replace(" Blueprint", ""),by="name",type="items"))
         if len(unique_name)>0:
             img = get_image_url(unique_name[0]["uniqueName"])
         
@@ -440,7 +274,7 @@ def get_ongoing_events():
     Returns:
         dict: events data | None
     """
-    response = warframe_status.ongoing_event_request()
+    response = warframe_status.world("events")
     events = []
     if len(response)>0:
         for event in response:
@@ -460,7 +294,7 @@ def get_alerts_data():
     Returns:
         dict: alerts data | None
     """
-    response = warframe_status.alert_request()
+    response = warframe_status.world("alerts")
     if len(response) >0:
         sorted_alert = sorted(
         [order for order in response ],
@@ -567,7 +401,7 @@ def get_all_tradables():
     Returns:
         dict: json response.
     """
-    return warframe_market.get_market_items()
+    return warframe_market.items()
 
 def get_item_by_name(name):
     """ Get item by name.
@@ -578,7 +412,7 @@ def get_item_by_name(name):
     Returns:
         dict: json data of the found item | None
     """
-    result = warframe_status.item_request(name,search_by_name=True)
+    result = warframe_status.items(WarframeStatusSearchParams(identifier=name.replace(" Blueprint", ""),by="name",type="items"))
     if len(result)>0:
         for item in result:
             if name == item["name"]:
@@ -593,7 +427,7 @@ def get_news():
     Returns:
         list: list of json data for news.
     """
-    world_state=warframe_status.world_state_request()
+    world_state=warframe_status.world()
     news = []
     if 'news' in world_state:
         if len(world_state["news"]) > 0:
@@ -617,7 +451,7 @@ def get_cycles():
     Returns:
         list: list of json data for open worlds.
     """
-    world_state=warframe_status.world_state_request()
+    world_state=warframe_status.world()
     cycles = [
                 {
                     "name":"Cetus",
@@ -653,7 +487,7 @@ def get_rivens_settings():
     Returns:
         tuple(list,list): combined data of riven default informations.
     """
-    return warframe_market.get_market_riven_items(), warframe_market.get_market_riven_attributes()
+    return warframe_market.rivens_info("items"), warframe_market.rivens_info("attributes")
 
 def get_rivens(weapon_url_name, 
                buyout_policy=None,
@@ -685,7 +519,7 @@ def get_rivens(weapon_url_name,
         buyout_policy = "with"
     else:
         buyout_policy = None
-    rivens = warframe_market.riven_search(weapon_url_name, buyout_policy, positive_stats, negative_stats,operation,re_rolls_min,re_rolls_max,polarity)
+    rivens = warframe_market.rivens_auction(RivenSearchParams(weapon_url_name, buyout_policy, positive_stats, negative_stats,operation,re_rolls_min,re_rolls_max,polarity))
     filtered_list =[]
     if status is not None:
         if rivens is not None:
@@ -706,7 +540,14 @@ def get_weapon_by_name(name):
         dict: json data of weapon.
     """
     name = name.replace("_", " ")
-    return warframe_status.get_weapon_by_name(name)
+    response = warframe_status.items(WarframeStatusSearchParams(name,"name",type="weapons",remove=["patchlogs"]))
+    if len(response) < 1:
+        return None
+    else:
+        for item in response:
+            if item["name"].lower() == name:
+                return item
+        return response[0]
 
 def get_event_rewards(data):
     """ Get event rewards.
@@ -741,7 +582,7 @@ def get_relics():
         list: relic list.
     """
     relic_list = []
-    relics = warframe_status.relics_request()
+    relics = warframe_status.items(WarframeStatusSearchParams("Relic",by="type",type="items",remove=["patchlogs"]))
 
     if len(relics) < 1:
         return None
@@ -836,7 +677,7 @@ def get_relic_rewards():
     Returns:
         list: list of rewards.
     """
-    requiems = warframe_status.requiem_request()
+    requiems = warframe_status.items(WarframeStatusSearchParams("Requiem",by="name",type="items",remove=["patchlogs"]))
     requiems_rewards =[]
     if len(requiems)> 0:
         for item in requiems:

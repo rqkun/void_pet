@@ -1,6 +1,8 @@
 from datetime import datetime, timezone
 import re
+from typing import Union
 
+from config.classes import WarframeStatusSearchParams, RivenSearchParams
 from config.constants import AppMessages
 
 def market_filter(data, rep=0, status="All",wtb=""):
@@ -218,3 +220,8 @@ def check_pattern_set(s):
     """
     pattern = r"^(.+)_(set)$"
     return bool(re.match(pattern, s))
+
+
+def hash_func(obj: Union[RivenSearchParams , WarframeStatusSearchParams]) -> str:
+    query_string = obj.to_query_string()
+    return f"{obj.type}&{obj.identifier}&{query_string}"
