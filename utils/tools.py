@@ -2,6 +2,8 @@ from datetime import datetime, timezone
 import re
 from typing import Union
 
+import urllib
+
 from config.classes import WarframeStatusSearchParams, RivenSearchParams
 from config.constants import AppMessages
 
@@ -225,3 +227,12 @@ def check_pattern_set(s):
 def hash_func(obj: Union[RivenSearchParams , WarframeStatusSearchParams]) -> str:
     query_string = obj.to_query_string()
     return f"{obj.type}&{obj.identifier}&{query_string}"
+
+
+def encode_identifier(identifier,is_unique = False):
+    if is_unique:
+        identifier = identifier.split("/")[-1]
+    if " and " in identifier:
+        identifier = identifier.replace(" and ", " & ")
+    identifier = re.sub(r'\s*\(.*?\)', '', identifier)
+    return urllib.parse.quote_plus(identifier, safe="")

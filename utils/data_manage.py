@@ -352,7 +352,7 @@ def get_cached_items(item_ids):
     Returns:
         list: list of items.
     """
-    return asyncio.run(warframe_status.fetch_all_items(item_ids))
+    return asyncio.run(warframe_status.items_async(item_ids))
 
 def preload_data(data):
     """ Getting all of the baro/varzia items.
@@ -378,8 +378,11 @@ def preload_data(data):
             else:
                 ids.append({
                             "uniqueName": item["uniqueName"],
-                            "ducats" : item["ducats"] if item["ducats"] is not None else 0,
-                            "credits" : item["credits"] if item["credits"] is not None else 0,
+                            "metadata":{
+                                "ducats" : item["ducats"] if item["ducats"] is not None else 0,
+                                "credits" : item["credits"] if item["credits"] is not None else 0,
+                            }
+                            
                         })
             
                 progress.progress((i+1)/len(data), text=f"""{(i+1)}/{len(data)} Items. Indexed: {item["item"]}""")

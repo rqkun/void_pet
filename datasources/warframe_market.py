@@ -61,7 +61,7 @@ def rivens_auction(params:RivenSearchParams):
     """
     base_url = Warframe.MARKET.value["api"]
     query_string = params.to_query_string()
-    request_url = f"{base_url}/auctions/search?type=riven&weapon_url_name={params.identifier}&{query_string}&sort_by=price_asc"
+    request_url = f"{base_url}/auctions/search?{query_string}"
     headers = {"accept": "application/json"}
     response = requests.get(request_url, headers=headers)
     raise_detailed_error(response)

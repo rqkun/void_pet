@@ -4,19 +4,23 @@ from typing import Literal
 class RivenSearchParams:
     def __init__(self, weapon_url_name, buyout_policy=None, positive_stats=None,
                  negative_stats=None, operation=None, re_rolls_min=None,
-                 re_rolls_max=None, polarity=None, type=None):
+                 re_rolls_max=None, polarity=None,sort="price_asc"):
         self.identifier = weapon_url_name
         self.buyout_policy = buyout_policy
         self.positive_stats = positive_stats or []
         self.negative_stats = negative_stats or []
         self.operation = operation
         self.re_rolls_min = re_rolls_min
-        self.type = ""
+        self.type = "riven"
         self.re_rolls_max = re_rolls_max
         self.polarity = polarity
+        self.sort = sort
 
     def to_query_string(self):
         filters = []
+        filters.append(f"type={self.type}")
+        if self.identifier:
+            filters.append(f"weapon_url_name={self.identifier}")
         if self.buyout_policy:
             filters.append(f"buyout_policy={self.buyout_policy}")
         if self.positive_stats:
@@ -33,9 +37,11 @@ class RivenSearchParams:
             filters.append(f"re_rolls_max={self.re_rolls_max}")
         if self.polarity:
             filters.append(f"polarity={self.polarity}")
+        if self.sort:
+            filters.append(f"sort_by={self.sort}")
         return "&".join(filters)
 class WarframeStatusSearchParams:
-    def __init__(self, identifier, by, type=Literal["items","weapons","warframes"],only=None, remove=None):
+    def __init__(self, identifier, by, type:str=Literal["items","weapons","warframes"],only=None, remove=None):
         self.identifier = identifier
         self.by = by
         self.type = type
