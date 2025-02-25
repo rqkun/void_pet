@@ -65,7 +65,7 @@ async def fetch_item(client, item_id, retries=3, SEMAPHORE=None):
     async with SEMAPHORE:
         for attempt in range(retries):
             try:
-                identifier = encode_identifier(item_id["uniqueName"])
+                identifier = encode_identifier(item_id["uniqueName"],True)
                 url = f"""{Warframe.STATUS.value["api"]}/items/search/{identifier}?by=uniqueName&remove=introduced,patchlogs"""
                 
                 response = await client.get(url, follow_redirects=True)

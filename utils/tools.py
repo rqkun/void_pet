@@ -232,7 +232,8 @@ def hash_func(obj: Union[RivenSearchParams , WarframeStatusSearchParams]) -> str
 def encode_identifier(identifier,is_unique = False):
     if is_unique:
         identifier = identifier.split("/")[-1]
-    if " and " in identifier:
-        identifier = identifier.replace(" and ", " & ")
-    identifier = re.sub(r'\s*\(.*?\)', '', identifier)
+    else:
+        if " and " in identifier:
+            identifier = identifier.replace(" and ", " & ")
+        identifier = re.sub(r'\s*\(.*?\)', '', identifier)
     return urllib.parse.quote_plus(identifier, safe="")
