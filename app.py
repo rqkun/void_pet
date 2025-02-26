@@ -2,7 +2,9 @@ import requests
 import streamlit as st
 from components import custom
 from config.constants import AppIcons, AppPages
+import os
 
+os.environ['STREAMLIT_SERVER_ENABLE_ STATIC_SERVING'] = 'true'
 st.set_page_config(page_title="Void Pet", page_icon=AppIcons.MAIN_APP.value, layout="centered")
 
 custom.app_style()
