@@ -40,6 +40,8 @@ class RivenSearchParams:
         if self.sort:
             filters.append(f"sort_by={self.sort}")
         return "&".join(filters)
+
+
 class WarframeStatusSearchParams:
     def __init__(self, identifier, by, type:str=Literal["items","weapons","warframes"],only=None, remove=None):
         self.identifier = identifier
@@ -59,3 +61,5 @@ class WarframeStatusSearchParams:
             remove_query = ",".join(self.remove)
             filters.append(f"remove={remove_query}")
         return "&".join(filters)
+
+

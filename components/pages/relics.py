@@ -46,7 +46,7 @@ types = left.segmented_control("Type",
                                 selection_mode="multi",
                                 default=None,
                                 format_func= lambda x: x.title())
-adv_setting = right_top.popover(":material/settings:",use_container_width=True)
+adv_setting = right_top.popover(AppIcons.SETTING.value,use_container_width=True)
 with adv_setting:
     vaulted = st.checkbox("Vaulted")
     non_vault = st.checkbox("Non-Vaulted")
@@ -67,19 +67,20 @@ if "relics" in st.session_state:
         st.write(" ")
         custom.empty_result(f"""relics with current filters.""")
     else:
-        paged_items, items_per_row = custom.paginations(st.session_state.relics,3,items_per_row=6)
-        
+        current_relics = st.session_state.relics
+        start_idx, end_idx, items_per_row = custom.paginations(len(current_relics),3,items_per_row=6)
+        view_relics = current_relics[start_idx:end_idx]
         _,middle,_ = st.columns([3,2,3],vertical_alignment="center")
 
         with middle,st.spinner("",show_time=True,_cache=False):
-            for item in paged_items:
+            for item in view_relics:
                 item["name"] = item["name"].replace(" Intact","")
                 item["image"] = data_manage.get_image_url(item["uniqueName"])
                 item["html"] = cards.generic(package=item, image_url=item["image"])
         list_col = st.columns(items_per_row)
         start_idx = 0
         custom.varzia_style()
-        for idx, item in enumerate(iterable=paged_items[start_idx:]):
+        for idx, item in enumerate(iterable=view_relics[start_idx:]):
             with list_col[idx%items_per_row]:
                 if item is not None:
                     st.markdown(item["html"],unsafe_allow_html=True)

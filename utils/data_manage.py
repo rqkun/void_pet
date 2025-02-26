@@ -3,7 +3,7 @@ from collections import defaultdict
 import re
 import streamlit as st
 from config import structures
-from config.classes import RivenSearchParams, WarframeStatusSearchParams
+from config.classes.parameters import RivenSearchParams, WarframeStatusSearchParams
 from config.constants import AppIcons, AppMessages, Warframe
 from datasources import warframe_export,warframe_market,warframe_status
 from utils import tools

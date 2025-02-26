@@ -4,7 +4,7 @@ from typing import Union
 
 import urllib
 
-from config.classes import WarframeStatusSearchParams, RivenSearchParams
+from config.classes.parameters import WarframeStatusSearchParams, RivenSearchParams
 from config.constants import AppMessages
 
 def market_filter(data, rep=0, status="All",wtb=""):
@@ -122,20 +122,6 @@ def remove_wf_color_codes(string):
     return re.sub(r"<.*?>", "", string)
 
 
-def deforma_rewards(option_map):
-    """ Remove Forma Blueprint rewards for market checking.
-
-    Args:
-        option_map (list): list of rewards.
-
-    Returns:
-        list: non-forma list of rewards
-    """
-    for item in option_map:
-        if "Forma Blueprint" in item["item"]["name"]:
-            option_map.remove(item)
-    return option_map
-
 def calculate_percentage_time(start,end) -> float:
     """ Calculate time percentage base on start, end time.
 
@@ -211,7 +197,7 @@ def check_pattern_prime_set(s):
     return bool(re.match(pattern, s))
 
 
-def check_pattern_set(s):
+def check_pattern_normal_set(s):
     """ Check for item with name 'x Set'.
 
     Args:
@@ -231,7 +217,8 @@ def hash_func(obj: Union[RivenSearchParams , WarframeStatusSearchParams]) -> str
 
 def encode_identifier(identifier,is_unique = False):
     if is_unique:
-        identifier = identifier.split("/")[-1]
+        temp = identifier.split("/")
+        identifier = temp[-1] if len(temp) < 3 else "/".join(temp[-3:])
     else:
         if " and " in identifier:
             identifier = identifier.replace(" and ", " & ")

@@ -18,7 +18,10 @@ class AppIcons(Enum):
     INSPECT = ":material/search:"
     INFO = ":material/info:"
     AYA = ":droplet:"
+    SETTING = ":material/settings:"
+    FILTER = ":material/filter_list:"
     NO_IMAGE_DATA_URL = "https://storage.googleapis.com/replit/images/1608749573246_3ecaeb5cdbf14cd5f1ad8c48673dd7ce.png"
+
 
 class AppMessages(Enum):
     """ Default messages for the app. """
@@ -30,40 +33,18 @@ class AppMessages(Enum):
     OFFER_TYPE_TOOLTIP = "WTS: sell offers, WTB: buy offers. Default to WTS if empty."
     PROGRESS = "Operation in progress. Please wait."
     GOTO_WIKI = "Go to Warframe Wiki."
-    
-    @staticmethod
-    def baro_time_message(date):
-        """ Return arrival date of baro formatted message. """
-        return f"Baro will arrive after: `{date}`"
-    
-    @staticmethod
-    def index_relic_message(item_name):
-        """ Return progress message for indexing relic. """
-        return f"Indexed: {item_name}"
-    @staticmethod
-    def location_message(location):
-        """ Return location formatted message. """
-        return f"Node: `{location}`"
-    
-    @staticmethod
-    def end_time_message(date):
-        """ Return leaving date formatted message. """
-        return f"Leave: `{date}`"
-    
-    @staticmethod
-    def start_time_message(date):
-        """ Return arrival date formatted message. """
-        return f"Arrive: `{date}`"
-    
+
     @staticmethod
     def delta_datetime_message(days,hours, minutes):
         """ Return delta time formatted message. """
         return f"{days}d, {hours}h, {minutes}m"
+
     @staticmethod
     def delta_time_message(hours, minutes):
         """ Return delta time formatted message. """
         return f"{hours}h:{minutes}m"
-    
+
+
 class AppLabels(Enum):
     """ Default button, widget labels for the app. """
     BROWSE = "Browse"
@@ -91,8 +72,8 @@ class AppLabels(Enum):
     def type_options():
         """ Return the labels of options for the order type widget. """
         return ["WTS","WTB"]
-    
-    
+
+
 class AppPages(Enum):
     """ The Web app pages locations. """
     HOME = "components/pages/home.py"
@@ -124,6 +105,7 @@ class AppExports(Enum):
     UPGRADES = "datasources/exports/ExportUpgrades_en.json"
     WARFRAMES = "datasources/exports/ExportWarframes_en.json"
     WEAPONS = "datasources/exports/ExportWeapons_en.json"
+
 
 class Warframe(Enum):
     """ Warframe APIs and images. """
@@ -170,6 +152,7 @@ class Warframe(Enum):
         "api": "http://content.warframe.com/PublicExport",
         "index": "https://origin.warframe.com/PublicExport/index_en.txt.lzma"
     }
+
     @staticmethod
     def get_wiki_url(string, type =None):
         """ Return the wiki url of a certain item. """
@@ -181,5 +164,5 @@ class Warframe(Enum):
             if type == "Ship Decoration":
                 if "Noggle" in string:
                     wiki_url = "Orbiter#Noggles"
-        
+
         return f"https://wiki.warframe.com/w/{wiki_url}"

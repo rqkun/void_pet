@@ -3,7 +3,7 @@ import asyncio
 import random
 import requests
 import urllib
-from config.classes import WarframeStatusSearchParams
+from config.classes.parameters import WarframeStatusSearchParams
 from config.constants import Warframe
 from utils.api_services import raise_detailed_error
 import streamlit as st

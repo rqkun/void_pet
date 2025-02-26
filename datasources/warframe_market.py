@@ -1,5 +1,5 @@
 import requests
-from config.classes import RivenSearchParams
+from config.classes.parameters import RivenSearchParams
 from config.constants import Warframe
 from utils.api_services import raise_detailed_error
 import streamlit as st

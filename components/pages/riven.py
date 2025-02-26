@@ -47,7 +47,7 @@ status = left.segmented_control("Status",
                                 selection_mode="single",
                                 default="ingame",
                                 format_func= lambda x: x.title())
-adv_setting = right_top.popover(":material/settings:",use_container_width=True)
+adv_setting = right_top.popover(AppIcons.SETTING.value,use_container_width=True)
 
 left,right=adv_setting.columns([1,1],vertical_alignment="top")
 polarity = adv_setting.pills("Polarity",
@@ -98,10 +98,11 @@ if 'rivens' in st.session_state:
         st.write(" ")
         custom.empty_result(f"""Riven with current filters.""")
     else:
+        current_rivens = st.session_state.rivens['auctions']
         custom.auction_style()
-        paged_items, items_per_row = custom.paginations(st.session_state.rivens['auctions'],10,items_per_row=1)
-        
-        for idx, auction in enumerate(iterable=paged_items):
+        start_idx, end_idx, items_per_row = custom.paginations(len(current_rivens),10,items_per_row=1)
+        view_rivens = current_rivens[start_idx:end_idx]
+        for idx, auction in enumerate(iterable=view_rivens):
             if auction is not None:
                 st.markdown(markdowns.riven_auction_md(auction,st.session_state['rivens']['image']),unsafe_allow_html=True)
                 name = f"""{st.session_state['rivens']['item']["name"]} {auction["item"]["name"].replace("-"," ").title().replace(" ","-")}"""

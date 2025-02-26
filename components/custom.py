@@ -50,7 +50,7 @@ def sideNav(current_idx):
             st.switch_page(AppPages.NEWS.value)
 
 
-def paginations(items,num_of_row=2,items_per_row = 5):
+def paginations(length,num_of_row=2,items_per_row = 5):
     """ Pagination for pages.
 
     Args:
@@ -61,17 +61,16 @@ def paginations(items,num_of_row=2,items_per_row = 5):
         list, int: item list for page, number of item per row.
     """
     items_per_page = items_per_row * num_of_row
-    total_items = len(items)
 
-    max_page = math.ceil(total_items / items_per_page)
-    page = sac.pagination(total=total_items,page_size=items_per_page,align='center', show_total=True)
+    max_page = math.ceil(length / items_per_page)
+    page = sac.pagination(total=length,page_size=items_per_page,align='center', show_total=True)
     
     page = max(1, min(page, max_page))  
 
     start_index = (page - 1) * items_per_page
     end_index = start_index + items_per_page
-    paged_items = items[start_index:end_index]
-    return paged_items, items_per_row
+    
+    return start_index, end_index, items_per_row
 
 
 def reject_url_param():

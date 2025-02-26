@@ -5,7 +5,7 @@ from config.constants import AppIcons, AppLabels, AppMessages, Warframe
 from utils import data_manage, tools
 
 from utils.tools import check_pattern_prime_set
-from utils.tools import check_pattern_set
+from utils.tools import check_pattern_normal_set
 
 custom.sideNav(5)
 custom.reject_url_param()
@@ -35,7 +35,7 @@ status = left.segmented_control("Status",
                                 default="ingame",
                                 format_func= lambda x: x.title())
 
-adv_setting = right_top.popover(":material/settings:",use_container_width=True)
+adv_setting = right_top.popover(AppIcons.SETTING.value,use_container_width=True)
 rep = adv_setting.number_input(AppLabels.REPUTATION.value,min_value=0,value="min",step=1)
 limit = adv_setting.number_input(AppLabels.NUMBER_OF_TRADES.value,min_value=5,value=10,max_value=20,step=1)
 
@@ -52,7 +52,7 @@ if submit:
                 name = option[0]["item_name"].replace(" Set","").replace(" Blueprint","")
                 item = data_manage.get_item_by_name(name)
                 image = data_manage.get_image_url(item["uniqueName"])
-            elif check_pattern_set(option[0]["url_name"]):
+            elif check_pattern_normal_set(option[0]["url_name"]):
                 name = option[0]["item_name"].replace(" Set","")
                 item = data_manage.get_item_by_name(name)
                 image = data_manage.get_image_url(item["uniqueName"])
@@ -90,8 +90,8 @@ if 'orders' in st.session_state:
             custom.empty_result(f"""{option[0]["item_name"]} with current filters.""")
         else:
             custom.market_style()
-            paged_items, items_per_row = custom.paginations(orders["orders"],items_per_row=1,num_of_row=limit)
-            for order in paged_items:
+            start_idx, end_idx, items_per_row = custom.paginations(len(orders["orders"]),items_per_row=1,num_of_row=limit)
+            for order in orders["orders"][start_idx: end_idx]:
                 st.markdown(markdowns.market_order_md(order,orders["market_data"]),unsafe_allow_html=True)
                 whisper = f"""/w {order["user"]["ingame_name"]} Hi! I want to buy: "{orders["name"]}" for {order["platinum"]} platinum. (warframe.market)"""
                 st.code(whisper,language="md",wrap_lines=False)
