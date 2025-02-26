@@ -4,7 +4,7 @@ import re
 from PIL import Image
 import streamlit as st
 from config.classes.parameters import RivenSearchParams, WarframeStatusSearchParams
-from config.constants import AppIcons, AppMessages, Warframe
+from config.constants import AppExports, AppIcons, AppMessages, Warframe
 from datasources import warframe_export,warframe_market,warframe_status
 from utils import api_services, data_manage, tools
 import utils.api_services as api_services
@@ -20,7 +20,7 @@ def get_image_url(unique_name,is_full =True) -> str:
         str: Item image url.
     """
     if 'image_manifest' not in st.session_state:
-        st.session_state.image_manifest = warframe_export.open_manifest()
+        st.session_state.image_manifest = warframe_export.export_request(AppExports.MANIFEST.value)
     if is_full:
         identifier = unique_name.split("/")
         identifier = "/".join(identifier[len(identifier)-3:])
@@ -53,7 +53,7 @@ def export_relic(name,field):
     Returns:
         dict: The json of found relic item.
     """
-    local_relic_data = warframe_export.open_relic_arcane()
+    local_relic_data = warframe_export.export_request(AppExports.RELIC_ARCANE.value)
     for item in local_relic_data:
         if name in item[field]:
             return item
@@ -219,8 +219,8 @@ def get_reward_image(name) -> str:
         bytes: ImageBytes
     """
     unique_name = name
-    resoureces_json = warframe_export.open_resources()
-    recipes_json = warframe_export.open_recipes()
+    resoureces_json = warframe_export.export_request(AppExports.RESOURCES.value)
+    recipes_json = warframe_export.export_request(AppExports.RECIPES.value)
     
     for item in recipes_json:
         if (name.replace(" ","") in item["uniqueName"]):

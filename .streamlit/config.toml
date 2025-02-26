@@ -3,5 +3,6 @@ base = "dark"
 primaryColor = "#FF4B4B"
 [server]
 runOnSave = true
+enableStaticServing = true
 [ui]
 hideTopBar = true
