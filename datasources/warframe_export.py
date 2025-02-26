@@ -1,8 +1,7 @@
 from enum import Enum
-import requests
+import json
 import streamlit as st
 
-from utils.api_services import raise_detailed_error
 
 @st.cache_data(ttl="7d", show_spinner=False)
 def export_request(item:Enum):
@@ -39,6 +38,8 @@ def export_request(item:Enum):
     Returns:
         dict: Raw json data of the export.
     """
-    request_object = requests.get(f"""{st.secrets.host.url}/app/{item["path"]}""")
-    raise_detailed_error(request_object)
-    return request_object.json()[item["object_name"]]
+    # request_object = requests.get(f"""{st.secrets.host.url}/app/{item["path"]}""")
+    # raise_detailed_error(request_object)
+    # return request_object.json()[item["object_name"]]
+    with open(item["path"], "r", encoding="utf-8") as file:
+        return json.load(file)[item["object_name"]]
