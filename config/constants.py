@@ -1,7 +1,7 @@
 from enum import Enum
 
 class AppIcons(Enum):
-    """ Default icons for the app. """
+    """Default icons for the app. """
     MAIN_APP = ":material/token:"
     ERROR = ":material/error:"
     WARNING = ":material/warning:"
@@ -24,7 +24,7 @@ class AppIcons(Enum):
 
 
 class AppMessages(Enum):
-    """ Default messages for the app. """
+    """Default messages for the app. """
     LOAD_DATA = "Gather Data..."
     BARO_LOCKED = "This will unlock when he comes back to a relay."
     VARZIA_BROWSE = "Click to browse wares."
@@ -36,17 +36,17 @@ class AppMessages(Enum):
 
     @staticmethod
     def delta_datetime_message(days,hours, minutes):
-        """ Return delta time formatted message. """
+        """Return delta time formatted message. """
         return f"{days}d, {hours}h, {minutes}m"
 
     @staticmethod
     def delta_time_message(hours, minutes):
-        """ Return delta time formatted message. """
+        """Return delta time formatted message. """
         return f"{hours}h:{minutes}m"
 
 
 class AppLabels(Enum):
-    """ Default button, widget labels for the app. """
+    """Default button, widget labels for the app. """
     BROWSE = "Browse"
     RELOAD = "Reload"
     DETAIL_MARKET = "Details"
@@ -63,19 +63,10 @@ class AppLabels(Enum):
     PRIME_SELECT = "Choose up to 2 Primes."
     RELIC_SELECT = "Choose a relic. "
     REWARD_SELECT = "Choose a reward to inspect: "
-    
-    @staticmethod
-    def status_options():
-        """ Return the labels of options for online status widget. """
-        return ["Ingame", "Online", "Offline", "All"]
-    @staticmethod
-    def type_options():
-        """ Return the labels of options for the order type widget. """
-        return ["WTS","WTB"]
 
 
 class AppPages(Enum):
-    """ The Web app pages locations. """
+    """The Web app pages locations. """
     HOME = "components/pages/home.py"
     ERROR = "components/pages/error.py"
     NOTFOUND = "components/pages/not_found.py"
@@ -88,7 +79,7 @@ class AppPages(Enum):
     ISSUE = "https://github.com/rqkun/void_pet/issues"
 
 class AppExports(Enum):
-    """ The Web app pages locations. """
+    """The Web app pages locations. """
     COSMETICS = "datasources/exports/ExportCustoms_en.json"
     DRONES = "datasources/exports/ExportDrones_en.json"
     FLAVOURS = "datasources/exports/ExportFlavour_en.json"
@@ -108,7 +99,7 @@ class AppExports(Enum):
 
 
 class Warframe(Enum):
-    """ Warframe APIs and images. """
+    """Warframe APIs and images. """
     PLATINUM = {
         "name": "Platinum",
         "image": "https://static.wikia.nocookie.net/warframe/images/e/e7/PlatinumLarge.png"
@@ -155,7 +146,7 @@ class Warframe(Enum):
 
     @staticmethod
     def get_wiki_url(string, type =None):
-        """ Return the wiki url of a certain item. """
+        """Return the wiki url of a certain item. """
         wiki_url = string.replace(" ","_")
         if type is not None:
             if type == "Skin":

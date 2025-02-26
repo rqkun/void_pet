@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 
 @st.fragment(run_every=timedelta(minutes=1))
 def show():
-    """ Show event's card that update every minute. """
+    """Show event's card that update every minute. """
     event_state_card = st.container(border=False)
     with event_state_card:
 

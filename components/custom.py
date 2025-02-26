@@ -5,7 +5,7 @@ from config.constants import AppIcons, AppPages
 import streamlit_antd_components as sac
 
 def sideNav(current_idx):
-    """ Custom Sidebar navigation.
+    """Custom Sidebar navigation.
 
     Args:
         current_idx (int): current page index.
@@ -51,7 +51,7 @@ def sideNav(current_idx):
 
 
 def paginations(length,num_of_row=2,items_per_row = 5):
-    """ Pagination for pages.
+    """Pagination for pages.
 
     Args:
         items (list): item list.
@@ -74,58 +74,58 @@ def paginations(length,num_of_row=2,items_per_row = 5):
 
 
 def reject_url_param():
-    """ Redirect to 404 page when there's query_params. """
+    """Redirect to 404 page when there's query_params. """
     if len(st.query_params.to_dict())>0:
         st.switch_page(AppPages.NOTFOUND.value)
 
 
 def empty_result(item):
-    """ Render Empty results."""
+    """Render Empty results."""
     sac.result(label='Empty', description=f"""Currently there's no {item}""", status='empty')
 
 
 def baro_time_alert(message):
-    """ Render baro kit'er alert message"""
+    """Render baro kit'er alert message"""
     sac.alert(label=f"{message}", banner=True,size='xs',variant='outline', color='#4682b4', icon=True, closable=True)
 
 
 def inject_style(filename):
-    """ Inject style from html file."""
+    """Inject style from html file."""
     st.html(f"""components/htmls/{filename}.html""")
 
 def auction_style():
-    """ Auction page style. """
+    """Auction page style. """
     inject_style("auction")
 
 
 def image_style():
-    """ Image style. """
+    """Image style. """
     inject_style("image")
 
 
 def varzia_style():
-    """ Varzia page style. """
+    """Varzia page style. """
     inject_style("varzia")
 
 
 def market_style():
-    """ Market page style. """
+    """Market page style. """
     inject_style("market")
 
 
 def world_style():
-    """ Home page style. """
+    """Home page style. """
     inject_style("world")
 
 
 def card_style():
-    """ Varzia/Baro cards style. """
+    """Varzia/Baro cards style. """
     inject_style("card")
 
 def app_style():
-    """ App style. """
+    """App style. """
     inject_style("app")
 
 def set_divider():
-    """ Render a divider. """
+    """Render a divider. """
     sac.divider(label='item', icon='diagram-2-fill', align='center', color='gray')

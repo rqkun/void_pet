@@ -1,59 +1,88 @@
-import streamlit as st
-from PIL import Image
 import components.markdowns
 from config.constants import Warframe
-from utils import api_services
 from utils import data_manage
 
-def info(item):
-    """ The info module for a card. """
-    hover_md = ""
-    if 'type' in item and 'category' in item:
-        if item["type"] == "Warframe" or item["type"] == "Archwing":
-            type_data = data_manage.extract_frame_abilities(item)
-            hover_md = components.markdowns.ability_info_md(item,type_data)
-        elif ("Weapons" in item["uniqueName"] or "Sentinels" in item["category"]) and item["category"] != "Skins":
-            type_data = data_manage.extract_craftable_components(item)
-            hover_md =components.markdowns.craftable_info_md(type_data)
-        elif ("Mods" in item["category"]):
-            # type_data = market.get (item name url)
-            pass
-        elif "Relic" in item["type"]:
-            type_data = data_manage.extract_relic_rewards(item)
-            hover_md = components.markdowns.relic_rewards_info_md(type_data)
-        else:
-            hover_md = components.markdowns.misc_info_md(item)
 
-    return hover_md
+class Card:
+    
+    def __init__(self,image_url: str,data:dict,metadata=None):
+        self.image_url = image_url
+        self.data = data
+        self.metadata = metadata
+        self.type = data.get("category","Unknown")
+        self.type_data = ""
+        self.wiki_url = Warframe.get_wiki_url(data.get("name","").replace(" ","_"),data.get("type",""))
 
-def generic(image_url: str,package=None,price_info=None):
-    """ Generic info card. """
-    item = package
-    generic_container = st.container(border=False)
-    with generic_container:
-        if item is not None:
-            wiki_url = Warframe.get_wiki_url(item["name"].replace(" Intact", "").replace(" ","_"),item["type"])
-            if 'category' in item and item["category"] == "Mods":
-                image_url = item["wikiaThumbnail"].split(".png")[0] + ".png"
-        elif price_info is not None:
-            wiki_url = Warframe.get_wiki_url(price_info["name"].replace("StoreItem", "").replace(" ","_"),item["type"])
-        hover_md = info(item)
-        
-        image_md = components.markdowns.image_md(wiki_url,item["name"],image_url,caption="visible",size="50px",border=0.5)
-        info_md = components.markdowns.hover_md(image_md,hover_md)
-        ducat_md = components.markdowns.price_overlay_md(price_info) if price_info is not None else ""
-        md = components.markdowns.card_md(info_md,ducat_md)
+    def _preload(self):
+        hover_md = components.markdowns.misc_info_md(self.data)
+        if 'category' in self.data:
+            if self.type == "Warframes" or self.type == "Archwing":
+                type_data = data_manage.extract_frame_abilities(self.data)
+                hover_md = components.markdowns.ability_info_md(self.data,type_data)
+            elif self.type in ["Primary", "Secondary", "Melee", "Arch-Gun", "Arch-Melee"] or self.type == "Sentinels":
+                type_data = data_manage.extract_craftable_components(self.data)
+                hover_md = components.markdowns.craftable_info_md(type_data)
+            elif self.type == "Mods":
+                # type_data = market.get (item name url)
+                pass
+            elif self.type == "Relics":
+                type_data = data_manage.extract_relic_rewards(self.data)
+                hover_md = components.markdowns.relic_rewards_info_md(type_data)
 
-        return md + """</div>"""
+        self.type_data = hover_md
 
-            
-def prep_image(enum):
-    """ Image card of Baro/Varzia."""
-    img_location = data_manage.get_image_url(enum.value["uniqueName"])
-    img_bytes = api_services.get_image(img_location)
-    if img_bytes is not None:
-        image = Image.open(img_bytes)
-        st.image(img_bytes,use_container_width=True)
+    def generate(self):
+        self._preload()
+        image_md = components.markdowns.image_md(self.wiki_url,self.data.get("name",""),self.image_url,caption="visible",size="50px",border=0.5)
+        info_md = components.markdowns.hover_md(image_md,self.type_data)
+        ducat_md = components.markdowns.price_overlay_md(self.metadata) if self.metadata is not None else ""
+        return components.markdowns.card_md(info_md,ducat_md)+ """</div>"""
+
+
+class WeaponCard(Card):
+    def __init__(self,image_url: str,data:dict,metadata=None):
+        super().__init__(image_url, data, metadata)
+
+
+class WarframeCard(Card):
+    def __init__(self,image_url: str,data:dict,metadata=None):
+        super().__init__(image_url, data, metadata)
+
+
+class ArchwingCard(Card):
+    def __init__(self,image_url: str,data:dict,metadata=None):
+        super().__init__(image_url, data, metadata)
+
+
+class SentinelCard(Card):
+    def __init__(self,image_url: str,data:dict,metadata=None):
+        super().__init__(image_url, data, metadata)
+
+class ModCard(Card):
+    def __init__(self,image_url: str,data:dict,metadata=None):
+        super().__init__(image_url, data, metadata)
+
+
+class RelicCard(Card):
+    def __init__(self,image_url: str,data:dict,metadata=None):
+        super().__init__(image_url, data, metadata)
+        self.wiki_url = Warframe.get_wiki_url(data.get("name","").replace(" Intact", "").replace(" ","_"),data.get("type",""))
+
+
+def match_type(data:dict,image_url:str,metadata:dict) -> Card:
+    type = data.get("category","Unknown")
+    if type == "Warframes":
+        return WarframeCard(image_url,data=data,metadata=metadata)
+    elif type == "Archwing":
+        return ArchwingCard(image_url,data=data,metadata=metadata)
+    elif type == "Sentinels":
+        return SentinelCard(image_url,data=data,metadata=metadata)
+    elif type == "Mods":
+        return ModCard(image_url,data=data,metadata=metadata)
+    elif type == "Relics":
+        return RelicCard(image_url,data=data,metadata=metadata)
+    elif type in ["Primary", "Secondary", "Melee", "Arch-Gun", "Arch-Melee"]:
+        return WeaponCard(image_url,data=data,metadata=metadata)
     else:
-        image = Image.open(enum.value["image"])
-        st.image(image.resize((200, 200)),use_container_width=True)
+        return Card(image_url,data=data,metadata=metadata)
+

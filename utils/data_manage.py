@@ -1,17 +1,17 @@
 import asyncio
 from collections import defaultdict
 import re
+from PIL import Image
 import streamlit as st
-from config import structures
 from config.classes.parameters import RivenSearchParams, WarframeStatusSearchParams
 from config.constants import AppIcons, AppMessages, Warframe
 from datasources import warframe_export,warframe_market,warframe_status
-from utils import tools
+from utils import api_services, data_manage, tools
 import utils.api_services as api_services
 from utils.tools import parse_item_string
 
 def get_image_url(unique_name,is_full =True) -> str:
-    """ Return image url from export.
+    """Return image url from export.
 
     Args:
         unique_name (str): the identifier of an item.
@@ -33,7 +33,7 @@ def get_image_url(unique_name,is_full =True) -> str:
     return AppIcons.NO_IMAGE_DATA_URL.value
 
 def get_image_bytes(url) -> bytes:
-    """ Get Image bytes from url.
+    """Get Image bytes from url.
 
     Args:
         url (str): Request Image Url
@@ -44,7 +44,7 @@ def get_image_bytes(url) -> bytes:
     return api_services.get_image(url)
 
 def export_relic(name,field):
-    """ Return the relic from the public export file.
+    """Return the relic from the public export file.
 
     Args:
         name (str): uniqueName or name of the item.
@@ -71,7 +71,7 @@ def extract_relic_rewards(relic):
     return relic
 
 def get_variza():
-    """ Call the warframe status api for varzia data.
+    """Call the warframe status api for varzia data.
 
     Returns:
         dict: Json data of the api response.
@@ -79,7 +79,7 @@ def get_variza():
     return warframe_status.world("vaultTrader")
 
 def get_baro():
-    """ Call the warframe status api for baro data.
+    """Call the warframe status api for baro data.
 
     Returns:
         dict: Json data of the api response.
@@ -87,7 +87,7 @@ def get_baro():
     return warframe_status.world("voidTrader")
 
 def get_world_state():
-    """ Call the warframe status api for world state data.
+    """Call the warframe status api for world state data.
 
     Returns:
         dict: Json data of the api response.
@@ -95,7 +95,7 @@ def get_world_state():
     return warframe_status.world()
 
 def get_prime_list() -> list:
-    """ Call the warframe status api for list of primes.
+    """Call the warframe status api for list of primes.
 
     Returns:
         list: A clean prime names list.
@@ -107,7 +107,7 @@ def get_prime_list() -> list:
 
 
 def get_sortie_missions(data) -> dict:
-    """ Get sortie's info
+    """Get sortie's info
 
     Args:
         data (dict): World state data of sortie
@@ -125,7 +125,7 @@ def get_sortie_missions(data) -> dict:
 
 
 def get_invasions_rewards(data) -> dict:
-    """ Get Invasion's rewards info
+    """Get Invasion's rewards info
 
     Args:
         data (dict): World state data of Invasions
@@ -148,7 +148,7 @@ def get_invasions_rewards(data) -> dict:
 
 
 def get_market_item(url_path):
-    """ Get warframe.market API data for item.
+    """Get warframe.market API data for item.
 
     Args:
         url_path (str): Item path.
@@ -165,7 +165,7 @@ def get_market_item(url_path):
 
 
 def extract_craftable_components(json_data):
-    """ Getting components of a craftable items.
+    """Getting components of a craftable items.
 
     Args:
         json_data (dict): main item data.
@@ -180,7 +180,7 @@ def extract_craftable_components(json_data):
 
 
 def extract_frame_abilities(json_data):
-    """ Get warframe abilities with the ability images.
+    """Get warframe abilities with the ability images.
 
     Args:
         json_data (dict): frame's data.
@@ -197,7 +197,7 @@ def extract_frame_abilities(json_data):
 
 
 def call_market(option):
-    """ Call warframe.market API for market inspection.
+    """Call warframe.market API for market inspection.
 
     Args:
         option (str): Market's item path.
@@ -210,7 +210,7 @@ def call_market(option):
     return sorted_orders
 
 def get_reward_image(name) -> str:
-    """ Get the material image from export API.
+    """Get the material image from export API.
 
     Args:
         name (str): Either name or uniqueName of item
@@ -244,7 +244,7 @@ def get_reward_image(name) -> str:
     return img
 
 def clean_event_data(data):
-    """ Cleaning missing data from event API.
+    """Cleaning missing data from event API.
 
     Args:
         data (dict): json data of the event.
@@ -269,7 +269,7 @@ def clean_event_data(data):
     return data
 
 def get_ongoing_events():
-    """ Call warframe status api for event data.
+    """Call warframe status api for event data.
 
     Returns:
         dict: events data | None
@@ -289,7 +289,7 @@ def get_ongoing_events():
         return None
 
 def get_alerts_data():
-    """ Call warframe status api for alert data.
+    """Call warframe status api for alert data.
 
     Returns:
         dict: alerts data | None
@@ -306,7 +306,7 @@ def get_alerts_data():
 
 
 def get_alert_reward(data):
-    """ Getting alert rewards with their images.
+    """Getting alert rewards with their images.
 
     Args:
         data (dict): alert data.
@@ -344,7 +344,7 @@ def get_alert_reward(data):
 
 @st.cache_data(ttl="30d",show_spinner=False)
 def get_cached_items(item_ids):
-    """ Getting all of the items aync by uniqueNames.
+    """Getting all of the items aync by uniqueNames.
 
     Args:
         item_ids (list): list of uniqueNames.
@@ -355,7 +355,7 @@ def get_cached_items(item_ids):
     return asyncio.run(warframe_status.items_async(item_ids))
 
 def preload_data(data):
-    """ Getting all of the baro/varzia items.
+    """Getting all of the baro/varzia items.
 
     Args:
         data (dict): baro/varzia data for filtering.
@@ -393,13 +393,13 @@ def preload_data(data):
     return items
 
 def clear_cached_item_call():
-    """ 
+    """
         Clear cache for the get_cached_items() function.
     """
     get_cached_items.clear()
 
 def get_all_tradables():
-    """ Get all of the market items.
+    """Get all of the market items.
 
     Returns:
         dict: json response.
@@ -407,7 +407,7 @@ def get_all_tradables():
     return warframe_market.items()
 
 def get_item_by_name(name):
-    """ Get item by name.
+    """Get item by name.
 
     Args:
         name (string): name of an item.
@@ -425,7 +425,7 @@ def get_item_by_name(name):
         return None
 
 def get_news():
-    """ API get news data.
+    """API get news data.
 
     Returns:
         list: list of json data for news.
@@ -449,7 +449,7 @@ def get_news():
         else: return None
 
 def get_cycles():
-    """ API get cycles for open worlds.
+    """API get cycles for open worlds.
 
     Returns:
         list: list of json data for open worlds.
@@ -485,7 +485,7 @@ def get_cycles():
     return cycles
 
 def get_rivens_settings():
-    """ API for riven attribute list and item list
+    """API for riven attribute list and item list
 
     Returns:
         tuple(list,list): combined data of riven default informations.
@@ -501,7 +501,7 @@ def get_rivens(weapon_url_name,
                re_rolls_max=None,
                polarity=None,
                status=None):
-    """ API to get all riven auctions.
+    """API to get all riven auctions.
 
     Args:
         weapon_url_name (string): weapon url path.
@@ -534,7 +534,7 @@ def get_rivens(weapon_url_name,
     return rivens
 
 def get_weapon_by_name(name):
-    """ API for weapon data search by name.
+    """API for weapon data search by name.
 
     Args:
         name (string): weapon's name.
@@ -553,7 +553,7 @@ def get_weapon_by_name(name):
         return response[0]
 
 def get_event_rewards(data):
-    """ Get event rewards.
+    """Get event rewards.
 
     Args:
         data (dict): event json data.
@@ -579,7 +579,7 @@ def get_event_rewards(data):
 
 @st.cache_data(ttl="10d",show_spinner=False)
 def get_relics():
-    """ Return all relics.
+    """Return all relics.
 
     Returns:
         list: relic list.
@@ -605,7 +605,7 @@ def get_relics():
 
 @st.cache_data(ttl="10d",show_spinner=False)
 def get_resurgent_relics():
-    """ Return list of resurgent relic.
+    """Return list of resurgent relic.
 
     Returns:
         list: list of resurgent relic.
@@ -624,7 +624,7 @@ def get_resurgent_relics():
 
 
 def filter_relic(data,rewards,types,tags,resurgent_data=None):
-    """ Relic filter function.
+    """Relic filter function.
 
     Args:
         data (list): relic list.
@@ -675,7 +675,7 @@ def filter_relic(data,rewards,types,tags,resurgent_data=None):
     return filtered_relics
 
 def get_relic_rewards():
-    """ Relic list of relic rewards, requiems included.
+    """Relic list of relic rewards, requiems included.
 
     Returns:
         list: list of rewards.
@@ -690,3 +690,14 @@ def get_relic_rewards():
     rewards = get_prime_list()
     rewards.extend(requiems_rewards)
     return rewards
+
+def prep_image(enum):
+    """Image card of Baro/Varzia."""
+    img_location = data_manage.get_image_url(enum.value["uniqueName"])
+    img_bytes = api_services.get_image(img_location)
+    if img_bytes is not None:
+        image = Image.open(img_bytes)
+        st.image(img_bytes,use_container_width=True)
+    else:
+        image = Image.open(enum.value["image"])
+        st.image(image.resize((200, 200)),use_container_width=True)

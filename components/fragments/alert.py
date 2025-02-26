@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 
 @st.fragment(run_every=timedelta(minutes=1))
 def show():
-    """ Show alert's card that update every minute. """
+    """Show alert's card that update every minute. """
     alert_state_card = st.container(border=False)
     with alert_state_card:
 

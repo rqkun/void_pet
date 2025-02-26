@@ -6,7 +6,7 @@ import lzma
 import urllib
 
 def get_manifest():
-    """ Getting manifest files from the zip file.
+    """Getting manifest files from the zip file.
 
     Raises:
         ValueError: lzma failed to decompress the index zip file.
@@ -26,7 +26,7 @@ def get_manifest():
         raise ValueError(f"Failed to decompress the LZMA file: {e}")
 
 def write_manifest(file):
-    """ Save a json file.
+    """Save a json file.
 
     Args:
         file (json): export data from the Warframe's PublicExport endpoint.

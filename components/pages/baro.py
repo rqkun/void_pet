@@ -6,7 +6,7 @@ from utils import data_manage
 from config.constants import AppIcons, AppMessages, AppPages
 
 def store_baro():
-    """ Loading data. """
+    """Loading data. """
     _,middle,_ = st.columns([2,3,2],vertical_alignment="center")
     with middle,st.spinner(AppMessages.LOAD_DATA.value,show_time=True,_cache=False):
         data=VoidTraider()

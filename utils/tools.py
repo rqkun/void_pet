@@ -4,11 +4,12 @@ from typing import Union
 
 import urllib
 
+
 from config.classes.parameters import WarframeStatusSearchParams, RivenSearchParams
 from config.constants import AppMessages
 
 def market_filter(data, rep=0, status="All",wtb=""):
-    """ Filter data with reputation threshold, online statuses, buy/sell orders.
+    """Filter data with reputation threshold, online statuses, buy/sell orders.
 
     Args:
         data (json): a json / dictionary object of market's orders.
@@ -29,7 +30,7 @@ def market_filter(data, rep=0, status="All",wtb=""):
 
 
 def parse_item_string(item_string):
-    """ Return name and count of the reward string.
+    """Return name and count of the reward string.
 
     Args:
         item_string (str): The reward string to be processed.
@@ -49,7 +50,7 @@ def parse_item_string(item_string):
 
 
 def clean_prime_names(frame_json,weap_json):
-    """ Group and clean the prime list.
+    """Group and clean the prime list.
 
     Args:
         frame_json (list): Prime Frame list.
@@ -67,7 +68,7 @@ def clean_prime_names(frame_json,weap_json):
 
 
 def format_timedelta(delta,day=True):
-    """ Extract hours, minutes, and seconds from the time delta.
+    """Extract hours, minutes, and seconds from the time delta.
 
     Args:
         delta (timedelta): Iime period.
@@ -90,7 +91,7 @@ def format_timedelta(delta,day=True):
 
 
 def get_min_status_plat(data,status):
-    """ Filter and find the lowest plat price for an item.
+    """Filter and find the lowest plat price for an item.
 
     Args:
         data (object): Warframe.market Data
@@ -111,7 +112,7 @@ def get_min_status_plat(data,status):
 
 
 def remove_wf_color_codes(string):
-    """ Remove Warframe color codes in strings.
+    """Remove Warframe color codes in strings.
 
     Args:
         string (string): target string.
@@ -123,7 +124,7 @@ def remove_wf_color_codes(string):
 
 
 def calculate_percentage_time(start,end) -> float:
-    """ Calculate time percentage base on start, end time.
+    """Calculate time percentage base on start, end time.
 
     Args:
         start (string): Start timestamp string.
@@ -144,7 +145,7 @@ def calculate_percentage_time(start,end) -> float:
 
 
 def filter_data(items, types):
-    """ Filter for baro/varzia
+    """Filter for baro/varzia
 
     Args:
         items (list): list of items need filtered.
@@ -167,15 +168,15 @@ def filter_data(items, types):
             condition = True
 
         # If 'Relic' is selected, include relic items
-        if "Relic" in types and item["type"] == "Relic":
+        if "Relic" in types and item["category"] == "Relics":
             condition = True
 
         # If 'Warframe' is selected, include warframe items
-        if "Warframe" in types and item["type"] == "Warframe":
+        if "Warframe" in types and item["category"] == "Warframes":
             condition = True
 
         # If 'Others' is selected, include items that are not Weapon, Relic, or Warframe
-        if "Others" in types and item["category"] not in ["Primary", "Secondary", "Melee", "Arch-Gun", "Arch-Melee", "Relic", "Warframe"] and item["type"] not in ["Primary", "Secondary", "Melee", "Arch-Gun", "Arch-Melee", "Relic", "Warframe"]:
+        if "Others" in types and item["category"] not in ["Primary", "Secondary", "Melee", "Arch-Gun", "Arch-Melee", "Relic", "Warframe"] and item["category"] not in ["Primary", "Secondary", "Melee", "Arch-Gun", "Arch-Melee", "Relics", "Warframes"]:
             condition = True
 
         # Append the item if it matches any of the selected conditions
@@ -185,7 +186,7 @@ def filter_data(items, types):
 
 
 def check_pattern_prime_set(s):
-    """ Check for item with name 'x Prime Set/Blueprint'.
+    """Check for item with name 'x Prime Set/Blueprint'.
 
     Args:
         s (string): item name.
@@ -198,7 +199,7 @@ def check_pattern_prime_set(s):
 
 
 def check_pattern_normal_set(s):
-    """ Check for item with name 'x Set'.
+    """Check for item with name 'x Set'.
 
     Args:
         s (string): item name.

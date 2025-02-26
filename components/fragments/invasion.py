@@ -12,7 +12,7 @@ from datetime import timedelta
 
 @st.fragment(run_every=timedelta(minutes=5))
 def show():
-    """ Show Invasion rewards card. """
+    """Show Invasion rewards card. """
     event_state_card = st.container(border=True)
     with event_state_card:
         st.subheader("""Invasions """)

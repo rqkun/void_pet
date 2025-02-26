@@ -8,7 +8,7 @@ from utils.tools import hash_func
 
 @st.cache_data(ttl="1m",show_spinner=False)
 def items(url_path=None,order=False)-> dict:
-    """ API request to get item's orders.
+    """API request to get item's orders.
 
     Args:
         url_path (str): warframe.market Item path.
@@ -31,7 +31,7 @@ def items(url_path=None,order=False)-> dict:
 
 @st.cache_data(ttl="7d",show_spinner=False)
 def rivens_info(key:str):
-    """ API request to get riven items data.
+    """API request to get riven items data.
 
     Returns:
         dict: All riven items data

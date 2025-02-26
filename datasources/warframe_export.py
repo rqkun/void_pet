@@ -4,7 +4,7 @@ import streamlit as st
 from config.constants import AppExports
 @st.cache_data(ttl="1d", show_spinner=False)
 def open_cosmetics():
-    """ Read Cosmetic's Json info.
+    """Read Cosmetic's Json info.
 
     Returns:
         dict: Json of Cosmetics info.
@@ -14,7 +14,7 @@ def open_cosmetics():
 
 @st.cache_data(ttl="1d", show_spinner=False)
 def open_drones():
-    """ Read Drone's Json info.
+    """Read Drone's Json info.
 
     Returns:
         dict: Json of Drones info.
@@ -24,7 +24,7 @@ def open_drones():
 
 @st.cache_data(ttl="1d", show_spinner=False)
 def open_flavours():
-    """ Read Flavour's Json info.
+    """Read Flavour's Json info.
 
     Returns:
         dict: Json of Flavours info.
@@ -34,7 +34,7 @@ def open_flavours():
 
 @st.cache_data(ttl="1d", show_spinner=False)
 def open_bundles():
-    """ Read Bundle's Json info.
+    """Read Bundle's Json info.
 
     Returns:
         dict: Json of Bundles info.
@@ -44,7 +44,7 @@ def open_bundles():
 
 @st.cache_data(ttl="1d", show_spinner=False)
 def open_gears():
-    """ Read Gear's Json info.
+    """Read Gear's Json info.
 
     Returns:
         dict: Json of Gears info.
@@ -54,7 +54,7 @@ def open_gears():
 
 @st.cache_data(ttl="1d", show_spinner=False)
 def open_keys():
-    """ Read Key's Json info.
+    """Read Key's Json info.
 
     Returns:
         dict: Json of Quest Keys info.
@@ -64,7 +64,7 @@ def open_keys():
 
 @st.cache_data(ttl="1d", show_spinner=False)
 def open_manifest():
-    """ Read Manifest's Json info.
+    """Read Manifest's Json info.
 
     Returns:
         dict: Json of Image Manifest info.
@@ -74,7 +74,7 @@ def open_manifest():
 
 @st.cache_data(ttl="1d", show_spinner=False)
 def open_recipes():
-    """ Read Recipe's Json info.
+    """Read Recipe's Json info.
 
     Returns:
         dict: Json of Recipes info.
@@ -84,7 +84,7 @@ def open_recipes():
 
 @st.cache_data(ttl="1d", show_spinner=False)
 def open_regions():
-    """ Read Region's Json info.
+    """Read Region's Json info.
 
     Returns:
         dict: Json of Regions info.
@@ -94,7 +94,7 @@ def open_regions():
 
 @st.cache_data(ttl="1d", show_spinner=False)
 def open_relic_arcane():
-    """ Read Relic & Arcane Json info.
+    """Read Relic & Arcane Json info.
 
     Returns:
         dict: Json of Relics and Arcanes info.
@@ -104,7 +104,7 @@ def open_relic_arcane():
 
 @st.cache_data(ttl="1d", show_spinner=False)
 def open_resources():
-    """ Read Resource's Json info.
+    """Read Resource's Json info.
 
     Returns:
         dict: Json of Resources info.
@@ -114,7 +114,7 @@ def open_resources():
 
 @st.cache_data(ttl="1d", show_spinner=False)
 def open_sentinels():
-    """ Read Sentiel's Json info.
+    """Read Sentiel's Json info.
 
     Returns:
         dict: Json of Sentinels info.
@@ -124,7 +124,7 @@ def open_sentinels():
 
 @st.cache_data(ttl="1d", show_spinner=False)
 def open_sorties():
-    """ Read Sorties Reward's Json info.
+    """Read Sorties Reward's Json info.
 
     Returns:
         dict: Json of Sortie Rewards info.
@@ -134,7 +134,7 @@ def open_sorties():
 
 @st.cache_data(ttl="1d", show_spinner=False)
 def open_nightwave():
-    """ Read Nightwave Reward's Json info.
+    """Read Nightwave Reward's Json info.
 
     Returns:
         dict: Json of Nightwave Rewards info.
@@ -144,7 +144,7 @@ def open_nightwave():
 
 @st.cache_data(ttl="1d", show_spinner=False)
 def open_railjack():
-    """ Read Railjack Reward's Json info.
+    """Read Railjack Reward's Json info.
 
     Returns:
         dict: Json of Railjack Rewards info.
@@ -154,7 +154,7 @@ def open_railjack():
 
 @st.cache_data(ttl="1d", show_spinner=False)
 def open_intrinsics():
-    """ Read Intrinsics's Json info.
+    """Read Intrinsics's Json info.
 
     Returns:
         dict: Json of Intrinsics info.
@@ -164,7 +164,7 @@ def open_intrinsics():
 
 @st.cache_data(ttl="1d", show_spinner=False)
 def open_other():
-    """ Read Other Export's Json info.
+    """Read Other Export's Json info.
 
     Returns:
         dict: Json of Other Rewards info.
@@ -174,7 +174,7 @@ def open_other():
 
 @st.cache_data(ttl="1d", show_spinner=False)
 def open_upgrades():
-    """ Read Upgrade's Json info.
+    """Read Upgrade's Json info.
 
     Returns:
         dict: Json of Mods and Upgrades info.
@@ -184,7 +184,7 @@ def open_upgrades():
 
 @st.cache_data(ttl="1d", show_spinner=False)
 def open_modsets():
-    """ Read Mod set's Json info.
+    """Read Mod set's Json info.
 
     Returns:
         dict: Json of Mod sets info.
@@ -194,7 +194,7 @@ def open_modsets():
 
 @st.cache_data(ttl="1d", show_spinner=False)
 def open_avionics():
-    """ Read Mod Avionics Json info.
+    """Read Mod Avionics Json info.
 
     Returns:
         dict: Json of Avionics info.
@@ -204,7 +204,7 @@ def open_avionics():
 
 @st.cache_data(ttl="1d", show_spinner=False)
 def open_focusupgrades():
-    """ Read Mod FocusUpgrades Json info.
+    """Read Mod FocusUpgrades Json info.
 
     Returns:
         dict: Json of FocusUpgrades info.
@@ -214,7 +214,7 @@ def open_focusupgrades():
 
 @st.cache_data(ttl="1d", show_spinner=False)
 def open_warframes():
-    """ Read Frame's Json info.
+    """Read Frame's Json info.
 
     Returns:
         dict: Json of Warframes info.
@@ -224,7 +224,7 @@ def open_warframes():
 
 @st.cache_data(ttl="1d", show_spinner=False)
 def open_abilities():
-    """ Read Ability's Json info.
+    """Read Ability's Json info.
 
     Returns:
         dict: Json of Abilities info.
@@ -234,7 +234,7 @@ def open_abilities():
 
 @st.cache_data(ttl="1d", show_spinner=False)
 def open_weapons():
-    """ Read Weapon's Json info.
+    """Read Weapon's Json info.
 
     Returns:
         dict: Json of Weapons info.
@@ -244,7 +244,7 @@ def open_weapons():
 
 @st.cache_data(ttl="1d", show_spinner=False)
 def open_railjackweapons():
-    """ Read Railjack Weapons's Json info.
+    """Read Railjack Weapons's Json info.
 
     Returns:
         dict: Json of Railjack Weapons info.

@@ -1,5 +1,5 @@
 
-import millify
+from millify import millify
 from components import cards
 from config.constants import Warframe
 from utils import data_manage, tools
@@ -119,14 +119,11 @@ class Vendor:
 
             currency_type, amount = (self.currency[0], item["ducats"]) if item["ducats"] > 0 else (self.currency[1], item["credits"])
 
-            item["html"] = cards.generic(
-                package=item,
-                image_url=item["image"],
-                price_info={
+            item["html"] = cards.match_type(data=item,image_url=item["image"],metadata={
                     "type": currency_type,
-                    "amount": millify.millify(amount, precision=2)
-                }
-            )
+                    "amount": millify(amount, precision=2)
+                }).generate()
+    
         return self.filtered_inventory[start_idx:end_idx]
 
 

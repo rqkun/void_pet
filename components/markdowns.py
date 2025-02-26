@@ -8,7 +8,7 @@ from utils import data_manage
 from typing import Literal
 
 def ability_info_md(item,abilities):
-    """ Abilities markdown custom web element. """
+    """Abilities markdown custom web element. """
     md = f"""<span class="item-image-drop-down-content"> <b>{item["name"]} &middot; {item["type"]} </b><br>"""
     if 'passiveDescription' in abilities:
         md = md + f"""<b>Passive</b>: <i>{abilities["passiveDescription"]}</i><br/>"""
@@ -20,7 +20,7 @@ def ability_info_md(item,abilities):
 
 
 def craftable_info_md(item):
-    """ Craftable markdown custom web element. """
+    """Craftable markdown custom web element. """
     md = f"""<span class="item-image-drop-down-content"> <b>{item["name"]} &middot; {item["type"]} &middot; MR: {item["masteryReq"] if 'masteryReq' in item else 0}</b><br>"""
 
     if 'damage' in item:
@@ -37,7 +37,7 @@ def craftable_info_md(item):
 
 
 def relic_rewards_info_md(item):
-    """ Relic rewards markdown custom web element. """
+    """Relic rewards markdown custom web element. """
     md = f"""<span class="item-image-drop-down-content"> <b>{item["name"]} &middot; {item["type"]}<br>"""
     for reward in item["rewards"]:
         md = md + f"""
@@ -47,7 +47,7 @@ def relic_rewards_info_md(item):
 
 
 def misc_info_md(item):
-    """ Misc information markdown custom web element. """
+    """Misc information markdown custom web element. """
     md = f"""<span class="item-image-drop-down-content"> <b>{item["name"]} &middot; {item["type"]}</b><br>"""
 
     if 'damage' in item:
@@ -61,7 +61,7 @@ def misc_info_md(item):
 
 def hover_md(image_md, info_md):
     """Return hover dialog markdown custom web element. """
-    md = f""" <div class="item-image-drop-down">"""
+    md = f"""<div class="item-image-drop-down">"""
     md = md + image_md
     md = md + info_md
     md = md + """</div>"""
@@ -69,7 +69,7 @@ def hover_md(image_md, info_md):
 
 
 def price_overlay_md(price_info):
-    """ Prices markdown custom web element. """
+    """Prices markdown custom web element. """
     return f"""
         <div class="price-tag" >{price_info["amount"]}<img class="price-img" alt="{price_info["type"]["name"]}" src="{price_info["type"]["image"]}"/></div>
         """
@@ -90,7 +90,7 @@ def image_md(url,alt,source,caption:Literal["hidden", "collapse", "visible"],ani
 
 def card_md(image_md,price_md):
     """Return card markdown custom web element. """
-    md = f""" <div class="item-flex-content">"""
+    md = f"""<div class="item-flex-content">"""
     md = md + image_md
     md = md + price_md 
     md = md + """</div>"""
@@ -98,8 +98,8 @@ def card_md(image_md,price_md):
 
 
 def mod_info_md(item):
-    """ Mods markdown custom web element. """
-    md = f""" """
+    """Mods markdown custom web element. """
+    md = f""""""
     
     if 'polarity' in item:
         md = md + f"""
@@ -120,7 +120,7 @@ def mod_info_md(item):
             for stat in level["stats"]:  
                 md = md + f"""<i>{ tools.remove_wf_color_codes(stat)} </i><br>"""
     
-    sub_md = f""" """
+    sub_md = f""""""
     if 'drops' in item:
         sub_md = sub_md + """<b>Drop Locations:</b><br><div style="padding-left: 20px;">"""
         for drop in item["drops"]:
@@ -132,7 +132,7 @@ def mod_info_md(item):
 
 
 def alerts_reward_info_md(data):
-    """ Alert rewards markdown custom web element. """
+    """Alert rewards markdown custom web element. """
     md = f"""<div><span><b>Reward:<b/> <i style="color:#a3a3a3;"> Reminder, Steelpath rewards might be different.</i></span><br>"""
     for reward in data:
         if reward["item"] != "Credits":
@@ -144,8 +144,8 @@ def alerts_reward_info_md(data):
 
 
 def invasions_reward_info_md(data):
-    """ Invasion rewards markdown custom web element. """
-    md = f""" """
+    """Invasion rewards markdown custom web element. """
+    md = f""""""
     for item,amount in data.items():
         image = data_manage.get_reward_image(item)
         md = md + f"""
@@ -155,7 +155,7 @@ def invasions_reward_info_md(data):
 
 
 def market_order_md(data,item):
-    """ Market order custom web element. """
+    """Market order custom web element. """
     img = "https://warframe.market/static/assets/user/default-avatar.png"
 
     if "mod_rank" in data:
@@ -233,7 +233,7 @@ def render_svg(svg,size):
 
 
 def riven_auction_md(data,image):
-    """ Market riven auctions custom web element. """
+    """Market riven auctions custom web element. """
     if "_and_" in data["item"]["weapon_url_name"]:
         data["item"]["weapon_url_name"] = data["item"]["weapon_url_name"].replace("_and_", "_&_")
     plat_icon = f"""<img alt="{Warframe.PLATINUM.value["name"]}" style="width:20px;height:20px;" src="{Warframe.PLATINUM.value["image"]}"/>"""
@@ -311,7 +311,7 @@ def riven_auction_md(data,image):
 
 
 def event_alert_card_md(name, time,info_md):
-    """ Events and Alerts container custom web element."""
+    """Events and Alerts container custom web element."""
     md = f"""<div class="event-alert-card">
                 <div class="event-alert-name-time-container">
                     <h4>{name} &middot;</h4>
@@ -322,7 +322,7 @@ def event_alert_card_md(name, time,info_md):
 
 
 def event_info_md(data,step_rewards):
-    """ Event info custom element. """
+    """Event info custom element. """
     jobs = """<div class="event-info-popup">"""
     if data["jobs"] is not None and len(data["jobs"]) > 0:
         for item in data["jobs"]:

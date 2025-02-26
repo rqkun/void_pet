@@ -2,7 +2,7 @@ from io import BytesIO
 import requests
 
 def raise_detailed_error(request_object):
-    """ Get details on http errors.
+    """Get details on http errors.
 
     Args:
         request_object (json): Json response data.
@@ -21,7 +21,7 @@ def raise_detailed_error(request_object):
 
 
 def get_image(path) -> bytes:
-    """ Getting image for json path to bytes.
+    """Getting image for json path to bytes.
 
     Args:
         path (str): Url of an item.

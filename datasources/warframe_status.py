@@ -14,7 +14,7 @@ from utils.tools import encode_identifier
 
 @st.cache_data(ttl="1m",show_spinner=False)
 def world(path=None):
-    """ API request to get current world state data.
+    """API request to get current world state data.
     Args:
         path(str):
             "events": "Current events",\n
@@ -42,7 +42,7 @@ def world(path=None):
 
 @st.cache_data(hash_funcs={WarframeStatusSearchParams: hash_func},ttl="1d",show_spinner=False)
 def items(params:WarframeStatusSearchParams):
-    """ API request to get item searchable data.
+    """API request to get item searchable data.
 
     Args:
         params (WarframeStatusSearchParams): The search parameters.
