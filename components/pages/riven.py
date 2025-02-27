@@ -1,7 +1,7 @@
 
 import streamlit as st
 from components import custom, markdowns
-from config.constants import AppIcons, AppMessages
+from config.constants import AppIcons, AppMessages, Warframe
 from utils import data_manage
 
 
@@ -43,7 +43,7 @@ left,right=search_form.columns([4,1],vertical_alignment="bottom")
 
 submit = right.form_submit_button("Search",use_container_width=True,icon=AppIcons.INSPECT.value,type="primary")
 status = left.segmented_control("Status",
-                                ["ingame","offline","online"],
+                                Warframe.ONLINE_STATUS.value["list"],
                                 selection_mode="single",
                                 default="ingame",
                                 format_func= lambda x: x.title())

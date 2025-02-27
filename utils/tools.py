@@ -1,117 +1,138 @@
 from datetime import datetime, timezone
+from hashlib import sha256
+from itertools import chain
 import re
-from typing import Union
+from typing import Dict, List, Literal, Optional, Tuple, Union
 
 import urllib
 
 
 from config.classes.parameters import WarframeStatusSearchParams, RivenSearchParams
-from config.constants import AppMessages
+from config.constants import AppMessages, Warframe
 
-def market_filter(data, rep=0, status="All",wtb=""):
-    """Filter data with reputation threshold, online statuses, buy/sell orders.
+def market_filter(
+        data: List[Dict],
+        rep: int = 0,
+        status: Optional[Literal["ingame", "online", "offline"]] = None,
+        wtb: Optional[Literal["sell", "buy"]] = None
+    ) -> List[Dict]:
+    """
+    Filter market orders based on reputation threshold, user status, and order type.
 
     Args:
-        data (json): a json / dictionary object of market's orders.
-        rep (int, optional): reputation threshold for filter. Defaults to 0.
-        status (str, optional): online status of the order owner for filter. Defaults to "All".
-        wtb (str, optional): wtb/wts status. Defaults to "".
+        data (List[Dict]): List of market order dictionaries.
+        rep (int, optional): Minimum reputation threshold. Defaults to 0.
+        status (str, optional): User's online status to filter by. Defaults to None.
+        wtb (str, optional): Order type to filter by ('sell' or 'buy'). Defaults to None.
 
     Returns:
-        List: orders that have been filtered out.
+        List[Dict]: Filtered list of market orders.
     """
-    if wtb == "WTB": 
-        data =[entry for entry in data if (entry['order_type'] == "buy")]
-    else:
-        data =[entry for entry in data if (entry['order_type'] == "sell")]
-    if status != "All" and status is not None:
-        data =[entry for entry in data if (entry['user']['status'] == status.lower())]
+    if wtb:
+        data = [entry for entry in data if entry['order_type'] == wtb]
+    if status:
+        data = [entry for entry in data if entry['user']['status'] == status]
     return [entry for entry in data if entry['user']['reputation'] >= rep]
 
 
-def parse_item_string(item_string):
-    """Return name and count of the reward string.
+def parse_item_string(item_string: str) -> Tuple[str, int]:
+    """
+    Extract the item name and count from a given string.
 
     Args:
-        item_string (str): The reward string to be processed.
+        item_string (str): The input string containing the item and its count.
 
     Returns:
-        str: Name of the reward.
-        int: Amount of the reward.
+        Tuple[str, int]: A tuple containing the item name and its count.
+
+    Examples:
+        >>> parse_item_string("3 Apple")
+        ('Apple', 3)
+        >>> parse_item_string("Banana")
+        ('Banana', 1)
     """
-    parts = item_string.split(" ", 1)
-    if parts[0].isdigit(): 
+    if not item_string.strip():
+        raise ValueError("The input string is empty or only contains whitespace.")
+
+    parts = item_string.split(maxsplit=1)
+    if parts[0].isdigit():
         count = int(parts[0])
-        name = parts[1]
+        name = parts[1] if len(parts) > 1 else ""
     else:
         count = 1
         name = item_string
+
+    if not name:
+        raise ValueError("The item name is missing in the input string.")
+
     return name, count
 
 
-def clean_prime_names(frame_json,weap_json):
+def clean_prime_names(frame_json, weap_json):
     """Group and clean the prime list.
 
     Args:
         frame_json (list): Prime Frame list.
-        weap_json (list): Prime Weapon list .
+        weap_json (list): Prime Weapon list.
 
     Returns:
-        list: Full list of Primes.
+        list: Combined list of Prime names.
     """
-    result = []
-    for item in frame_json:
-        result.append(item["name"])
-    for item in weap_json:
-        result.append(item["name"])
-    return result
+    return [item["name"] for item in chain(frame_json, weap_json)]
 
 
-def format_timedelta(delta,day=True):
-    """Extract hours, minutes, and seconds from the time delta.
+def format_timedelta(delta, day=True):
+    """
+    Extract hours, minutes, and optionally days from a timedelta object.
 
     Args:
-        delta (timedelta): Iime period.
-        day (bool, optional): Whether if should the function return days or not. Defaults to True.
+        delta (timedelta): Time period.
+        day (bool, optional): Whether to include days in the output. Defaults to True.
 
     Returns:
         str: Formatted time message.
     """
     total_seconds = int(delta.total_seconds())
-    days, remainder = divmod(total_seconds, 86400)
-    hours, remainder = divmod(remainder, 3600)
-    minutes, _ = divmod(remainder, 60)
-    if day:
-        message = AppMessages.delta_datetime_message(days,hours,minutes)
-    else:
-        message = AppMessages.delta_time_message(hours,minutes)
-    if total_seconds < 0:
-        return message.replace("-","") + " ago"
-    else: return message
+    days, remainder = divmod(abs(total_seconds), 86400)
+    hours, minutes = divmod(remainder, 3600)[0], divmod(remainder, 60)[0]
+
+    message = (
+        AppMessages.delta_datetime_message(days, hours, minutes)
+        if day else
+        AppMessages.delta_time_message(hours, minutes)
+    )
+
+    return message + " ago" if total_seconds < 0 else message
 
 
-def get_min_status_plat(data,status):
-    """Filter and find the lowest plat price for an item.
+def get_min_status_plat(data, status):
+    """
+    Filter and find the lowest platinum price for an item.
 
     Args:
-        data (object): Warframe.market Data
-        status (str): Online status, usually Ingame.
+        data (list): List of Warframe.market orders.
+        status (str or list): Online status or list of statuses (e.g., "ingame", "online", "offline").
 
     Returns:
-        object: The lowest price order object.
+        dict or None: The lowest price order object, or None if no valid orders are found.
     """
-    if status is None or status == "":
-        status = ["offline","ingame","online"]
-    status_priority = {"ingame": 0, "online": 1, "offline": 2}
+    # Ensure status is a list of valid statuses
+    status = Warframe.ONLINE_STATUS.value["list"] if not status else [status] if isinstance(status, str) else status
     
+    # Status priority for sorting (lower value means higher priority)
+    status_priority = Warframe.ONLINE_STATUS.value["priority"]
+
+    # Filter and sort the orders
     filtered_sorted_orders = sorted(
-        [order for order in data if ((order["user"]["status"] in status) and order['order_type'] == "sell")],
+        (order for order in data if order["user"]["status"] in status and order['order_type'] == "sell"),
         key=lambda x: (status_priority.get(x["user"]["status"], 3), x["platinum"])
     )
-    return filtered_sorted_orders
+
+    return filtered_sorted_orders[0] if filtered_sorted_orders else None
 
 
-def remove_wf_color_codes(string):
+
+def remove_wf_color_codes(string) -> str:
     """Remove Warframe color codes in strings.
 
     Args:
@@ -176,7 +197,7 @@ def filter_data(items, types):
             condition = True
 
         # If 'Others' is selected, include items that are not Weapon, Relic, or Warframe
-        if "Others" in types and item["category"] not in ["Primary", "Secondary", "Melee", "Arch-Gun", "Arch-Melee", "Relic", "Warframe"] and item["category"] not in ["Primary", "Secondary", "Melee", "Arch-Gun", "Arch-Melee", "Relics", "Warframes"]:
+        if "Others" in types and item["category"] not in ["Primary", "Secondary", "Melee", "Arch-Gun", "Arch-Melee", "Relics", "Warframes"]:
             condition = True
 
         # Append the item if it matches any of the selected conditions
@@ -211,17 +232,39 @@ def check_pattern_normal_set(s):
     return bool(re.match(pattern, s))
 
 
-def hash_func(obj: Union[RivenSearchParams , WarframeStatusSearchParams]) -> str:
+def hash_func(obj: Union[RivenSearchParams, WarframeStatusSearchParams]) -> str:
+    """
+    Generate a unique hash for a given search parameter object.
+
+    Args:
+        obj (Union[RivenSearchParams, WarframeStatusSearchParams]): Object containing search parameters.
+
+    Returns:
+        str: A unique hash string representing the object.
+    """
     query_string = obj.to_query_string()
-    return f"{obj.type}&{obj.identifier}&{query_string}"
+    raw_string = f"{obj.type}&{obj.identifier}&{query_string}"
+    
+    # Generate a secure hash to ensure uniqueness
+    return sha256(raw_string.encode('utf-8')).hexdigest()
 
 
-def encode_identifier(identifier,is_unique = False):
+def encode_identifier(identifier, is_unique=False):
+    """
+    Encode an identifier for use in URLs.
+
+    Args:
+        identifier (str): The identifier to be encoded.
+        is_unique (bool, optional): Whether to use a unique identifier format. Defaults to False.
+
+    Returns:
+        str: The encoded identifier.
+    """
     if is_unique:
-        temp = identifier.split("/")
-        identifier = temp[-1] if len(temp) < 3 else "/".join(temp[-3:])
+        parts = identifier.split("/")
+        identifier = "/".join(parts[-3:]) if len(parts) >= 3 else parts[-1]
     else:
-        if " and " in identifier:
-            identifier = identifier.replace(" and ", " & ")
+        identifier = identifier.replace(" and ", " & ")
         identifier = re.sub(r'\s*\(.*?\)', '', identifier)
+
     return urllib.parse.quote_plus(identifier, safe="")

@@ -182,7 +182,6 @@ class AppExports(Enum):
     }
     
 
-
 class Warframe(Enum):
     """Warframe APIs and images. """
     PLATINUM = {
@@ -215,18 +214,23 @@ class Warframe(Enum):
         "uniqueName" : "/Lotus/Types/StoreItems/Packages/MegaPrimeVault/LastChanceItemA", 
         "image" : "datasources/images/varzia.png"
     }
-    STATUS = {
+    STATUS_API = {
         "api" : "https://api.warframestat.us"
     }
-    MARKET = {
+    MARKET_API = {
         "api" : "https://api.warframe.market/v1",
         "static" : "https://warframe.market/static/assets/",
         "url" : "https://warframe.market/items/",
         "base" : "https://warframe.market/"
     }
-    PUBLIC_EXPORT ={
+    PUBLIC_EXPORT_API ={
         "api": "http://content.warframe.com/PublicExport",
         "index": "https://origin.warframe.com/PublicExport/index_en.txt.lzma"
+    }
+    
+    ONLINE_STATUS ={
+        "list": ["offline", "ingame", "online"],
+        "priority" : {"ingame": 0, "online": 1, "offline": 2}
     }
 
     @staticmethod

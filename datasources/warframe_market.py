@@ -21,7 +21,7 @@ def items(url_path=None,order=False)-> dict:
         path = f"/{url_path}{order_req}"
     else:
         path =""
-    base_url = Warframe.MARKET.value["api"]
+    base_url = Warframe.MARKET_API.value["api"]
     request_url = f"{base_url}/items{path}"
     headers = {"accept": "application/json"}
     response = requests.get(request_url,headers=headers)
@@ -38,7 +38,7 @@ def rivens_info(key:str):
     """
     if key not in ["items","attributes"]:
         raise ValueError("Riven API - Implemented key. (items, attributes)")
-    base_url = Warframe.MARKET.value["api"]
+    base_url = Warframe.MARKET_API.value["api"]
     request_url = f"{base_url}/riven/{key}"
     headers = {"accept": "application/json"}
     response = requests.get(request_url,headers=headers)
@@ -59,7 +59,7 @@ def rivens_auction(params:RivenSearchParams):
     Returns:
         list or None: List of auctions if found, otherwise None.
     """
-    base_url = Warframe.MARKET.value["api"]
+    base_url = Warframe.MARKET_API.value["api"]
     query_string = params.to_query_string()
     request_url = f"{base_url}/auctions/search?{query_string}"
     headers = {"accept": "application/json"}

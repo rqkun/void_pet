@@ -5,7 +5,6 @@ from utils import data_manage
 from config.constants import AppIcons, AppMessages, AppPages
 
 
-
 def store_regal():
     """Loading data. """
     _,middle,_ = st.columns([2,3,2],vertical_alignment="center")

@@ -28,20 +28,10 @@ def get_image_url(unique_name,is_full =True) -> str:
         identifier = unique_name
     for item in st.session_state.image_manifest:
         if identifier in item["uniqueName"]:
-            return Warframe.PUBLIC_EXPORT.value["api"] + item["textureLocation"]
+            return Warframe.PUBLIC_EXPORT_API.value["api"] + item["textureLocation"]
 
     return AppIcons.NO_IMAGE_DATA_URL.value
 
-def get_image_bytes(url) -> bytes:
-    """Get Image bytes from url.
-
-    Args:
-        url (str): Request Image Url
-
-    Returns:
-        bytes: ImageBytes
-    """
-    return api_services.get_image(url)
 
 def export_relic(name,field):
     """Return the relic from the public export file.
@@ -61,14 +51,29 @@ def export_relic(name,field):
 
 
 def extract_relic_rewards(relic):
+    """
+    Extract and update relic reward information.
+
+    Args:
+        relic (dict): Relic data containing rewards and unique identifier.
+
+    Returns:
+        dict or None: Updated relic with extracted reward details, or None if export fails.
+    """
+    relic_export = export_relic(relic["uniqueName"], "uniqueName")
+    if not relic_export:
+        return None
     
-    relic_export = export_relic(relic["uniqueName"],"uniqueName")
-    for i,item in enumerate(relic["rewards"]):
-        if relic_export is None:
-            return None
-        item["item"]["uniqueName"] = relic_export["relicRewards"][i]["rewardName"]
-        item["item"]["imageName"] = get_image_url(relic_export["relicRewards"][i]["rewardName"])
+    rewards = relic.get("rewards", [])
+    for i, item in enumerate(rewards):
+        reward_data = relic_export["relicRewards"][i]
+        item["item"].update({
+            "uniqueName": reward_data["rewardName"],
+            "imageName": get_image_url(reward_data["rewardName"])
+        })
+        
     return relic
+
 
 def get_variza():
     """Call the warframe status api for varzia data.
@@ -78,6 +83,7 @@ def get_variza():
     """
     return warframe_status.world("vaultTrader")
 
+
 def get_baro():
     """Call the warframe status api for baro data.
 
@@ -86,6 +92,7 @@ def get_baro():
     """
     return warframe_status.world("voidTrader")
 
+
 def get_world_state():
     """Call the warframe status api for world state data.
 
@@ -93,6 +100,7 @@ def get_world_state():
         dict: Json data of the api response.
     """
     return warframe_status.world()
+
 
 def get_prime_list() -> list:
     """Call the warframe status api for list of primes.
@@ -104,24 +112,6 @@ def get_prime_list() -> list:
     p_weapon = warframe_status.items(WarframeStatusSearchParams("prime","name",type="weapons",only=["name","category"]))
     
     return tools.clean_prime_names(p_frame, p_weapon)
-
-
-def get_sortie_missions(data) -> dict:
-    """Get sortie's info
-
-    Args:
-        data (dict): World state data of sortie
-
-    Returns:
-        dict: Full sortie data,
-        dict: List of sortie missions.
-    """
-    result = {}
-    result_option = []
-    for item in data["variants"]:
-        result[item["missionType"]] = item
-        result_option.append(item["missionType"])
-    return result, result_option
 
 
 def get_invasions_rewards(data) -> dict:
@@ -144,7 +134,7 @@ def get_invasions_rewards(data) -> dict:
         name, count = parse_item_string(invasion["defender"]["reward"]["asString"])
         result[name] += count
 
-    return result
+    return dict(result)
 
 
 def get_market_item(url_path):
@@ -209,6 +199,7 @@ def call_market(option):
     sorted_orders = sorted(result, key=lambda x: x["platinum"])
     return sorted_orders
 
+
 def get_reward_image(name) -> str:
     """Get the material image from export API.
 
@@ -219,29 +210,31 @@ def get_reward_image(name) -> str:
         bytes: ImageBytes
     """
     unique_name = name
-    resoureces_json = warframe_export.export_request(AppExports.RESOURCES.value)
+    resources_json = warframe_export.export_request(AppExports.RESOURCES.value)
     recipes_json = warframe_export.export_request(AppExports.RECIPES.value)
     
-    for item in recipes_json:
-        if (name.replace(" ","") in item["uniqueName"]):
-            unique_name = item["uniqueName"]
-            break
+    def find_unique_name(data, key):
+        for item in data:
+            if name.replace(" ", "") in item[key]:
+                return item["uniqueName"]
+        return None
     
-    for item in resoureces_json:
-        if (name in item["name"]):
-            unique_name = item["uniqueName"]
-            break
-    if unique_name:
-        img = get_image_url(unique_name)
-    else:
-        img = get_image_url(unique_name,False)
+    unique_name = find_unique_name(recipes_json, "uniqueName") or find_unique_name(resources_json, "name")
     
+    # Get image URL or fallback if not found
+    img = get_image_url(unique_name) if unique_name else get_image_url(name, False)
+
+    # Handle cases where no image is found
     if img == AppIcons.NO_IMAGE_DATA_URL.value:
-        unique_name = warframe_status.items(WarframeStatusSearchParams(identifier=name.replace(" Blueprint", ""),by="name",type="items"))
-        if len(unique_name)>0:
-            img = get_image_url(unique_name[0]["uniqueName"])
-        
+        search_params = WarframeStatusSearchParams(
+            identifier=name.replace(" Blueprint", ""), by="name", type="items"
+        )
+        items = warframe_status.items(search_params)
+        if items:
+            img = get_image_url(items[0]["uniqueName"])
+
     return img
+
 
 def clean_event_data(data):
     """Cleaning missing data from event API.
@@ -268,6 +261,7 @@ def clean_event_data(data):
         data['node'] = "No Data"
     return data
 
+
 def get_ongoing_events():
     """Call warframe status api for event data.
 
@@ -287,6 +281,7 @@ def get_ongoing_events():
         return sorted_event
     else:
         return None
+
 
 def get_alerts_data():
     """Call warframe status api for alert data.
@@ -342,6 +337,7 @@ def get_alert_reward(data):
                                         })
     return reward
 
+
 @st.cache_data(ttl="30d",show_spinner=False)
 def get_cached_items(item_ids):
     """Getting all of the items aync by uniqueNames.
@@ -353,6 +349,7 @@ def get_cached_items(item_ids):
         list: list of items.
     """
     return asyncio.run(warframe_status.items_async(item_ids))
+
 
 def preload_data(data):
     """Getting all of the baro/varzia items.
@@ -392,11 +389,13 @@ def preload_data(data):
     progress.empty()
     return items
 
+
 def clear_cached_item_call():
     """
         Clear cache for the get_cached_items() function.
     """
     get_cached_items.clear()
+
 
 def get_all_tradables():
     """Get all of the market items.
@@ -405,6 +404,7 @@ def get_all_tradables():
         dict: json response.
     """
     return warframe_market.items()
+
 
 def get_item_by_name(name):
     """Get item by name.
@@ -423,6 +423,7 @@ def get_item_by_name(name):
         return result[0]
     else:
         return None
+
 
 def get_news():
     """API get news data.
@@ -447,6 +448,7 @@ def get_news():
             
             return news
         else: return None
+
 
 def get_cycles():
     """API get cycles for open worlds.
@@ -484,6 +486,7 @@ def get_cycles():
             ]
     return cycles
 
+
 def get_rivens_settings():
     """API for riven attribute list and item list
 
@@ -492,46 +495,41 @@ def get_rivens_settings():
     """
     return warframe_market.rivens_info("items"), warframe_market.rivens_info("attributes")
 
-def get_rivens(weapon_url_name, 
-               buyout_policy=None,
-               positive_stats=None,
-               negative_stats=None,
-               operation=None,
-               re_rolls_min=None,
-               re_rolls_max=None,
-               polarity=None,
-               status=None):
-    """API to get all riven auctions.
+
+def get_rivens(weapon_url_name, buyout_policy=None, positive_stats=None, negative_stats=None,
+               operation=None, re_rolls_min=None, re_rolls_max=None, polarity=None, status=None):
+    """
+    Fetch and filter Riven auctions from Warframe Market.
 
     Args:
-        weapon_url_name (string): weapon url path.
-        buyout_policy (string, optional): buyout policy. Defaults to None.
-        positive_stats (list, optional): list positive attributes. Defaults to None.
-        negative_stats (_type_, optional): list negative attributes. Defaults to None.
-        operation (string, optional): not implemented. Defaults to None.
-        re_rolls_min (int, optional): min reroll stat. Defaults to None.
-        re_rolls_max (int, optional): max reroll stat. Defaults to None.
-        polarity (string, optional): polarity of the riven. Defaults to None.
+        weapon_url_name (str): Weapon URL path.
+        buyout_policy (str, optional): Buyout type ("Buyout", "Auction", or None).
+        positive_stats (list, optional): List of positive attributes.
+        negative_stats (list, optional): List of negative attributes.
+        operation (str, optional): Not implemented (reserved for future use).
+        re_rolls_min (int, optional): Minimum reroll count.
+        re_rolls_max (int, optional): Maximum reroll count.
+        polarity (str, optional): Riven polarity.
+        status (str, optional): Desired owner status (e.g., "ingame", "online", "offline").
 
     Returns:
-        list: list of riven | None.
+        list: Filtered list of Riven auctions or None if no results.
     """
-    if buyout_policy == "Buyout":
-        buyout_policy = "direct"
-    elif buyout_policy == "Auction":
-        buyout_policy = "with"
-    else:
-        buyout_policy = None
-    rivens = warframe_market.rivens_auction(RivenSearchParams(weapon_url_name, buyout_policy, positive_stats, negative_stats,operation,re_rolls_min,re_rolls_max,polarity))
-    filtered_list =[]
-    if status is not None:
-        if rivens is not None:
-            if len(rivens) >0:
-                for item in rivens:
-                    if status in item["owner"]["status"]:
-                        filtered_list.append(item)
-                return filtered_list
-    return rivens
+    buyout_map = {"Buyout": "direct", "Auction": "with"}
+    buyout_policy = buyout_map.get(buyout_policy, None)
+
+    # Fetch rivens from the market API
+    rivens = warframe_market.rivens_auction(
+        RivenSearchParams(weapon_url_name, buyout_policy, positive_stats,
+                          negative_stats, operation, re_rolls_min, re_rolls_max, polarity)
+    )
+
+    if not rivens or status is None:
+        return rivens
+
+    # Filter by owner status
+    return [riven for riven in rivens if status == riven["owner"]["status"]]
+
 
 def get_weapon_by_name(name):
     """API for weapon data search by name.
@@ -551,6 +549,7 @@ def get_weapon_by_name(name):
             if item["name"].lower() == name:
                 return item
         return response[0]
+
 
 def get_event_rewards(data):
     """Get event rewards.
@@ -576,6 +575,7 @@ def get_event_rewards(data):
                     rewards.append(item)
 
     return rewards
+
 
 @st.cache_data(ttl="10d",show_spinner=False)
 def get_relics():
@@ -603,6 +603,7 @@ def get_relics():
             relic_list.append(item)
         return relic_list
 
+
 @st.cache_data(ttl="10d",show_spinner=False)
 def get_resurgent_relics():
     """Return list of resurgent relic.
@@ -621,6 +622,7 @@ def get_resurgent_relics():
                 continue
             relic_list.append(item["uniqueName"])
         return relic_list
+
 
 
 def filter_relic(data,rewards,types,tags,resurgent_data=None):
@@ -674,6 +676,7 @@ def filter_relic(data,rewards,types,tags,resurgent_data=None):
 
     return filtered_relics
 
+
 def get_relic_rewards():
     """Relic list of relic rewards, requiems included.
 
@@ -690,6 +693,7 @@ def get_relic_rewards():
     rewards = get_prime_list()
     rewards.extend(requiems_rewards)
     return rewards
+
 
 def prep_image(enum):
     """Image card of Baro/Varzia."""

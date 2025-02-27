@@ -30,7 +30,7 @@ left,right=search_form.columns([4,1],vertical_alignment="bottom")
 submit = right.form_submit_button("Search",use_container_width=True,icon=AppIcons.INSPECT.value,type="primary")
 
 status = left.segmented_control("Status",
-                                ["ingame","offline","online"],
+                                Warframe.ONLINE_STATUS.value["list"],
                                 selection_mode="single",
                                 default="ingame",
                                 format_func= lambda x: x.title())
@@ -57,7 +57,7 @@ if submit:
                 item = data_manage.get_item_by_name(name)
                 image = data_manage.get_image_url(item["uniqueName"])
             else:
-                image = Warframe.MARKET.value["static"] + item_market["icon"]
+                image = Warframe.MARKET_API.value["static"] + item_market["icon"]
             market_data = tools.market_filter(data_manage.call_market(option[0]["url_name"]),rep,status=status)
             filtered_data = tools.get_min_status_plat(market_data,status)
             if "orders" in st.session_state:
@@ -80,7 +80,7 @@ if 'orders' in st.session_state:
     with search_form: 
         custom.set_divider()
         left,right = search_form.columns([1,4],vertical_alignment="center")
-        left.markdown(markdowns.image_md(Warframe.MARKET.value["url"]+orders["url_name"],orders["name"],orders["image"],"hidden"),unsafe_allow_html=True)
+        left.markdown(markdowns.image_md(Warframe.MARKET_API.value["url"]+orders["url_name"],orders["name"],orders["image"],"hidden"),unsafe_allow_html=True)
         with right:
             st.markdown(markdowns.market_item_desc(orders["market_data"]),unsafe_allow_html=True)
             st.pills("Tags",orders["market_data"]["tags"],disabled=True,label_visibility="collapsed")

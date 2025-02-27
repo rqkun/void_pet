@@ -164,7 +164,7 @@ def market_order_md(data,item):
         mod_rank = f"""<span class="rank-amount flex-font">  Rank {data["mod_rank"]} {rank}</span>"""
     else: mod_rank = ""
     if data["user"]["avatar"] is not None:
-        img = Warframe.MARKET.value["static"]+data["user"]["avatar"]
+        img = Warframe.MARKET_API.value["static"]+data["user"]["avatar"]
     md =f"""<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"><div class="row"> """
     md = md+ f"""
     <div class="listing-container">
@@ -173,7 +173,7 @@ def market_order_md(data,item):
                 <span class="status-tag {data["user"]["status"]}-tag">{data["user"]["status"].title()}</span>
             </div>
             <div class="profile-section">
-                <a class="profile-link" style="text-decoration: none;" href="{Warframe.MARKET.value["base"]}profile/{data["user"]["ingame_name"]}">
+                <a class="profile-link" style="text-decoration: none;" href="{Warframe.MARKET_API.value["base"]}profile/{data["user"]["ingame_name"]}">
                     <img class="profile-image" alt="{data["user"]["ingame_name"]}" src="{img}">
                     <span class="profile-name flex-font"><b>{data["user"]["ingame_name"]}</b></span>
                 </a>
@@ -276,12 +276,12 @@ def riven_auction_md(data,image):
         price = price + f"""<div class="price flex-font"> Top Bid:<span class="price-amount-text">{data["top_bid"]} {plat_icon}</span></div>"""
     
     if data["owner"]["avatar"] is not None:
-        avatar_img = Warframe.MARKET.value["static"]+data["owner"]["avatar"]
+        avatar_img = Warframe.MARKET_API.value["static"]+data["owner"]["avatar"]
 
     md = f"""
         <div class="card" >
             <img class="aunction-item-img" src="{image}" alt="{name}">
-            <a class="title" href="{Warframe.MARKET.value["base"]}auction/{data["id"]}">{name} {data["item"]["name"].replace("-"," ").title().replace(" ","-")}</a>
+            <a class="title" href="{Warframe.MARKET_API.value["base"]}auction/{data["id"]}">{name} {data["item"]["name"].replace("-"," ").title().replace(" ","-")}</a>
             <hr class="solid" style="margin-top:5px;margin-bottom:5px;">
             <div class="price-details">
                 <div class="stat-details">
