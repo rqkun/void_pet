@@ -11,10 +11,10 @@ from config.classes.parameters import WarframeStatusSearchParams, RivenSearchPar
 from config.constants import AppMessages, Warframe
 
 def market_filter(
-        data: List[Dict],
+        data,
         rep: int = 0,
         status: Optional[Literal["ingame", "online", "offline"]] = None,
-        wtb: Optional[Literal["sell", "buy"]] = None
+        wtb: Optional[Literal["sell", "buy"]] = "sell"
     ) -> List[Dict]:
     """
     Filter market orders based on reputation threshold, user status, and order type.
@@ -128,7 +128,7 @@ def get_min_status_plat(data, status):
         key=lambda x: (status_priority.get(x["user"]["status"], 3), x["platinum"])
     )
 
-    return filtered_sorted_orders[0] if filtered_sorted_orders else None
+    return filtered_sorted_orders if filtered_sorted_orders else None
 
 
 

@@ -58,7 +58,8 @@ if submit:
                 image = data_manage.get_image_url(item["uniqueName"])
             else:
                 image = Warframe.MARKET_API.value["static"] + item_market["icon"]
-            market_data = tools.market_filter(data_manage.call_market(option[0]["url_name"]),rep,status=status)
+            market_data = data_manage.call_market(option[0]["url_name"])
+            market_data = tools.market_filter(market_data,rep,status=status)
             filtered_data = tools.get_min_status_plat(market_data,status)
             if "orders" in st.session_state:
                 del st.session_state.orders
@@ -91,7 +92,8 @@ if 'orders' in st.session_state:
         else:
             custom.market_style()
             start_idx, end_idx, items_per_row = custom.paginations(len(orders["orders"]),items_per_row=1,num_of_row=limit)
-            for order in orders["orders"][start_idx: end_idx]:
+            view_orders = orders["orders"]
+            for order in view_orders[start_idx:end_idx]:
                 st.markdown(markdowns.market_order_md(order,orders["market_data"]),unsafe_allow_html=True)
                 whisper = f"""/w {order["user"]["ingame_name"]} Hi! I want to buy: "{orders["name"]}" for {order["platinum"]} platinum. (warframe.market)"""
                 st.code(whisper,language="md",wrap_lines=False)

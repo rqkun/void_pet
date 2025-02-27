@@ -195,7 +195,7 @@ def call_market(option):
     Returns:
         dict: Item's market data.
     """
-    result = warframe_market.items(option,order=True)['payload']['orders']
+    result = warframe_market.items(url_path=option,order=True)['payload']['orders']
     sorted_orders = sorted(result, key=lambda x: x["platinum"])
     return sorted_orders
 
