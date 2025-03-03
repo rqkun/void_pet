@@ -27,19 +27,63 @@ class DiscordBot:
         asyncio.set_event_loop(self.loop)
         intents = discord.Intents.default()
         intents.message_content = True
+        intents.dm_messages = True
         self.bot = commands.Bot(command_prefix="!", intents=intents)
+        self.bot.remove_command('help')
         
         @self.bot.event
         async def on_ready():
+            await self.bot.tree.sync()
             logging.info(f"Bot logged in as {self.bot.user}")
             activity = discord.Game(name="Warframe")
             await self.bot.change_presence(status=discord.Status.online, activity=activity)
             logging.info("Bot presence set to playing 'Warframe'")
+            
+        @self.bot.event
+        async def on_message(message):
+            if message.author == self.bot.user:
+                return  # Ignore bot's own messages
 
-        # @self.bot.command()
-        # async def greet(ctx):
-        #     await ctx.send(f"Hello, {ctx.author.name}!")
-        #     logging.info(f"{ctx.author.name} invoke !greet")
+            # Check if it's a DM and ensure only valid commands are processed
+            if isinstance(message.channel, discord.DMChannel):
+                ctx = await self.bot.get_context(message)
+                if ctx.valid:
+                    await self.bot.process_commands(message)  # Handle valid command
+                else:
+                    await message.channel.send("❌ Invalid command. Use `!help` for a list of commands.")
+
+            else:
+                await self.bot.process_commands(message)  # Handle server messages
+
+        @self.bot.tree.context_menu(name="Run Invasions")
+        async def run_invasions(interaction: discord.Interaction, user: discord.User):
+            """Allows user to trigger the `!invasions` command from context menu."""
+            if user == interaction.user:
+                ctx = await self.bot.get_context(interaction)
+                command = self.bot.get_command("invasions")
+                if command:
+                    await command.invoke(ctx)  # Run the invasion command
+                    await interaction.response.send_message("✅ Running `!invasions`", ephemeral=True)
+                else:
+                    await interaction.response.send_message("❌ Command not found.", ephemeral=True)
+            else:
+                await interaction.response.send_message("❌ You can only run commands on yourself.", ephemeral=True)
+
+        @self.bot.command()
+        async def help(ctx):
+            embed = discord.Embed(title="Commands", color=discord.Color.blue())
+            embed.set_footer(icon_url=Warframe.MODE_ICONS.value["ALERT"],text="via Voidpet | Hosted on Streamlit")
+            embed.add_field(name="!help", value="A command that show you this!", inline=False)
+            embed.add_field(name="!worldstate", value="A command that show the ingame planet cycles!", inline=False)
+            embed.add_field(name="!invasions", value="A command that show potential invasion rewards!", inline=False)
+            embed.add_field(name="!alerts", value="A command that show alert info and rewards!", inline=False)
+            embed.add_field(name="!void", value="A command that show Prime Resurgent duration!", inline=False)
+            embed.add_field(name="!vault", value="A command that show Baro Kit'er ETA!", inline=False)
+            try:
+                await ctx.author.send(embed=embed)  # Send private message to the user
+                await ctx.message.add_reaction("📩")  # Confirm with reaction
+            except discord.Forbidden:
+                await ctx.send("❌ I can't DM you! Please check your privacy settings.")
         
         @self.bot.command()
         async def invasions(ctx):
