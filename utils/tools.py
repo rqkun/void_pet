@@ -94,8 +94,8 @@ def format_timedelta(delta, day=True):
     """
     total_seconds = int(delta.total_seconds())
     days, remainder = divmod(abs(total_seconds), 86400)
-    hours, minutes = divmod(remainder, 3600)[0], divmod(remainder, 60)[0]
-
+    hours, remainder = divmod(remainder, 3600)
+    minutes = divmod(remainder, 60)[0]
     message = (
         AppMessages.delta_datetime_message(days, hours, minutes)
         if day else

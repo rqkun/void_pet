@@ -1,6 +1,6 @@
 import math
 import streamlit as st
-from components import dialogs
+from config.classes.exceptions import ResetBotFlag
 from config.constants import AppIcons, AppPages
 import streamlit_antd_components as sac
 
@@ -31,7 +31,7 @@ def sideNav(current_idx):
         sac.divider(label='Settings', icon='gear', align='center', color='gray')
         
         if st.button("Clear caches",type="primary",use_container_width=True, help="Force reload data.",icon=AppIcons.SYNC.value):
-            dialogs.clear_cache_dialog()
+            raise ResetBotFlag("True")
         
     if selection != current_idx:
         if selection == 0:

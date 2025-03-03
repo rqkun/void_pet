@@ -1,8 +1,16 @@
 import requests
 import streamlit as st
-from components import custom
+from components import bots, custom
+from config.classes.exceptions import ResetBotFlag
 from config.constants import AppIcons, AppPages
 
+def clear_session():
+    if "rivens" in st.session_state:
+        del st.session_state.rivens
+    if "orders" in st.session_state:
+        del st.session_state.orders
+    if "relics" in st.session_state:
+        del st.session_state.relics
 
 st.set_page_config(page_title="Void Pet", page_icon=AppIcons.MAIN_APP.value, layout="centered")
 
@@ -20,12 +28,17 @@ notfound_page = st.Page(AppPages.NOTFOUND.value,url_path="/404")
 authenticated_pages = [home_page,baro_page,regal_page,market_page,news_page,rivens_page,relics_page,error_page,notfound_page]
 pg = st.navigation(authenticated_pages,position="hidden")
 
+bot = bots.get_discord()
+
 try:
     pg.run()
 except (requests.exceptions.HTTPError,requests.exceptions.Timeout,requests.exceptions.ConnectionError) as error:
-    if "rivens" in st.session_state:
-        del st.session_state.rivens
-    if "orders" in st.session_state:
-        del st.session_state.orders
+    clear_session()
     print(error.args)
     st.switch_page(AppPages.ERROR.value)
+except ResetBotFlag:
+    bot.stop()
+    clear_session()
+    st.cache_data.clear()
+    st.cache_resource.clear()
+    st.rerun(scope="app")

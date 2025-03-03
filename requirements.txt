@@ -3,3 +3,4 @@ pillow==11.1.0
 streamlit-antd-components==0.3.2
 millify
 httpx==0.25.0
+discord.py

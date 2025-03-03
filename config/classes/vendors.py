@@ -143,3 +143,18 @@ class VaultTraider(Vendor):
         super().__init__(data_manage.get_variza())
         self.type = Warframe.VARZIA.value
         self.currency = [Warframe.REGAL_AYA.value, Warframe.AYA.value]
+
+    def check(self)  -> dict:
+        """Check the vendor's status and generate an alert message.
+
+        Returns:
+            dict: Contains the active status and a formatted message.
+        """
+        time_string = self.leave_time() if self.is_active() else self.arrive_time()
+        action_string = "expire" if self.is_active() else "arrive"
+        alert_message = f"The Resurgent will {action_string} in {time_string}"
+        return {
+            "active": self.is_active(),
+            "message": alert_message
+        }
+    
