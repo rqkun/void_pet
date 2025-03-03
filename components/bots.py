@@ -118,31 +118,47 @@ class DiscordBot:
         async def void(ctx): await send_void_trader(ctx)
         @self.bot.command()
         async def vault(ctx): await send_vault_trader(ctx)
+        @self.bot.command()
+        async def help(ctx):
+            embed = discord.Embed(title="Commands", color=discord.Color.blue())
+            embed.set_footer(icon_url=Warframe.MODE_ICONS.value["ALERT"],text="via Voidpet | Hosted on Streamlit")
+            embed.add_field(name="!help", value="A command that show you this!", inline=False)
+            embed.add_field(name="!worldstate", value="A command that show the ingame planet cycles!", inline=False)
+            embed.add_field(name="!invasions", value="A command that show potential invasion rewards!", inline=False)
+            embed.add_field(name="!alerts", value="A command that show alert info and rewards!", inline=False)
+            embed.add_field(name="!void", value="A command that show Prime Resurgent duration!", inline=False)
+            embed.add_field(name="!vault", value="A command that show Baro Ki'ter ETA!", inline=False)
+            try:
+                await ctx.author.send(embed=embed)  # Send private message to the user
+                await ctx.message.add_reaction("📩")  # Confirm with reaction
+            except discord.Forbidden:
+                await ctx.send("❌ I can't DM you! Please check your privacy settings.")
 
         # Context Menu Commands (Send in DM)
-        @self.bot.tree.context_menu(name="Run Invasions")
+        @self.bot.tree.context_menu(name="Invasions")
         async def run_invasions(interaction: discord.Interaction, user: discord.User):
             await handle_context_menu(interaction, user, send_invasions)
 
-        @self.bot.tree.context_menu(name="Run Worldstate")
+        @self.bot.tree.context_menu(name="Worldstate")
         async def run_worldstate(interaction: discord.Interaction, user: discord.User):
             await handle_context_menu(interaction, user, send_worldstate)
 
-        @self.bot.tree.context_menu(name="Run Alerts")
+        @self.bot.tree.context_menu(name="Alerts")
         async def run_alerts(interaction: discord.Interaction, user: discord.User):
             await handle_context_menu(interaction, user, send_alerts)
 
-        @self.bot.tree.context_menu(name="Run Void Trader")
+        @self.bot.tree.context_menu(name="Baro Ki'ter")
         async def run_void_trader(interaction: discord.Interaction, user: discord.User):
             await handle_context_menu(interaction, user, send_void_trader)
 
-        @self.bot.tree.context_menu(name="Run Vault Trader")
+        @self.bot.tree.context_menu(name="Varzia")
         async def run_vault_trader(interaction: discord.Interaction, user: discord.User):
             await handle_context_menu(interaction, user, send_vault_trader)
 
         async def handle_context_menu(interaction, user, function):
             """Handles sending messages based on context menu."""
-            if user == interaction.user or user == self.bot.user:
+            # if user == interaction.user or user == self.bot.user:
+            if user == interaction.user or user.id == self.bot.user.id:
                 try:
                     await function(user)  # DM the user
                     await interaction.response.send_message("✅ Check your DMs.", ephemeral=True)
