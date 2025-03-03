@@ -1,6 +1,7 @@
 import requests
 import streamlit as st
-from components import bots, custom
+from components import custom
+from components.integrations.discord import bots
 from config.classes.exceptions import ResetBotFlag
 from config.constants import AppIcons, AppPages
 import logging
