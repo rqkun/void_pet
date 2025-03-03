@@ -3,8 +3,10 @@ import streamlit as st
 from components import custom
 from components.integrations.discord import bots
 from config.classes.exceptions import ResetBotFlag
-from config.constants import AppIcons, AppPages
+from config.constants import AppIcons, AppPages, Warframe
 import logging
+
+from utils import api_services
 def clear_session():
     if "rivens" in st.session_state:
         del st.session_state.rivens
@@ -13,7 +15,7 @@ def clear_session():
     if "relics" in st.session_state:
         del st.session_state.relics
 
-st.set_page_config(page_title="Void Pet", page_icon=AppIcons.MAIN_APP.value, layout="centered")
+st.set_page_config(page_title="Void Pet", page_icon=api_services.get_image(Warframe.AYA.value["image"]), layout="centered")
 logging.basicConfig(level=logging.INFO)
 custom.app_style()
 
