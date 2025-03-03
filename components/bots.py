@@ -122,23 +122,23 @@ class DiscordBot:
         # Context Menu Commands (Send in DM)
         @self.bot.tree.context_menu(name="Run Invasions")
         async def run_invasions(interaction: discord.Interaction, user: discord.User):
-            await self.handle_context_menu(interaction, user, send_invasions)
+            await handle_context_menu(interaction, user, send_invasions)
 
         @self.bot.tree.context_menu(name="Run Worldstate")
         async def run_worldstate(interaction: discord.Interaction, user: discord.User):
-            await self.handle_context_menu(interaction, user, send_worldstate)
+            await handle_context_menu(interaction, user, send_worldstate)
 
         @self.bot.tree.context_menu(name="Run Alerts")
         async def run_alerts(interaction: discord.Interaction, user: discord.User):
-            await self.handle_context_menu(interaction, user, send_alerts)
+            await handle_context_menu(interaction, user, send_alerts)
 
         @self.bot.tree.context_menu(name="Run Void Trader")
         async def run_void_trader(interaction: discord.Interaction, user: discord.User):
-            await self.handle_context_menu(interaction, user, send_void_trader)
+            await handle_context_menu(interaction, user, send_void_trader)
 
         @self.bot.tree.context_menu(name="Run Vault Trader")
         async def run_vault_trader(interaction: discord.Interaction, user: discord.User):
-            await self.handle_context_menu(interaction, user, send_vault_trader)
+            await handle_context_menu(interaction, user, send_vault_trader)
 
         async def handle_context_menu(self, interaction, user, function):
             """Handles sending messages based on context menu."""
