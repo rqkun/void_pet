@@ -98,7 +98,7 @@ class Vendor:
         """
         time_string = self.leave_time() if self.is_active() else self.arrive_time()
         action_string = "leave" if self.is_active() else "arrive"
-        alert_message = f"{self.type['name']} will {action_string} in {time_string}"
+        alert_message = f"{action_string.title()} in {time_string}"
         return {
             "active": self.is_active(),
             "message": alert_message
@@ -152,7 +152,7 @@ class VaultTraider(Vendor):
         """
         time_string = self.leave_time() if self.is_active() else self.arrive_time()
         action_string = "expire" if self.is_active() else "arrive"
-        alert_message = f"The Resurgent will {action_string} in {time_string}"
+        alert_message = f"{action_string.title()} in {time_string}"
         return {
             "active": self.is_active(),
             "message": alert_message

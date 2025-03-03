@@ -20,7 +20,7 @@ custom.image_style()
 custom.card_style()
 data = store_baro()
 if 'baro_alert' in st.session_state:
-    custom.baro_time_alert(st.session_state.baro_alert["message"])
+    custom.baro_time_alert(f"""Baro Ki'ter will {st.session_state.baro_alert["message"].lower()}""")
 
 if len(data.inventory) > 0:
     left,mid,right =st.columns([1,7,1],vertical_alignment="center")

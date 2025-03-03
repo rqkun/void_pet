@@ -36,17 +36,17 @@ class DiscordBot:
             await self.bot.change_presence(status=discord.Status.online, activity=activity)
             logging.info("Bot presence set to playing 'Warframe'")
 
-
-        @self.bot.command()
-        async def greet(ctx):
-            await ctx.send(f"Hello, {ctx.author.name}!")
-            logging.info(f"{ctx.author.name} invoke !greet")
+        # @self.bot.command()
+        # async def greet(ctx):
+        #     await ctx.send(f"Hello, {ctx.author.name}!")
+        #     logging.info(f"{ctx.author.name} invoke !greet")
         
         @self.bot.command()
         async def invasions(ctx):
             data=data_manage.get_invasions_rewards(data_manage.get_world_state()["invasions"])
             if data is not None:
                 embed = discord.Embed(title="Invasion Rewards", color=discord.Color.blue())
+                embed.set_footer(icon_url=Warframe.MODE_ICONS.value["INVASION"],text="via Voidpet | Hosted on Streamlit")
                 for item,amount in data.items():
                     embed.add_field(name=item, value=amount, inline=False)
                 await ctx.send(embed=embed)
@@ -57,7 +57,8 @@ class DiscordBot:
         async def worldstate(ctx):
             data=data_manage.get_cycles()
             if data is not None:
-                embed = discord.Embed(title="Worldstate", color=discord.Color.blue())
+                embed = discord.Embed(title="Worldstate", color=discord.Color.blue(),url=f"""{st.secrets.host.cloud}""")
+                embed.set_footer(icon_url=Warframe.MODE_ICONS.value["OPEN_WORLD"],text="via Voidpet | Hosted on Streamlit")
                 for item in data:
                     span = datetime.strptime(item["data"]["expiry"],"%Y-%m-%dT%H:%M:%S.%fZ")-datetime.today()
                     if span.total_seconds() >0:
@@ -72,7 +73,8 @@ class DiscordBot:
         async def alerts(ctx):
             data=data_manage.get_alerts_data()
             if data is not None:
-                embed = discord.Embed(title="Alert Rewards", color=discord.Color.blue())
+                embed = discord.Embed(title="Alert Rewards", color=discord.Color.blue(),url=f"""{st.secrets.host.cloud}""")
+                embed.set_footer(icon_url=Warframe.MODE_ICONS.value["ALERT"],text="via Voidpet | Hosted on Streamlit")
                 for alert in data:
                     if alert["active"] == True:
                         time = tools.format_timedelta(datetime.strptime(alert["expiry"],"%Y-%m-%dT%H:%M:%S.%fZ")-datetime.today(),day=True)
@@ -87,25 +89,24 @@ class DiscordBot:
                 ctx.send("None")
         
         @self.bot.command()
-        async def baro(ctx):
+        async def void(ctx):
             data=VoidTraider()
             check=data.check()
-            embed = discord.Embed(title="Baro Ki'ter", color=discord.Color.blue())
-            embed.set_thumbnail(url=Warframe.DUCAT.value["image"])
-            embed.add_field(name="Active", value=check["active"], inline=False)
-            embed.add_field(name="Time", value=check["message"], inline=False)
+            embed = discord.Embed(title="Baro Ki'ter", color=discord.Color.blue(),url=f"""{st.secrets.host.cloud}void""")
+            embed.set_footer(icon_url=Warframe.DUCAT.value["image"],text="via Voidpet | Hosted on Streamlit")
+            embed.add_field(name="Active", value=check["active"], inline=True)
+            embed.add_field(name="Time", value=check["message"], inline=True)
             await ctx.send(embed=embed)
         
         @self.bot.command()
-        async def varzia(ctx):
+        async def vault(ctx):
             data=VaultTraider()
             check=data.check()
-            embed = discord.Embed(title="Varzia", color=discord.Color.blue())
-            embed.set_thumbnail(url=Warframe.AYA.value["image"])
-            embed.add_field(name="Active", value=check["active"], inline=False)
-            embed.add_field(name="Time", value=check["message"], inline=False)
+            embed = discord.Embed(title="Varzia", color=discord.Color.blue(),url=f"""{st.secrets.host.cloud}vault""")
+            embed.set_footer(icon_url=Warframe.AYA.value["image"],text="via Voidpet | Hosted on Streamlit")
+            embed.add_field(name="Active", value=check["active"], inline=True)
+            embed.add_field(name="Time", value=check["message"], inline=True)
             await ctx.send(embed=embed)
-
         
         try:
             self.loop.run_until_complete(self.bot.start(self.token))

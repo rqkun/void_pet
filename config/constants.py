@@ -233,6 +233,12 @@ class Warframe(Enum):
         "priority" : {"ingame": 0, "online": 1, "offline": 2}
     }
 
+    MODE_ICONS = {
+        "INVASION": "https://wiki.warframe.com/images/InvasionIcon.png",
+        "ALERT": "https://wiki.warframe.com/images/IconLotus.png",
+        "OPEN_WORLD": "https://wiki.warframe.com/images/ReputationLarge.png"
+    }
+    
     @staticmethod
     def get_wiki_url(string, type =None):
         """Return the wiki url of a certain item. """
