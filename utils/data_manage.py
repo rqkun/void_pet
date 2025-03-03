@@ -92,7 +92,7 @@ def get_baro():
     """
     return warframe_status.world("voidTrader")
 
-
+@st.cache_data(ttl="1m",show_spinner=False)
 def get_world_state():
     """Call the warframe status api for world state data.
 
@@ -112,6 +112,10 @@ def get_prime_list() -> list:
     p_weapon = warframe_status.items(WarframeStatusSearchParams("prime","name",type="weapons",only=["name","category"]))
     
     return tools.clean_prime_names(p_frame, p_weapon)
+
+
+def get_invasion()->dict:
+    return warframe_status.world("invasions")
 
 
 def get_invasions_rewards(data) -> dict:
@@ -201,7 +205,7 @@ def call_market(option):
 
 
 def get_reward_image(name) -> str:
-    """Get the material image from export API.
+    """ Get the material image from export API.
 
     Args:
         name (str): Either name or uniqueName of item
@@ -210,29 +214,28 @@ def get_reward_image(name) -> str:
         bytes: ImageBytes
     """
     unique_name = name
-    resources_json = warframe_export.export_request(AppExports.RESOURCES.value)
+    resoureces_json = warframe_export.export_request(AppExports.RESOURCES.value)
     recipes_json = warframe_export.export_request(AppExports.RECIPES.value)
     
-    def find_unique_name(data, key):
-        for item in data:
-            if name.replace(" ", "") in item[key]:
-                return item["uniqueName"]
-        return None
+    for item in recipes_json:
+        if (name.replace(" ","") in item["uniqueName"]):
+            unique_name = item["uniqueName"]
+            break
     
-    unique_name = find_unique_name(recipes_json, "uniqueName") or find_unique_name(resources_json, "name")
+    for item in resoureces_json:
+        if (name in item["name"]):
+            unique_name = item["uniqueName"]
+            break
+    if unique_name:
+        img = get_image_url(unique_name)
+    else:
+        img = get_image_url(unique_name,False)
     
-    # Get image URL or fallback if not found
-    img = get_image_url(unique_name) if unique_name else get_image_url(name, False)
-
-    # Handle cases where no image is found
     if img == AppIcons.NO_IMAGE_DATA_URL.value:
-        search_params = WarframeStatusSearchParams(
-            identifier=name.replace(" Blueprint", ""), by="name", type="items"
-        )
-        items = warframe_status.items(search_params)
-        if items:
-            img = get_image_url(items[0]["uniqueName"])
-
+        unique_name = warframe_status.item_request(name.replace(" Blueprint", ""),True)
+        if len(unique_name)>0:
+            img = get_image_url(unique_name[0]["uniqueName"])
+        
     return img
 
 

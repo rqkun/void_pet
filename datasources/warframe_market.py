@@ -24,7 +24,6 @@ def items(url_path=None,order=False)-> dict:
     base_url = Warframe.MARKET_API.value["api"]
     request_url = f"{base_url}/items{path}"
     headers = {"accept": "application/json"}
-    print(request_url)
     response = requests.get(request_url,headers=headers)
     raise_detailed_error(response)
     return response.json()

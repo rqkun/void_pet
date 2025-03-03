@@ -12,7 +12,7 @@ import httpx
 from utils.tools import hash_func
 from utils.tools import encode_identifier
 
-@st.cache_data(ttl="1m",show_spinner=False)
+
 def world(path=None):
     """API request to get current world state data.
     Args:
