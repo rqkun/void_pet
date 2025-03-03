@@ -22,11 +22,12 @@ def show():
         alert_info = st.container(border=True)
         with alert_info, st.spinner(AppMessages.LOAD_DATA.value):
             data=data_manage.get_alerts_data()
+            
             if data is not None:
+                count = 0
                 for alert in data:
                     try:
                         if alert["active"] == True:
-
                             percentage_completed = tools.calculate_percentage_time(start=alert["activation"],end=alert["expiry"])
                             if percentage_completed < 1:
                                 left,right = alert_info.columns([3,1],vertical_alignment="bottom")
@@ -37,5 +38,7 @@ def show():
                                 left.progress(percentage_completed,f"""{alert["mission"]["node"]}""")
                     except:
                         st.warning(f"Error occured",icon=AppIcons.ERROR.value)
+                if count <1:
+                    alert_info.info('There are currently no alerts', icon=AppIcons.INFO.value)
             else:
                 alert_info.info('There are currently no alerts', icon=AppIcons.INFO.value)
