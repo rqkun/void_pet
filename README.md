@@ -1,4 +1,5 @@
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://rqkun-voidpet.streamlit.app/)
+[![GPL License][license-shield]][license-url]
 # Void Pet 
 
 A Python-based **Streamlit** application that utilizes the **Warframe Status API** and the **Warframe.market API** to provide up-to-date information on in-game events, vendor inventories, and market pricing.
@@ -15,6 +16,7 @@ Checkout the website [here](https://rqkun-voidpet.streamlit.app/)
 - **News Updates**: Check news, stream announcements, updates.
 - **Riven mods Auction Checkup**: Check real-time market prices for rivens, including auctions and buyouts.
 - **User-Friendly Interface**: Built with Streamlit for an intuitive, lightweight, and responsive user experience.
+- **Discord Bot Integration**: Run a bot for integrating with Discord.
 
 ---
 
@@ -48,6 +50,15 @@ Ensure you have the following installed:
    ```bash
    python3 ./utils/local_manifest_update.py
    ```
+
+4. Insert discord credentials in the `./streamlit/secrets.toml`
+   ```
+   [discord]
+   key="<your-bot-secret-key>"
+   [host]
+   local = "http://localhost:8501/"
+   cloud = "<your-host-here>" #remember to add the "/" at the end. Ex: https://rqkun-voidpet.streamlit.app/
+   ```
 ---
 
 ## Usage
@@ -79,24 +90,34 @@ void-pet/
     └── exports/        # Downloaded JSON Exports
 ├── utils/              # Utility functions
 ├── requirements.txt    # Project dependencies
-└── README.md           # Project documentation
+├── README.md           # Project documentation
+└── ...
 ```
 
 ---
 
 ## APIs Used
 
-1. **[Warframe Status API](https://docs.warframestat.us/)**:
+1. **[Warframe Stat API](https://docs.warframestat.us/)**:
    - Provides data on in-game events, alerts and vendors.
 
 2. **[Warframe.market API](https://warframe.market/api_docs/)**:
    - Enables retrieval of real-time item prices and market trends.
+
+3. **[Discord](https://discord.com/developers/docs/intro)**
+   - Enables Discord bot hooks.
+---
+
+## License
+
+Distributed under the MIT License. See LICENSE for more information.
 
 ---
 
 ## Acknowledgments
 
 - **Warframe Status API** and **Warframe.market API** for making data accessible.
+- **Discord** for making ease of access to their bot features.
 - The Warframe community for their support and feedback.
 
 ---
