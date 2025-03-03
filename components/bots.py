@@ -140,7 +140,7 @@ class DiscordBot:
         async def run_vault_trader(interaction: discord.Interaction, user: discord.User):
             await handle_context_menu(interaction, user, send_vault_trader)
 
-        async def handle_context_menu(self, interaction, user, function):
+        async def handle_context_menu(interaction, user, function):
             """Handles sending messages based on context menu."""
             if user == interaction.user or user == self.bot.user:
                 try:
