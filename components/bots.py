@@ -1,4 +1,5 @@
 from datetime import datetime
+import logging
 import streamlit as st
 import discord
 from discord.ext import commands
@@ -30,12 +31,12 @@ class DiscordBot:
 
         @self.bot.event
         async def on_ready():
-            print(f"Bot logged in as {self.bot.user}")
+            logging.info(f"Bot logged in as {self.bot.user}")
 
         @self.bot.command()
         async def greet(ctx):
             await ctx.send(f"Hello, {ctx.author.name}!")
-            print(f"{ctx.author.name} invoke !greet")
+            logging.info(f"{ctx.author.name} invoke !greet")
         
         @self.bot.command()
         async def invasions(ctx):
@@ -117,18 +118,18 @@ class DiscordBot:
             self.thread = None
             self.loop = None
             self.bot = None
-            print(f"Bot stopped")
+            logging.info(f"Bot stopped")
             
 
     async def send_message(self, channel_id, message):
         if self.bot is None:
-            print("Bot is not running.")
+            logging.error("Bot is not running.")
             return
         channel = self.bot.get_channel(channel_id)
         if channel:
             await channel.send(message)
         else:
-            print("Channel not found")
+            logging.error("Channel not found")
 
 @st.cache_resource
 def get_discord():

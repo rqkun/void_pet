@@ -3,7 +3,7 @@ import streamlit as st
 from components import bots, custom
 from config.classes.exceptions import ResetBotFlag
 from config.constants import AppIcons, AppPages
-
+import logging
 def clear_session():
     if "rivens" in st.session_state:
         del st.session_state.rivens
@@ -13,7 +13,7 @@ def clear_session():
         del st.session_state.relics
 
 st.set_page_config(page_title="Void Pet", page_icon=AppIcons.MAIN_APP.value, layout="centered")
-
+logging.basicConfig(level=logging.INFO)
 custom.app_style()
 
 home_page = st.Page(AppPages.HOME.value)
@@ -34,11 +34,12 @@ try:
     pg.run()
 except (requests.exceptions.HTTPError,requests.exceptions.Timeout,requests.exceptions.ConnectionError) as error:
     clear_session()
-    print(error.args)
+    logging.error("; ".join(error.args))
     st.switch_page(AppPages.ERROR.value)
 except ResetBotFlag:
     bot.stop()
     clear_session()
     st.cache_data.clear()
     st.cache_resource.clear()
+    logging.info("Reset caches, sessions and bot.")
     st.rerun(scope="app")
