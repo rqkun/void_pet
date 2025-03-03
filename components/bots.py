@@ -28,10 +28,14 @@ class DiscordBot:
         intents = discord.Intents.default()
         intents.message_content = True
         self.bot = commands.Bot(command_prefix="!", intents=intents)
-
+        
         @self.bot.event
         async def on_ready():
             logging.info(f"Bot logged in as {self.bot.user}")
+            activity = discord.Game(name="Warframe")
+            await self.bot.change_presence(status=discord.Status.online, activity=activity)
+            logging.info("Bot presence set to playing 'Warframe'")
+
 
         @self.bot.command()
         async def greet(ctx):
@@ -101,6 +105,7 @@ class DiscordBot:
             embed.add_field(name="Active", value=check["active"], inline=False)
             embed.add_field(name="Time", value=check["message"], inline=False)
             await ctx.send(embed=embed)
+
         
         try:
             self.loop.run_until_complete(self.bot.start(self.token))

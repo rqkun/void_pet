@@ -13,7 +13,7 @@ def clear_session():
         del st.session_state.relics
 
 st.set_page_config(page_title="Void Pet", page_icon=AppIcons.MAIN_APP.value, layout="centered")
-logging.basicConfig(level=logging.INFO)
+# logging.basicConfig(level=logging.INFO)
 custom.app_style()
 
 home_page = st.Page(AppPages.HOME.value)
