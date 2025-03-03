@@ -56,7 +56,7 @@ Ensure you have the following installed:
    key="<your-bot-secret-key>"
    [host]
    local = "http://localhost:8501/"
-   #remember to add the "/" at the end. Ex: https://rqkun-voidpet.streamlit.app/
+   #Ex: https://rqkun-voidpet.streamlit.app/
    cloud = "<your-host-here>" 
    ```
 ---
