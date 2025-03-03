@@ -160,7 +160,7 @@ class DiscordBot:
             # if user == interaction.user or user == self.bot.user:
             if user == interaction.user or user.id == self.bot.user.id:
                 try:
-                    await function(user)  # DM the user
+                    await function(interaction.user)  # DM the user
                     await interaction.response.send_message("✅ Check your DMs.", ephemeral=True)
                 except discord.Forbidden:
                     await interaction.response.send_message("❌ I can't DM you. Check your privacy settings.", ephemeral=True)
