@@ -1,5 +1,4 @@
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://rqkun-voidpet.streamlit.app/)
-[![GPL License][license-shield]][license-url]
 # Void Pet 
 
 A Python-based **Streamlit** application that utilizes the **Warframe Status API** and the **Warframe.market API** to provide up-to-date information on in-game events, vendor inventories, and market pricing.
