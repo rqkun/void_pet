@@ -30,18 +30,20 @@ notfound_page = st.Page(AppPages.NOTFOUND.value,url_path="/404")
 authenticated_pages = [home_page,baro_page,regal_page,market_page,rivens_page,relics_page,error_page,notfound_page]
 pg = st.navigation(authenticated_pages,position="hidden")
 
-bot = bots.get_discord()
+# bot = bots.start_bot()
 
 try:
     pg.run()
-except (requests.exceptions.HTTPError,requests.exceptions.Timeout,requests.exceptions.ConnectionError) as error:
-    clear_session()
-    logging.error("; ".join(error.args))
-    st.switch_page(AppPages.ERROR.value)
 except ResetBotFlag:
-    bot.stop()
+    # bot.stop()
     clear_session()
     st.cache_data.clear()
     st.cache_resource.clear()
     logging.info("Reset caches, sessions and bot.")
     st.rerun(scope="app")
+except (requests.exceptions.HTTPError,requests.exceptions.Timeout,requests.exceptions.ConnectionError) as error:
+    clear_session()
+    error_message = "; ".join(error.args)
+    logging.error(error_message)
+    st.session_state.app_error = error_message
+    st.switch_page(AppPages.ERROR.value)

@@ -94,7 +94,7 @@ class DiscordBot:
 
 
 @st.cache_resource
-def get_discord():
+def start_bot():
     bot_instance = DiscordBot(st.secrets["discord"]["key"])
     bot_instance.start()
     return bot_instance
