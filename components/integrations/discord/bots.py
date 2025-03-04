@@ -85,6 +85,8 @@ class DiscordBot:
             self.loop.run_until_complete(self.bot.start(self.token))
         except asyncio.CancelledError:
             pass
+        except discord.errors.LoginFailure as err:
+            logging.error("Invalid Discord bot token.")
         finally:
             self.loop.run_until_complete(self.bot.close())
             self.loop.close()

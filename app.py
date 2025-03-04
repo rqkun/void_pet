@@ -1,3 +1,4 @@
+import discord
 import requests
 import streamlit as st
 from components import custom
@@ -22,13 +23,12 @@ custom.app_style()
 home_page = st.Page(AppPages.HOME.value)
 baro_page = st.Page(AppPages.BARO.value,url_path="/void")
 regal_page = st.Page(AppPages.VARZIA.value,url_path="/vault")
-news_page = st.Page(AppPages.NEWS.value)
 rivens_page = st.Page(AppPages.RIVENS.value)
 relics_page = st.Page(AppPages.RELICS.value)
 market_page = st.Page(AppPages.MARKET.value)
 error_page = st.Page(AppPages.ERROR.value,url_path="/500")
 notfound_page = st.Page(AppPages.NOTFOUND.value,url_path="/404")
-authenticated_pages = [home_page,baro_page,regal_page,market_page,news_page,rivens_page,relics_page,error_page,notfound_page]
+authenticated_pages = [home_page,baro_page,regal_page,market_page,rivens_page,relics_page,error_page,notfound_page]
 pg = st.navigation(authenticated_pages,position="hidden")
 
 bot = bots.get_discord()

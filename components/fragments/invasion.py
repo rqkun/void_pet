@@ -1,5 +1,5 @@
 from components import markdowns
-from config.constants import AppIcons, AppMessages
+from config.constants import AppIcons, AppMessages, Warframe
 from utils import data_manage
 from utils.data_manage import get_invasions_rewards
 
@@ -15,7 +15,7 @@ def show():
     """Show Invasion rewards card. """
     event_state_card = st.container(border=True)
     with event_state_card:
-        st.subheader("""Invasions """)
+        st.markdown(f"""### Invasions <image width=30 height=30 src="{Warframe.MODE_ICONS.value["INVASION"]}"/>""",unsafe_allow_html=True)
         with st.expander("Rewards",expanded=True),st.spinner(AppMessages.LOAD_DATA.value):
             data=get_invasions_rewards(data_manage.get_world_state()["invasions"])
             if data is not None:

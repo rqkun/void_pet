@@ -1,5 +1,6 @@
+import logging
 from components import markdowns
-from config.constants import AppIcons, AppMessages
+from config.constants import AppIcons, AppMessages, Warframe
 from utils import data_manage, tools
 
 
@@ -14,8 +15,7 @@ def show():
     """Show event's card that update every minute. """
     event_state_card = st.container(border=False)
     with event_state_card:
-
-        st.subheader("""Events """)
+        st.markdown(f"""### News {AppIcons.CALENDAR.value}""")
         events_info = st.container(border=True)
         with events_info, st.spinner(AppMessages.LOAD_DATA.value):
             data=data_manage.get_ongoing_events()
@@ -33,7 +33,8 @@ def show():
                         left.progress(percentage,f"""{event["description"]}""")
                         pop = right.popover(AppIcons.INFO.value,use_container_width=True)
                         pop.markdown(markdowns.event_alert_card_md(node,time,markdowns.event_info_md(event,rewards)),unsafe_allow_html=True)
-                    except Exception as err:
+                    except Exception as error:
                         st.warning(f"Error occured",icon=AppIcons.ERROR.value)
+                        logging.error(logging.error("; ".join(error.args)))
             else:
                 events_info.info('There are currently no events', icon=AppIcons.INFO.value)

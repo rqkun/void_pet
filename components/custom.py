@@ -24,7 +24,7 @@ def sideNav(current_idx):
                 sac.MenuItem('Rivens', icon='dice-6'),
             ]),
             sac.MenuItem('Relics', icon='browser-firefox'),
-            sac.MenuItem('News', icon='newspaper'),
+            sac.MenuItem('Discord', icon='discord',description="Invite Bot", href='https://discord.com/oauth2/authorize?client_id=1047432559388282900'),
             sac.MenuItem('Github', icon='github',description="rqkun/void_pet", href='https://github.com/rqkun/void_pet/')
         ], size='xs',variant='left-bar', return_index=True, open_all=True, index=current_idx)
         
@@ -46,8 +46,6 @@ def sideNav(current_idx):
             st.switch_page(AppPages.RIVENS.value)
         if selection == 7:
             st.switch_page(AppPages.RELICS.value)
-        if selection == 8:
-            st.switch_page(AppPages.NEWS.value)
 
 
 def paginations(length,num_of_row=2,items_per_row = 5):

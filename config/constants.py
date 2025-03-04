@@ -20,6 +20,8 @@ class AppIcons(Enum):
     AYA = ":droplet:"
     SETTING = ":material/settings:"
     FILTER = ":material/filter_list:"
+    NEWS = ":material/newspaper:"
+    CALENDAR = ":material/calendar_month:"
     NO_IMAGE_DATA_URL = "https://storage.googleapis.com/replit/images/1608749573246_3ecaeb5cdbf14cd5f1ad8c48673dd7ce.png"
 
 
@@ -236,7 +238,8 @@ class Warframe(Enum):
     MODE_ICONS = {
         "INVASION": "https://wiki.warframe.com/images/InvasionIcon.png",
         "ALERT": "https://wiki.warframe.com/images/IconLotus.png",
-        "OPEN_WORLD": "https://wiki.warframe.com/images/ReputationLarge.png"
+        "OPEN_WORLD": "https://wiki.warframe.com/images/ReputationLarge.png",
+        "QUEST":"https://wiki.warframe.com/images/IconQuest.png",
     }
     
     @staticmethod

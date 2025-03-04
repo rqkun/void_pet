@@ -1,3 +1,4 @@
+import logging
 from components import markdowns
 from config.constants import AppIcons, AppMessages
 from utils import data_manage, tools
@@ -15,10 +16,7 @@ def show():
     """Show alert's card that update every minute. """
     alert_state_card = st.container(border=False)
     with alert_state_card:
-
-        
-        st.subheader("""Alerts """)
-
+        st.markdown(f"""### Alerts {AppIcons.WARNING.value}""")
         alert_info = st.container(border=True)
         with alert_info, st.spinner(AppMessages.LOAD_DATA.value):
             data=data_manage.get_alerts_data()
@@ -39,7 +37,8 @@ def show():
                                     info_md = markdowns.alerts_reward_info_md(data_manage.get_alert_reward(alert))
                                     st.markdown(markdowns.event_alert_card_md(alert["mission"]["type"],time,info_md),unsafe_allow_html=True)
                                 left.progress(percentage_completed,f"""{alert["mission"]["node"]}""")
-                    except:
+                    except Exception as error:
                         st.warning(f"Error occured",icon=AppIcons.ERROR.value)
+                        logging.error(logging.error("; ".join(error.args)))
                 if count <1:
                     alert_info.info('There are currently no alerts', icon=AppIcons.INFO.value)
