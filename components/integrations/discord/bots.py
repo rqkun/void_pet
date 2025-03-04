@@ -26,9 +26,9 @@ class DiscordBot:
         intents = discord.Intents.default()
         intents.message_content = True
         intents.dm_messages = True
-        self.bot = commands.Bot(command_prefix="!", intents=intents)
+        self.bot = commands.Bot(command_prefix="/", intents=intents)
         self.bot.remove_command('help')
-        
+
         @self.bot.event
         async def on_ready():
             await self.bot.tree.sync()
@@ -36,51 +36,30 @@ class DiscordBot:
             activity = discord.Game(name="Warframe",platform="PC",start=datetime.now())
             await self.bot.change_presence(status=discord.Status.online, activity=activity)
             logging.info("Bot presence set to playing 'Warframe'")
-            
-        @self.bot.event
-        async def on_message(message):
-            if message.author == self.bot.user:
-                return
 
-            ctx = await self.bot.get_context(message)
-            if ctx.valid:
-                await self.bot.process_commands(message)
+        @self.bot.tree.command(name="help", description="Get the commands list.")
+        async def help(interaction: discord.Interaction): 
+            await functions.handle_context(interaction, functions.commands_embed)
 
-        
-        # Text Commands (Send in Channel)
-        @self.bot.command()
-        async def invasions(ctx:commands.Context): await functions.send_invasions(ctx)
-        @self.bot.command()
-        async def worldstate(ctx:commands.Context): await functions.send_worldstate(ctx)
-        @self.bot.command()
-        async def alerts(ctx:commands.Context): await functions.send_alerts(ctx)
-        @self.bot.command()
-        async def void(ctx:commands.Context): await functions.send_void_trader(ctx)
-        @self.bot.command()
-        async def vault(ctx:commands.Context): await functions.send_vault_trader(ctx)
-        @self.bot.command()
-        async def help(ctx:commands.Context): await functions.send_command_list(ctx)
+        @self.bot.tree.command(name="worldstate", description="Get the planet cycles list.")
+        async def worldstate(interaction: discord.Interaction): 
+            await functions.handle_context(interaction, functions.worldstate_embed)
 
-        # Context Menu Commands (Send in DM)
-        @self.bot.tree.context_menu(name="Invasions")
-        async def run_invasions(interaction: discord.Interaction, user: discord.User):
-            await functions.handle_context_menu(interaction, user, functions.send_invasions, self.bot.user.id)
+        @self.bot.tree.command(name="alerts", description="Get the alerts list.")
+        async def alerts(interaction: discord.Interaction): 
+            await functions.handle_context(interaction, functions.alerts_embed)
 
-        @self.bot.tree.context_menu(name="Worldstate")
-        async def run_worldstate(interaction: discord.Interaction, user: discord.User):
-            await functions.handle_context_menu(interaction, user, functions.send_worldstate, self.bot.user.id)
+        @self.bot.tree.command(name="invasions", description="Get the invasion rewards list.")
+        async def invasions(interaction: discord.Interaction): 
+            await functions.handle_context(interaction, functions.invasions_embed)
+ 
+        @self.bot.tree.command(name="void", description="Get the Baro Ki'ter info.")
+        async def void(interaction: discord.Interaction): 
+            await functions.handle_context(interaction, functions.void_trader_embed)
 
-        @self.bot.tree.context_menu(name="Alerts")
-        async def run_alerts(interaction: discord.Interaction, user: discord.User):
-            await functions.handle_context_menu(interaction, user, functions.send_alerts, self.bot.user.id)
-
-        @self.bot.tree.context_menu(name="Baro Ki'ter")
-        async def run_void_trader(interaction: discord.Interaction, user: discord.User):
-            await functions.handle_context_menu(interaction, user, functions.send_void_trader, self.bot.user.id)
-
-        @self.bot.tree.context_menu(name="Varzia")
-        async def run_vault_trader(interaction: discord.Interaction, user: discord.User):
-            await functions.handle_context_menu(interaction, user, functions.send_vault_trader, self.bot.user.id)
+        @self.bot.tree.command(name="vault", description="Get the Varzia (Prime Resurgent) info.")
+        async def vault(interaction: discord.Interaction): 
+            await functions.handle_context(interaction, functions.vault_trader_embed)   
 
         try:
             self.loop.run_until_complete(self.bot.start(self.token))
