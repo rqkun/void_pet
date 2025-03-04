@@ -15,7 +15,7 @@ def show():
     """Show world state's info card. """
     world_state_card = st.container(border=True)
     with world_state_card:
-        st.markdown(f"""### World <image width=30 height=30 src="{Warframe.MODE_ICONS.value["OPEN_WORLD"]}"/>""",unsafe_allow_html=True)
+        st.markdown(f"""<div style="display:flex;align-items:center;gap:0.5rem;"><image width=30 height=30 src="{Warframe.MODE_ICONS.value["OPEN_WORLD"]}"/><h3>World </h3></div>""",unsafe_allow_html=True)
         with st.container(border=True), st.spinner(AppMessages.LOAD_DATA.value):
             try:
                 data=data_manage.get_cycles()

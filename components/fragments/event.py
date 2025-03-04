@@ -15,7 +15,7 @@ def show():
     """Show event's card that update every minute. """
     event_state_card = st.container(border=False)
     with event_state_card:
-        st.markdown(f"""### News {AppIcons.CALENDAR.value}""")
+        st.markdown(f"""### {AppIcons.CALENDAR.value} Events""")
         events_info = st.container(border=True)
         with events_info, st.spinner(AppMessages.LOAD_DATA.value):
             data=data_manage.get_ongoing_events()

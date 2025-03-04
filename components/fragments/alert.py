@@ -16,7 +16,7 @@ def show():
     """Show alert's card that update every minute. """
     alert_state_card = st.container(border=False)
     with alert_state_card:
-        st.markdown(f"""### Alerts {AppIcons.WARNING.value}""")
+        st.markdown(f"""### {AppIcons.WARNING.value} Alerts""")
         alert_info = st.container(border=True)
         with alert_info, st.spinner(AppMessages.LOAD_DATA.value):
             data=data_manage.get_alerts_data()

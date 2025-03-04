@@ -14,7 +14,7 @@ def show():
     """Show Invasion rewards card. """
     event_state_card = st.container(border=True)
     with event_state_card:
-        st.markdown(f"""### News {AppIcons.NEWS.value}""")
+        st.markdown(f"""### {AppIcons.NEWS.value} News""")
         with st.expander("Expands",expanded=True),st.spinner(AppMessages.LOAD_DATA.value,show_time=True,_cache=False):
             news = data_manage.get_news()
             if len(news)>0:

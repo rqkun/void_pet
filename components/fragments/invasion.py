@@ -15,7 +15,7 @@ def show():
     """Show Invasion rewards card. """
     event_state_card = st.container(border=True)
     with event_state_card:
-        st.markdown(f"""### Invasions <image width=30 height=30 src="{Warframe.MODE_ICONS.value["INVASION"]}"/>""",unsafe_allow_html=True)
+        st.markdown(f"""<div style="display:flex;align-items:center;gap:0.5rem;"><image width=30 height=30 src="{Warframe.MODE_ICONS.value["INVASION"]}"/><h3>Invasions</h3></div>""",unsafe_allow_html=True)
         with st.expander("Rewards",expanded=True),st.spinner(AppMessages.LOAD_DATA.value):
             data=get_invasions_rewards(data_manage.get_world_state()["invasions"])
             if data is not None:
