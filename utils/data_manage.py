@@ -232,7 +232,7 @@ def get_reward_image(name) -> str:
         img = get_image_url(unique_name,False)
     
     if img == AppIcons.NO_IMAGE_DATA_URL.value:
-        unique_name = warframe_status.item_request(name.replace(" Blueprint", ""),True)
+        unique_name = warframe_status.items(WarframeStatusSearchParams(name.replace(" Blueprint", ""),by="name",type="items",only=["uniqueName"]))
         if len(unique_name)>0:
             img = get_image_url(unique_name[0]["uniqueName"])
         
