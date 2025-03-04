@@ -2,7 +2,7 @@ from enum import Enum
 
 class AppIcons(Enum):
     """Default icons for the app. """
-    MAIN_APP = ":material/token:"
+    MAIN_APP = "static/images/icon.png"
     ERROR = ":material/error:"
     WARNING = ":material/warning:"
     SUCCESS =":material/check_circle:"
