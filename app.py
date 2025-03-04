@@ -15,7 +15,7 @@ def clear_session():
     if "relics" in st.session_state:
         del st.session_state.relics
 
-st.set_page_config(page_title="Void Pet", page_icon=api_services.get_image(Warframe.AYA.value["image"]), layout="centered")
+st.set_page_config(page_title="Void-Pet", page_icon=api_services.get_image(Warframe.GAME_ICON.value), layout="centered")
 logging.basicConfig(level=logging.INFO)
 custom.app_style()
 
