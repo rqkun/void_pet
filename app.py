@@ -30,12 +30,12 @@ notfound_page = st.Page(AppPages.NOTFOUND.value,url_path="/404")
 authenticated_pages = [home_page,baro_page,regal_page,market_page,rivens_page,relics_page,error_page,notfound_page]
 pg = st.navigation(authenticated_pages,position="hidden")
 
-# bot = bots.start_bot()
+bot = bots.start_bot()
 
 try:
     pg.run()
 except ResetBotFlag:
-    # bot.stop()
+    bot.stop()
     clear_session()
     st.cache_data.clear()
     st.cache_resource.clear()
