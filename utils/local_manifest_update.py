@@ -61,6 +61,17 @@ def process_manifest():
             # Ensure proper filename
             file_name = file.split(".json")[0] + ".json"
 
+                    # Parse the JSON data
+
+            if ".json" in file:
+                file = file.split(".json")[0] + ".json"
+                # Save the JSON data to a file
+                output_path = f"./static/exports/{file}"
+                with open(output_path, "w", encoding="utf-8") as output_file:
+                    json.dump(data, output_file, indent=4)
+                logging.info(f"File '{file_name}' uploaded successfully saved to local.")
+            
+
             # Upload to Supabase
             try:
                 supabase.storage.from_(BUCKET_NAME).upload(file_name, json_data.encode('utf-8'), {"content-type": "application/json","upsert":"true"})

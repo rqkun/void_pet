@@ -1,9 +1,13 @@
 from enum import Enum
 import json
+import logging
+import requests
 import streamlit as st
 
+from utils.api_services import raise_detailed_error
 
-@st.cache_data(ttl="7d", show_spinner=False)
+
+@st.cache_data(ttl="30d", show_spinner=False)
 def export_request(item:Enum):
     """_summary_
 
@@ -38,8 +42,12 @@ def export_request(item:Enum):
     Returns:
         dict: Raw json data of the export.
     """
-    # request_object = requests.get(f"""{st.secrets.host.url}/app/{item["path"]}""")
-    # raise_detailed_error(request_object)
-    # return request_object.json()[item["object_name"]]
-    with open(item["path"], "r", encoding="utf-8") as file:
-        return json.load(file)[item["object_name"]]
+    try:
+        request_object = requests.get(f"""{st.secrets["supabase"]["SUPABASE_BUCKET_URL"]}{item["path"]}""")
+        raise_detailed_error(request_object)
+        return request_object.json()[item["object_name"]]
+    except Exception as err:
+        logging.error(err.args)
+        logging.info("Open local instead")
+        with open(f"""static/exports/{item["path"]}""", "r", encoding="utf-8") as file:
+            return json.load(file)[item["object_name"]]

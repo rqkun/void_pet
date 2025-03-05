@@ -83,103 +83,103 @@ class AppPages(Enum):
 class AppExports(Enum):
     """The Web app pages locations. """
     DRONES = {
-        "path": "static/exports/ExportDrones_en.json",
+        "path": "ExportDrones_en.json",
         "object_name": "ExportDrones"
     }
     COSMETICS = {
-        "path": "static/exports/ExportCustoms_en.json",
+        "path": "ExportCustoms_en.json",
         "object_name": "ExportCustoms"
     }
     FLAVOURS = {
-        "path": "static/exports/ExportFlavour_en.json",
+        "path": "ExportFlavour_en.json",
         "object_name": "ExportFlavour"
     }
     BUNDLES = {
-        "path": "static/exports/ExportFusionBundles_en.json",
+        "path": "ExportFusionBundles_en.json",
         "object_name": "ExportFusionBundles"
     }
     GEARS = {
-        "path": "static/exports/ExportGear_en.json",
+        "path": "ExportGear_en.json",
         "object_name": "ExportGear"
     }
     KEYS = {
-        "path": "static/exports/ExportKeys_en.json",
+        "path": "ExportKeys_en.json",
         "object_name": "ExportKeys"
     }
     MANIFEST = {
-        "path": "static/exports/ExportManifest.json",
+        "path": "ExportManifest.json",
         "object_name": "Manifest"
     }
     RECIPES = {
-        "path": "static/exports/ExportRecipes_en.json",
+        "path": "ExportRecipes_en.json",
         "object_name": "ExportRecipes"
     }
     REGIONS = {
-        "path": "static/exports/ExportRegions_en.json",
+        "path": "ExportRegions_en.json",
         "object_name": "ExportRegions"
     }
     RELIC_ARCANE = {
-        "path": "static/exports/ExportRelicArcane_en.json",
+        "path": "ExportRelicArcane_en.json",
         "object_name": "ExportRelicArcane"
     }
     RESOURCES = {
-        "path": "static/exports/ExportResources_en.json",
+        "path": "ExportResources_en.json",
         "object_name": "ExportResources"
     }
     SENTINELS = {
-        "path": "static/exports/ExportSentinels_en.json",
+        "path": "ExportSentinels_en.json",
         "object_name": "ExportSentinels"
     }
     SORTIES = {
-        "path": "static/exports/ExportSortieRewards_en.json",
+        "path": "ExportSortieRewards_en.json",
         "object_name": "ExportSortieRewards"
     }
     NIGHTWAVE = {
-        "path": "static/exports/ExportSortieRewards_en.json",
+        "path": "ExportSortieRewards_en.json",
         "object_name": "ExportNightwave"
     }
     RAILJACK = {
-        "path": "static/exports/ExportSortieRewards_en.json",
+        "path": "ExportSortieRewards_en.json",
         "object_name": "ExportRailjack"
     }
     INTRINSICS = {
-        "path": "static/exports/ExportSortieRewards_en.json",
+        "path": "ExportSortieRewards_en.json",
         "object_name": "ExportIntrinsics"
     }
     OTHER = {
-        "path": "static/exports/ExportSortieRewards_en.json",
+        "path": "ExportSortieRewards_en.json",
         "object_name": "ExportOther"
     }
     UPGRADES = {
-        "path": "static/exports/ExportUpgrades_en.json",
+        "path": "ExportUpgrades_en.json",
         "object_name": "ExportUpgrades"
     }
     MOD_SET = {
-        "path": "static/exports/ExportUpgrades_en.json",
+        "path": "ExportUpgrades_en.json",
         "object_name": "ExportModSet"
     }
     AVIONICS = {
-        "path": "static/exports/ExportUpgrades_en.json",
+        "path": "ExportUpgrades_en.json",
         "object_name": "ExportAvionics"
     }
     FOCUS_UPGRADES = {
-        "path": "static/exports/ExportUpgrades_en.json",
+        "path": "ExportUpgrades_en.json",
         "object_name": "ExportFocusUpgrades"
     }
     WARFRAMES = {
-        "path": "static/exports/ExportWarframes_en.json",
+        "path": "ExportWarframes_en.json",
         "object_name": "ExportWarframes"
     }
     ABILITIES = {
-        "path": "static/exports/ExportWarframes_en.json",
+        "path": "ExportWarframes_en.json",
         "object_name": "ExportAbilities"
     }
     WEAPONS = {
-        "path": "static/exports/ExportWeapons_en.json",
+        "path": "ExportWeapons_en.json",
         "object_name": "ExportWeapons"
     }
     RAILJACK_WEAPONS = {
-        "path": "static/exports/ExportWeapons_en.json",
+        "path": "ExportWeapons_en.json",
         "object_name": "ExportRailjackWeapons"
     }
     
