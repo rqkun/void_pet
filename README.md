@@ -1,7 +1,7 @@
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://rqkun-voidpet.streamlit.app/)
 # Void Pet 
 
-A Python-based **Streamlit** application that utilizes the **Warframe Status API** and the **Warframe.market API** to provide up-to-date information on in-game events, vendor inventories, and market pricing.
+A Python-based **Streamlit** application that utilizes the **Warframe Stat API** and the **Warframe.market API** to provide up-to-date information on in-game events, vendor inventories, and market pricing.
 
 Checkout the website [here](https://rqkun-voidpet.streamlit.app/)
 
@@ -44,13 +44,11 @@ Ensure you have the following installed:
    pip install -r requirements.txt
    ```
 
-3. Update the required export files:
+3. Create a Discord Bot [here](https://discord.com/developers/applications)
 
-   ```bash
-   python3 ./utils/local_manifest_update.py
-   ```
+4. Create a Supabase Project [here](https://supabase.com/docs)
 
-4. Insert discord credentials in the `./streamlit/secrets.toml`
+5. Insert Discord Bot and Supabase credentials in the `./streamlit/secrets.toml`
    ```
    [discord]
    key="<your-bot-secret-key>"
@@ -58,7 +56,18 @@ Ensure you have the following installed:
    local = "http://localhost:8501/"
    #Ex: https://rqkun-voidpet.streamlit.app/
    cloud = "<your-host-here>" 
+   [supabase]
+   SUPABASE_URL=""
+   SUPABASE_KEY=""
+   SUPABASE_BUCKET_URL =""
    ```
+
+6. Update the required export files:
+
+   ```bash
+   python3 ./utils/local_manifest_update.py
+   ```
+
 ---
 
 ## Usage
@@ -106,6 +115,9 @@ void-pet/
 
 3. **[Discord](https://discord.com/developers/docs/intro)**
    - Enables Discord bot hooks.
+
+4. **[Supabase](https://supabase.com/docs/reference/python/start)**
+   - Enables saving export jsons to object storage.
 ---
 
 ## License
@@ -116,8 +128,9 @@ Distributed under the MIT License. See LICENSE for more information.
 
 ## Acknowledgments
 
-- **Warframe Status API** and **Warframe.market API** for making data accessible.
+- **Warframe Stat API** and **Warframe.market API** for making data accessible.
 - **Discord** for making ease of access to their bot features.
+- **Supabase** for making ease of access to their storage hosting features.
 - The Warframe community for their support and feedback.
 
 ---
