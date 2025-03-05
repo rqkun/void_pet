@@ -1,5 +1,7 @@
 import asyncio
 from collections import defaultdict
+from enum import Enum
+import logging
 import re
 from PIL import Image
 import streamlit as st
@@ -20,7 +22,7 @@ def get_image_url(unique_name,is_full =True) -> str:
         str: Item image url.
     """
     if 'image_manifest' not in st.session_state:
-        st.session_state.image_manifest = warframe_export.export_request(AppExports.MANIFEST.value)
+        st.session_state.image_manifest = query_exports(AppExports.MANIFEST.value)
     if is_full:
         identifier = unique_name.split("/")
         identifier = "/".join(identifier[len(identifier)-3:])
@@ -43,7 +45,7 @@ def export_relic(name,field):
     Returns:
         dict: The json of found relic item.
     """
-    local_relic_data = warframe_export.export_request(AppExports.RELIC_ARCANE.value)
+    local_relic_data = query_exports(AppExports.RELIC_ARCANE.value)
     for item in local_relic_data:
         if name in item[field]:
             return item
@@ -214,8 +216,8 @@ def get_reward_image(name) -> str:
         bytes: ImageBytes
     """
     unique_name = name
-    resoureces_json = warframe_export.export_request(AppExports.RESOURCES.value)
-    recipes_json = warframe_export.export_request(AppExports.RECIPES.value)
+    resoureces_json = query_exports(AppExports.RESOURCES.value)
+    recipes_json = query_exports(AppExports.RECIPES.value)
     
     for item in recipes_json:
         if (name.replace(" ","") in item["uniqueName"]):
@@ -708,6 +710,17 @@ def prep_image(enum):
     else:
         image = Image.open(enum.value["image"])
         st.image(image.resize((200, 200)),use_container_width=True)
+
+def query_exports(item:Enum):
+    try:
+        return warframe_export.export_request(item)
+    except Exception as err:
+        logging.warning(f"""Failed request object {item["path"]} in S3. Trying local json instead.""")
+        try:
+            return warframe_export.export_open(item)
+        except Exception as sub_err:
+            logging.error(f"""Failed read object {item["path"]}. Error: {sub_err}""")
+            return None
 
 def clear_cache():
     warframe_market.items.clear()
