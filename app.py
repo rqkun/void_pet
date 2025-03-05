@@ -7,6 +7,8 @@ from config.constants import AppIcons, AppPages
 import logging
 from PIL import Image
 
+from utils import data_manage
+
 def clear_session():
     if "rivens" in st.session_state:
         del st.session_state.rivens
@@ -14,6 +16,7 @@ def clear_session():
         del st.session_state.orders
     if "relics" in st.session_state:
         del st.session_state.relics
+    data_manage.clear_cache()
 
 st.set_page_config(page_title="Void-Pet", page_icon=Image.open(AppIcons.MAIN_APP.value), layout="centered")
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -37,8 +40,7 @@ try:
 except ResetBotFlag:
     bot.stop()
     clear_session()
-    st.cache_data.clear()
-    st.cache_resource.clear()
+    bots.start_bot.clear()
     logging.info("Reset caches, sessions and bot.")
     st.rerun(scope="app")
 except (requests.exceptions.HTTPError,requests.exceptions.Timeout,requests.exceptions.ConnectionError) as error:

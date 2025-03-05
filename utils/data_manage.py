@@ -708,3 +708,16 @@ def prep_image(enum):
     else:
         image = Image.open(enum.value["image"])
         st.image(image.resize((200, 200)),use_container_width=True)
+
+def clear_cache():
+    warframe_market.items.clear()
+    warframe_market.rivens_auction.clear()
+    warframe_market.rivens_info.clear()
+    
+    warframe_status.items.clear()
+    
+    get_world_state.clear()
+    get_cached_items.clear()
+    get_relics.clear()
+    get_resurgent_relics.clear()
+    
