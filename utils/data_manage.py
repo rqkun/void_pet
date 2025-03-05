@@ -1,9 +1,12 @@
 import asyncio
 from collections import defaultdict
 from enum import Enum
+import json
 import logging
+import lzma
 import re
 from PIL import Image
+import requests
 import streamlit as st
 from config.classes.parameters import RivenSearchParams, WarframeStatusSearchParams
 from config.constants import AppExports, AppIcons, AppMessages, Warframe
@@ -711,9 +714,10 @@ def prep_image(enum):
         image = Image.open(enum.value["image"])
         st.image(image.resize((200, 200)),use_container_width=True)
 
+
 def query_exports(item:Enum):
     try:
-        return warframe_export.export_request(item)
+        return warframe_export.export_open(item)
     except Exception as err:
         logging.warning(f"""Failed request object {item["path"]} in S3. Trying local json instead.""")
         try:
@@ -721,6 +725,31 @@ def query_exports(item:Enum):
         except Exception as sub_err:
             logging.error(f"""Failed read object {item["path"]}. Error: {sub_err}""")
             return None
+
+
+def update_exports(password: str) -> None:
+    try:
+        if password == st.secrets.app.key:
+            warframe_export.update_exports()
+            error = None
+        else:
+            raise ValueError("Wrong passkey.")
+        
+    except (requests.RequestException, lzma.LZMAError) as e:
+        logging.error(f"Error fetching or decompressing manifest: {e}")
+        error = e
+    except (requests.RequestException, json.JSONDecodeError) as e:
+        logging.error(f"Error processing: {e}")
+        error = e
+    except ValueError as e:
+        error = e
+    except Exception as e:
+        logging.error(f"Unexpected error: {e}")
+        error = e
+        
+    if error:
+        raise error
+
 
 def clear_cache():
     warframe_market.items.clear()
