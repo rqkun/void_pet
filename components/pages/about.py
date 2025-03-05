@@ -26,7 +26,11 @@ def get_manifest():
             response.raise_for_status()
 
             logging.info("Decompressing manifest file.")
-            decompressed_data = lzma.decompress(response.content)
+            buf = bytearray(response.content)
+            buf[5:13] = b'\xff\xff\xff\xff\xff\xff\xff\xff'
+            st.download_button("a",response.content,"index_en.txt.lzma")
+            decompressed_data = lzma.decompress(buf, format=lzma.FORMAT_ALONE)
+            
             return decompressed_data.decode("utf-8", errors='ignore').split("\r\n")
         except (requests.RequestException, lzma.LZMAError) as e:
             logging.error(f"Error fetching or decompressing manifest: {e}")
