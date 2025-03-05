@@ -78,6 +78,7 @@ class AppPages(Enum):
     MARKET = "components/pages/market.py"
     VARZIA = "components/pages/varzia.py"
     BARO = "components/pages/baro.py"
+    ABOUT = "components/pages/about.py"
     ISSUE = "https://github.com/rqkun/void_pet/issues"
 
 class AppExports(Enum):
