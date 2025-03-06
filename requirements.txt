@@ -5,3 +5,4 @@ millify
 httpx
 discord.py
 supabase
+streamlit-option-menu

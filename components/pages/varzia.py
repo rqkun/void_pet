@@ -13,7 +13,7 @@ def store_regal():
     data.preload()
     return data
 
-custom.sideNav(3)
+custom.sideNav(2)
 custom.reject_url_param()
 custom.image_style()
 custom.card_style()

@@ -3,6 +3,7 @@ import streamlit as st
 from config.classes.exceptions import ResetBotFlag
 from config.constants import AppIcons, AppPages
 import streamlit_antd_components as sac
+from streamlit_option_menu import option_menu
 
 def sideNav(current_idx):
     """Custom Sidebar navigation.
@@ -11,41 +12,84 @@ def sideNav(current_idx):
         current_idx (int): current page index.
         logo (enum, optional): current page logo. Defaults to Warframe.AYA.value.
     """
+    option_maping = ["Home", "Void", "Vault", 'Market', 'Rivens','Relics','About']
     with st.sidebar:
         st.markdown("""<style>.st-emotion-cache-kgpedg {padding: calc(1.375rem) 1.5rem 0rem; margin:-1rem 0 -1rem 0;}</style>""",unsafe_allow_html=True)
-        selection = sac.menu([
-            sac.MenuItem('Home', icon='house-fill',),
-            sac.MenuItem('Vendors', icon='box-fill', children=[
-                sac.MenuItem("Baro Ki'ter", icon='arrow-repeat'),
-                sac.MenuItem('Varzia', icon='droplet-fill'),
-            ]),
-            sac.MenuItem('Market', icon='shop-window', children=[
-                sac.MenuItem('Orders', icon='cart3'),
-                sac.MenuItem('Rivens', icon='dice-6'),
-            ]),
-            sac.MenuItem('Relics', icon='browser-firefox'),
-            sac.MenuItem('Discord', icon='discord',description="Invite Bot", href='https://discord.com/oauth2/authorize?client_id=1047432559388282900'),
-            sac.MenuItem('Github', icon='github',description="rqkun/void_pet", href='https://github.com/rqkun/void_pet/')
-        ], size='xs',variant='left-bar', return_index=True, open_all=True, index=current_idx)
-        
+        selection = option_menu(None, option_maping,
+                        icons=['house', 'arrow-repeat', "droplet-fill", 'cart3','dice-6','browser-firefox','discord'], 
+                        menu_icon=None, default_index=current_idx, orientation="vertical",
+                        styles={
+                            "container": {"padding": "0!important", "background-color": "#262730","display":"flex",},
+                            "icon": {"color": "white", "font-size": "20px"},
+
+                            "nav-item":{
+                                "min-height":"2.5rem",
+                                "display":" flex",
+                                "-webkit-box-align":" center",
+                                "align-items":" center",
+                                "-webkit-box-pack":" center",
+                                "justify-content":" center",
+                                "font-weight":" 400",
+                                "border-radius":" 0.5rem",
+                                "min-height":" 2.5rem",
+                                "margin":" 0px",
+                                "line-height":" 1.6",
+                                "text-transform":" none",
+                                "font-size":" inherit",
+                                "font-family":" inherit",
+                                "width":" 100%",
+                                "font-family": '"Source Sans Pro", sans-serif',
+                                "margin-bottom":"5px",
+                                "max-height":"40px",
+                                "font-size": "14px"
+                            },
+                            "nav-link": {
+                                "font-family":" inherit",
+                                "width":" 100%",
+                                "font-size":" inherit",
+                                "display":"flex",
+                                "text-align": "left",
+                                "margin":"0px",
+                                "--hover-border": "#232323",
+                                "align-items":" center",
+                                "justify-content":" flex-start",
+                                "max-height":"40px",
+                            },
+                            "nav-link-selected": {
+                                "background-color":"rgb(255, 75, 75, 100)",
+                                "font-family":"inherit",
+                                "width":"100%",
+                                "font-size":"inherit",
+                                "display":"flex",
+                                "align-items":"center",
+                                "justify-content":"flex-start",
+                                "font-weight":"normal",
+                            },
+                        }
+                    )
+                        
         sac.divider(label='Settings', icon='gear', align='center', color='gray')
         
-        if st.button("Clear caches",type="primary",use_container_width=True, help="Force reload data.",icon=AppIcons.SYNC.value):
+        if st.button("Clear caches",type="secondary",use_container_width=True, help="Force reload data.",icon=AppIcons.SYNC.value):
             raise ResetBotFlag("True")
-        
-    if selection != current_idx:
-        if selection == 0:
+    
+    selected_idx = option_maping.index(selection)
+    
+    if selected_idx != current_idx:
+        if selected_idx == 0:
             st.switch_page(AppPages.HOME.value)
-        if selection == 2:
+        if selected_idx == 1:
             st.switch_page(AppPages.BARO.value)
-        if selection == 3:
+        if selected_idx == 2:
             st.switch_page(AppPages.VARZIA.value)
-        if selection == 5:
+        if selected_idx == 3:
             st.switch_page(AppPages.MARKET.value)
-        if selection == 6:
+        if selected_idx == 4:
             st.switch_page(AppPages.RIVENS.value)
-        if selection == 7:
+        if selected_idx == 5:
             st.switch_page(AppPages.RELICS.value)
+        if selected_idx == 6:
+            st.switch_page(AppPages.ABOUT.value)
 
 
 def paginations(length,num_of_row=2,items_per_row = 5):

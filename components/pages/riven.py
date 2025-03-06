@@ -5,7 +5,7 @@ from config.constants import AppIcons, AppMessages, Warframe
 from utils import data_manage
 
 
-custom.sideNav(6)
+custom.sideNav(4)
 custom.reject_url_param()
 custom.image_style()
 

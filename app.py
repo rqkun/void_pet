@@ -22,7 +22,7 @@ st.set_page_config(page_title="Void-Pet", page_icon=Image.open(AppIcons.MAIN_APP
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 custom.app_style()
 
-home_page = st.Page(AppPages.HOME.value)
+home_page = st.Page(AppPages.HOME.value,default=True)
 baro_page = st.Page(AppPages.BARO.value,url_path="/void")
 regal_page = st.Page(AppPages.VARZIA.value,url_path="/vault")
 rivens_page = st.Page(AppPages.RIVENS.value)

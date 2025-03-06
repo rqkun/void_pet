@@ -14,7 +14,7 @@ def store_primes():
     rewards = data_manage.get_relic_rewards()
     return rewards
 
-custom.sideNav(7)
+custom.sideNav(5)
 custom.reject_url_param()
 custom.image_style()
 custom.card_style()

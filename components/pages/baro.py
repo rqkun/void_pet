@@ -14,7 +14,7 @@ def store_baro():
     st.session_state.baro_alert = data.check()
     return data
 
-custom.sideNav(2)
+custom.sideNav(1)
 custom.reject_url_param()
 custom.image_style()
 custom.card_style()
