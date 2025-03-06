@@ -19,7 +19,7 @@ class Card:
             if self.type == "Warframes" or self.type == "Archwing":
                 type_data = data_manage.extract_frame_abilities(self.data)
                 hover_md = components.markdowns.ability_info_md(self.data,type_data)
-            elif self.type in ["Primary", "Secondary", "Melee", "Arch-Gun", "Arch-Melee"] or self.type == "Sentinels":
+            elif self.type in ["Primary", "Secondary", "Melee", "Arch-Gun", "Arch-Melee"]:
                 type_data = data_manage.extract_craftable_components(self.data)
                 hover_md = components.markdowns.craftable_info_md(type_data)
             elif self.type == "Mods":
