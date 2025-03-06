@@ -267,4 +267,4 @@ def encode_identifier(identifier, is_unique=False):
         identifier = identifier.replace(" and ", " & ")
         identifier = re.sub(r'\s*\(.*?\)', '', identifier)
 
-    return urllib.parse.quote_plus(identifier, safe="")
+    return urllib.parse.quote(identifier)

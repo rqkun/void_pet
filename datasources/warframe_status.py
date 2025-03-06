@@ -40,7 +40,7 @@ def world(path=None):
     raise_detailed_error(response)
     return response.json()
 
-@st.cache_data(hash_funcs={WarframeStatusSearchParams: hash_func},ttl="1d",show_spinner=False)
+@st.cache_data(hash_funcs={WarframeStatusSearchParams: hash_func},ttl="1m",show_spinner=False)
 def items(params:WarframeStatusSearchParams):
     """API request to get item searchable data.
 

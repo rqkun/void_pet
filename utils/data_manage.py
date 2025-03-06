@@ -554,7 +554,7 @@ def get_weapon_by_name(name):
         return None
     else:
         for item in response:
-            if item["name"].lower() == name:
+            if item["name"].lower() == name.lower():
                 return item
         return response[0]
 
