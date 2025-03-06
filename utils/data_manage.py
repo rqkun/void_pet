@@ -31,9 +31,10 @@ def get_image_url(unique_name,is_full =True) -> str:
         identifier = "/".join(identifier[len(identifier)-3:])
     else:
         identifier = unique_name
-    for item in st.session_state.image_manifest:
-        if identifier in item["uniqueName"]:
-            return Warframe.PUBLIC_EXPORT_API.value["api"] + item["textureLocation"]
+    if st.session_state.image_manifest:
+        for item in st.session_state.image_manifest:
+            if identifier in item["uniqueName"]:
+                return Warframe.PUBLIC_EXPORT_API.value["api"] + item["textureLocation"]
 
     return AppIcons.NO_IMAGE_DATA_URL.value
 
@@ -49,9 +50,10 @@ def export_relic(name,field):
         dict: The json of found relic item.
     """
     local_relic_data = query_exports(AppExports.RELIC_ARCANE.value)
-    for item in local_relic_data:
-        if name in item[field]:
-            return item
+    if local_relic_data:
+        for item in local_relic_data:
+            if name in item[field]:
+                return item
     return None
 
 
@@ -220,26 +222,26 @@ def get_reward_image(name) -> str:
     """
     unique_name = name
     resoureces_json = query_exports(AppExports.RESOURCES.value)
+    if resoureces_json: 
+        for item in resoureces_json:
+            if (name in item["name"]):
+                unique_name = item["uniqueName"]
+                break
     recipes_json = query_exports(AppExports.RECIPES.value)
-    
-    for item in recipes_json:
-        if (name.replace(" ","") in item["uniqueName"]):
-            unique_name = item["uniqueName"]
-            break
-    
-    for item in resoureces_json:
-        if (name in item["name"]):
-            unique_name = item["uniqueName"]
-            break
-    if unique_name:
-        img = get_image_url(unique_name)
-    else:
-        img = get_image_url(unique_name,False)
+    if recipes_json:
+        for item in recipes_json:
+            if (name.replace(" ","") in item["uniqueName"]):
+                unique_name = item["uniqueName"]
+                break
+
+    identifier = unique_name.split("/")[-1]
+
+    img = get_image_url(identifier,False)
     
     if img == AppIcons.NO_IMAGE_DATA_URL.value:
-        unique_name = warframe_status.items(WarframeStatusSearchParams(name.replace(" Blueprint", ""),by="name",type="items",only=["uniqueName"]))
-        if len(unique_name)>0:
-            img = get_image_url(unique_name[0]["uniqueName"])
+        items = warframe_status.items(WarframeStatusSearchParams(name.replace(" Blueprint", ""),by="name",type="items",only=["uniqueName"]))
+        if len(items)>0:
+            img = get_image_url(items[0]["uniqueName"])
         
     return img
 
@@ -716,15 +718,7 @@ def prep_image(enum):
 
 
 def query_exports(item:Enum):
-    try:
-        return warframe_export.export_open(item)
-    except Exception as err:
-        logging.warning(f"""Failed request object {item["path"]} in S3. Trying local json instead.""")
-        try:
-            return warframe_export.export_open(item)
-        except Exception as sub_err:
-            logging.error(f"""Failed read object {item["path"]}. Error: {sub_err}""")
-            return None
+    return warframe_export.export_open(item)
 
 
 def update_exports(password: str) -> None:
