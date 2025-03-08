@@ -115,7 +115,10 @@ class Vendor:
             list: List of filtered items between start and end index.
         """
         for item in self.filtered_inventory[start_idx:end_idx]:
-            item["image"] = data_manage.get_image_url(item["uniqueName"])
+            if "wikiaThumbnail" in item:
+                item["image"] = item["wikiaThumbnail"]
+            else:
+                item["image"] = data_manage.get_image_url(item["uniqueName"])
 
             currency_type, amount = (self.currency[0], item["ducats"]) if item["ducats"] > 0 else (self.currency[1], item["credits"])
 

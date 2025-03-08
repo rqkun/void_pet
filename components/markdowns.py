@@ -330,12 +330,13 @@ def event_info_md(data,step_rewards):
             rewards = ", ".join(item["rewardPool"])
             jobs = jobs + f"""<details><summary>{item["type"]} &middot; Enemies: {item["enemyLevels"][0]} - {item["enemyLevels"][1]}</summary><b>Rewards: </b><font style="color:#a3a3a3;">{rewards}</font></details></div>"""
     jobs = jobs + "</div>"
+    
     if step_rewards is not None and len(step_rewards)>0:
         step_rewards_md = f"""<details><summary><b>Rewards</b></summary><font style="color:#a3a3a3;">{"<br>".join(step_rewards)}</font></details>"""
     else:
         step_rewards_md =""
     md = f"""<div>
-                <div style="display:flex;"><i style="color:#a3a3a3;max-width:300px;">{data["tooltip"]}</i></div>{jobs}{step_rewards_md}
+                <div style="display:flex;"><i style="color:#a3a3a3;max-width:300px;">{data.get("tooltip","")}</i></div>{jobs}{step_rewards_md}
         </div>
     """
     return md
