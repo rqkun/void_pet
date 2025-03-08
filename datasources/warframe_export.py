@@ -129,5 +129,6 @@ def update_exports():
 
         supabase.storage.from_(BUCKET_NAME).upload(file_name, json_data.encode('utf-8'), {"content-type": "application/json","upsert":"true"})
         logging.info(f"File '{file_name}' uploaded successfully to bucket '{BUCKET_NAME}'.")
+    logging.info(f"All files successfully updated.")
         
         
