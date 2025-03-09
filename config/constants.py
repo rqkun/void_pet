@@ -235,6 +235,7 @@ class Warframe(Enum):
         "list": ["offline", "ingame", "online"],
         "priority" : {"ingame": 0, "online": 1, "offline": 2}
     }
+    FILTER = ["Warframes","Archwings","Sentinels","Weapons","Relics","Mods","Cosmetics","Others"]
     GAME_ICON = "https://wiki.warframe.com/images/IconLotus.png"
     MODE_ICONS = {
         "INVASION": "https://wiki.warframe.com/images/InvasionIcon.png",

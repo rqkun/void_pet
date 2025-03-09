@@ -2,7 +2,7 @@ import streamlit as st
 from components import custom
 from config.classes.vendors import VaultTraider
 from utils import data_manage
-from config.constants import AppIcons, AppMessages, AppPages
+from config.constants import AppIcons, AppMessages, AppPages, Warframe
 
 
 def store_regal():
@@ -23,7 +23,7 @@ data = store_regal()
 left,mid,right =st.columns([1,7,1],vertical_alignment="center")
 
 with left.popover(AppIcons.FILTER.value,use_container_width=True):
-    categories = ["Warframe", "Weapon", "Relic", "Others"]
+    categories = Warframe.FILTER.value
     selected_categories= st.pills("Pick the desired item type.",categories,selection_mode="multi")
     data.filter(selected_categories)
 

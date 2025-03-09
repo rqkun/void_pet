@@ -183,22 +183,23 @@ def filter_data(items, types):
 
     for item in items:
         condition = False
-
-        # If 'Weapon' is selected, include weapon items
-        if "Weapon" in types and item["category"] in ["Primary", "Secondary", "Melee", "Arch-Gun", "Arch-Melee"]:
-            condition = True
-
-        # If 'Relic' is selected, include relic items
-        if "Relic" in types and item["category"] == "Relics":
-            condition = True
-
-        # If 'Warframe' is selected, include warframe items
-        if "Warframe" in types and item["category"] == "Warframes":
-            condition = True
-
-        # If 'Others' is selected, include items that are not Weapon, Relic, or Warframe
-        if "Others" in types and item["category"] not in ["Primary", "Secondary", "Melee", "Arch-Gun", "Arch-Melee", "Relics", "Warframes"]:
-            condition = True
+        if 'category' in item:
+            if "Warframes" in types and item["category"] == "Warframes":
+                condition = True
+            if "Archwings" in types and item["category"] == "Archwing":
+                condition = True
+            if "Weapons" in types and item["category"] in ["Primary", "Secondary", "Melee", "Arch-Gun", "Arch-Melee"]:
+                condition = True
+            if "Relics" in types and item["category"] == "Relics":
+                condition = True
+            if "Mods" in types and item["category"] == "Mods":
+                condition = True
+            if "Cosmetics" in types and item["category"] == "Skins":
+                condition = True
+            if "Sentinels" in types and item["category"] == "Sentinels":
+                condition = True
+            if "Others" in types and item["category"] not in ["Sentinels","Skins","Mods","Archwing","Primary", "Secondary", "Melee", "Arch-Gun", "Arch-Melee", "Relics", "Warframes"]:
+                condition = True
 
         # Append the item if it matches any of the selected conditions
         if condition:
