@@ -71,7 +71,7 @@ def worldstate_embed():
             embed.add_field(name=item["name"], value=f"""{item["data"]["state"].title()}: {time}""", inline=True)
         return embed
     else:
-        embed.add_field(name="Empty",value="❌ No active invasions.")
+        embed.add_field(name="Empty",value="❌ No active cycles.")
         return embed
 
 
@@ -82,13 +82,20 @@ def alerts_embed():
     data = data_manage.get_alerts_data()
     if data:
         for alert in data:
-            if alert["active"]:
+            if alert.get("active",False):
                 time = tools.format_timedelta(datetime.strptime(alert["expiry"], "%Y-%m-%dT%H:%M:%S.%fZ") - datetime.today(), day=True)
-                rewards = ", ".join(f"""{reward["amount"]:,} {reward["item"]}""" for reward in data_manage.get_alert_reward(alert))
-                embed.add_field(name=f"""{alert["mission"]["node"]}: {time}""", value=rewards, inline=False)
+                mission = alert.get("mission", None)
+                if mission:
+                    rewards = mission.get("reward", None)
+                    if rewards:
+                        credit = rewards.get("credits",0)
+                        credit_str = f"""{credit} Credits""" if credit >0 else ""
+                        reward = rewards.get("itemString","None")
+                        node = mission.get("node", "")
+                        embed.add_field(name=f"""{node}: {time}""", value=f"""{reward}\n{credit_str}""", inline=True)
         return embed
     else:
-        embed.add_field(name="Empty",value="❌ No active invasions.")
+        embed.add_field(name="Empty",value="❌ No active alerts.")
         return embed
 
 
