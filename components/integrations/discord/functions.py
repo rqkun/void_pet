@@ -25,13 +25,37 @@ def invasions_embed():
     """Helper function to send invasion rewards."""
     embed = discord.Embed(title="Invasion Rewards", color=discord.Color.blue())
     embed.set_footer(icon_url=Warframe.MODE_ICONS.value["INVASION"], text="via Voidpet | Hosted on Streamlit")
-    data = data_manage.get_invasions_rewards(data_manage.get_world_state()["invasions"])
+    data = data_manage.get_world_state()["invasions"]
     if data:
-        for item, amount in data.items():
-            embed.add_field(name=item, value=amount, inline=False)
+        for invasion in data:
+            if not invasion.get("completed",True):
+                attacker = invasion.get("attacker", None)
+                
+                if attacker:
+                    atk_faction = attacker.get("faction","")
+                    atk_rewards = attacker.get("reward", None)
+                    if atk_rewards:
+                        atk_reward = atk_rewards.get("asString","None")
+                    else: atk_reward = "None"
+                    
+                defender = invasion.get("defender", None)
+                if defender:
+                    def_faction = defender.get("faction","")
+                    def_rewards = defender.get("reward", "None")
+                    if def_rewards:
+                        def_reward = def_rewards.get("asString","None")
+                    else: def_reward = "None"
+
+                node = invasion.get("node","")
+                completion = invasion.get("completion",0)
+                atk_completion = 100 - int(completion)
+                embed.add_field(name=f"{node}: ", value=f"{atk_completion:02d}%\
+                                **{atk_faction}**: *{atk_reward}*\n{int(completion):02d}%\
+                                **{def_faction}**: *{def_reward}*", inline=True)
+
         return embed
     else:
-        embed.add_field(name="❌ No active invasions.",value="Empty")
+        embed.add_field(name="Empty",value="❌ No active invasions.")
         return embed
 
 
@@ -47,7 +71,7 @@ def worldstate_embed():
             embed.add_field(name=item["name"], value=f"""{item["data"]["state"].title()}: {time}""", inline=True)
         return embed
     else:
-        embed.add_field(name="❌ No active cycles.",value="Empty")
+        embed.add_field(name="Empty",value="❌ No active invasions.")
         return embed
 
 
@@ -64,7 +88,7 @@ def alerts_embed():
                 embed.add_field(name=f"""{alert["mission"]["node"]}: {time}""", value=rewards, inline=False)
         return embed
     else:
-        embed.add_field(name="❌ No active alert.",value="Empty")
+        embed.add_field(name="Empty",value="❌ No active invasions.")
         return embed
 
 

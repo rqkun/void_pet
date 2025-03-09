@@ -52,7 +52,7 @@ class DiscordBot:
         @self.bot.tree.command(name="invasions", description="Get the invasion rewards list.")
         async def invasions(interaction: discord.Interaction): 
             await functions.handle_context(interaction, functions.invasions_embed)
- 
+        
         @self.bot.tree.command(name="void", description="Get the Baro Ki'ter info.")
         async def void(interaction: discord.Interaction): 
             await functions.handle_context(interaction, functions.void_trader_embed)
