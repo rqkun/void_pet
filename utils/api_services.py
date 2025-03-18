@@ -16,7 +16,7 @@ def raise_detailed_error(request_object):
         raise requests.exceptions.HTTPError(error, request_object.text)
     except requests.exceptions.Timeout as error:
         raise requests.exceptions.Timeout("The request timed out")
-    except requests.exceptions.ConnectionError as erro:
+    except requests.exceptions.ConnectionError as error:
         raise requests.exceptions.ConnectionError(error, request_object.text)
 
 
