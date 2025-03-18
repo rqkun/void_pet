@@ -12,11 +12,11 @@ def sideNav(current_idx):
         current_idx (int): current page index.
         logo (enum, optional): current page logo. Defaults to Warframe.AYA.value.
     """
-    option_maping = ["Home", "Void", "Vault", 'Market', 'Rivens','Relics','About']
+    option_maping = ["Home", "Void", "Vault", 'Market', 'Rivens','Relics','Statistics','About']
     with st.sidebar:
         st.markdown("""<style>.st-emotion-cache-kgpedg {padding: calc(1.375rem) 1.5rem 0rem; margin:-1rem 0 -1rem 0;}</style>""",unsafe_allow_html=True)
         selection = option_menu(None, option_maping,
-                        icons=['house', 'arrow-repeat', "droplet-fill", 'cart3','dice-6','browser-firefox','discord'], 
+                        icons=['house', 'arrow-repeat', "droplet-fill", 'cart3','dice-6','browser-firefox','bar-chart-fill','discord'], 
                         menu_icon=None, default_index=current_idx, orientation="vertical",
                         styles={
                             "container": {"padding": "0!important", "background-color": "#262730","display":"flex",},
@@ -89,6 +89,8 @@ def sideNav(current_idx):
         if selected_idx == 5:
             st.switch_page(AppPages.RELICS.value)
         if selected_idx == 6:
+            st.switch_page(AppPages.STATISTICS.value)
+        if selected_idx == 7:
             st.switch_page(AppPages.ABOUT.value)
 
 

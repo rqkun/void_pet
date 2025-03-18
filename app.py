@@ -26,27 +26,27 @@ home_page = st.Page(AppPages.HOME.value,default=True)
 baro_page = st.Page(AppPages.BARO.value,url_path="/void")
 regal_page = st.Page(AppPages.VARZIA.value,url_path="/vault")
 rivens_page = st.Page(AppPages.RIVENS.value)
+stats_page = st.Page(AppPages.STATISTICS.value)
 relics_page = st.Page(AppPages.RELICS.value)
 market_page = st.Page(AppPages.MARKET.value)
 about_page = st.Page(AppPages.ABOUT.value,url_path="/about")
 error_page = st.Page(AppPages.ERROR.value,url_path="/500")
 notfound_page = st.Page(AppPages.NOTFOUND.value,url_path="/404")
-authenticated_pages = [home_page,baro_page,regal_page,market_page,rivens_page,relics_page,about_page,error_page,notfound_page]
+authenticated_pages = [home_page,baro_page,regal_page,market_page,rivens_page,relics_page,about_page,error_page,notfound_page,stats_page]
 pg = st.navigation(authenticated_pages,position="hidden")
 
-bot = bots.start_bot()
+# bot = bots.start_bot()
 
 try:
     pg.run()
 except ResetBotFlag:
-    bot.stop()
+    # bot.stop()
     clear_session()
     bots.start_bot.clear()
     logging.info("Reset caches, sessions and bot.")
     st.rerun(scope="app")
 except (requests.exceptions.HTTPError,requests.exceptions.Timeout,requests.exceptions.ConnectionError) as error:
     clear_session()
-    error_message = "; ".join(error.args)
-    logging.error(error_message)
-    st.session_state.app_error = error_message
+    logging.error(error.args)
+    st.session_state.app_error = error.args
     st.switch_page(AppPages.ERROR.value)

@@ -749,7 +749,6 @@ def clear_cache():
     warframe_market.items.clear()
     warframe_market.rivens_auction.clear()
     warframe_market.rivens_info.clear()
-    
     warframe_status.items.clear()
     
     get_world_state.clear()
@@ -757,3 +756,116 @@ def clear_cache():
     get_relics.clear()
     get_resurgent_relics.clear()
     
+    get_prime_frames.clear()
+    get_prime_weapons.clear()
+    get_prime_sentinels.clear()
+    
+    clear_primecaches()
+
+def clear_primecaches():
+    get_primeframes_orders.clear()
+    get_primeweaps_orders.clear()
+    get_primesens_orders.clear()
+
+
+@st.cache_data(ttl="1d",show_spinner=False)
+def get_prime_frames() -> list:
+    
+    """Call the warframe status api for list of primes.
+
+    Returns:
+        list: A clean prime names list.
+    """
+    p_frame = warframe_status.items(WarframeStatusSearchParams("prime","name",type="warframes",only=["name","category"]))
+    return [item["name"] for item in p_frame]
+
+
+@st.cache_data(ttl="1d",show_spinner=False)
+def get_primeframes_orders(item_ids):
+    """Getting all of the items aync by uniqueNames.
+
+    Args:
+        item_ids (list): list of uniqueNames.
+
+    Returns:
+        list: list of items.
+    """
+    return asyncio.run(warframe_market.items_async(item_ids))
+
+
+def preload_primeframes_orders() -> list:
+    ids = [f"{item} set".lower().replace(" ","_") for item in get_prime_frames()]
+    return get_primeframes_orders(ids)
+
+@st.cache_data(ttl="1d",show_spinner=False)
+def get_prime_weapons() -> list:
+    """Call the warframe status api for list of primes.
+
+    Returns:
+        list: A clean prime names list.
+    """
+    p_weap = warframe_status.items(WarframeStatusSearchParams("prime","name",type="weapons",only=["name","category"]))
+    return [item["name"] for item in p_weap]
+
+@st.cache_data(ttl="1d",show_spinner=False)
+def get_prime_frames() -> list:
+    
+    """Call the warframe status api for list of primes.
+
+    Returns:
+        list: A clean prime names list.
+    """
+    p_frame = warframe_status.items(WarframeStatusSearchParams("prime","name",type="warframes",only=["name","category"]))
+    return [item["name"] for item in p_frame]
+
+
+@st.cache_data(ttl="1d",show_spinner=False)
+def get_primeweaps_orders(item_ids):
+    """Getting all of the items aync by uniqueNames.
+
+    Args:
+        item_ids (list): list of uniqueNames.
+
+    Returns:
+        list: list of items.
+    """
+    return asyncio.run(warframe_market.items_async(item_ids))
+
+
+def preload_primeweaps_orders() -> list:
+    ids = [f"{item} set".lower().replace(" ","_") for item in get_prime_weapons()]
+    return get_primeweaps_orders(ids)
+
+
+@st.cache_data(ttl="1d",show_spinner=False)
+def get_prime_sentinels() -> list:
+    
+    """Call the warframe status api for list of primes.
+
+    Returns:
+        list: A clean prime names list.
+    """
+    result =[]
+    p_items = warframe_status.items(WarframeStatusSearchParams("prime","name",type="items",only=["name","category"]))
+    for item in p_items:
+        if item["category"] != "Sentinels":
+            continue
+        result.append(item["name"])
+    return result
+
+@st.cache_data(ttl="1d",show_spinner=False)
+def get_primesens_orders(item_ids):
+    """Getting all of the items aync by uniqueNames.
+
+    Args:
+        item_ids (list): list of uniqueNames.
+
+    Returns:
+        list: list of items.
+    """
+    return asyncio.run(warframe_market.items_async(item_ids))
+
+
+def preload_primesens_orders() -> list:
+    ids = [f"{item} set".lower().replace(" ","_") for item in get_prime_sentinels()]
+    return get_primesens_orders(ids)

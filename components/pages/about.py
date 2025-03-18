@@ -6,7 +6,7 @@ from config.constants import AppIcons, AppMessages
 from utils import data_manage
 
 
-custom.sideNav(6)
+custom.sideNav(7)
 custom.reject_url_param()
 
 st.subheader(f"""{AppIcons.INFO.value} About the Page""")

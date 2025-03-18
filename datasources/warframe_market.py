@@ -1,3 +1,7 @@
+import asyncio
+import logging
+import random
+import httpx
 import requests
 from config.classes.parameters import RivenSearchParams
 from config.constants import Warframe
@@ -68,3 +72,35 @@ def rivens_auction(params:RivenSearchParams):
     data = response.json()
     obj = data.get("payload", {}).get("auctions", [])
     return obj if obj else None
+
+async def items_async(item_ids):
+    """Fetch multiple items concurrently with error handling."""
+    
+    async def fetch_item(client, item_id, retries=3, SEMAPHORE=None):
+        """Fetch item asynchronously with retries and concurrency limit."""
+        async with SEMAPHORE:
+            for attempt in range(retries):
+                try:
+                    path = f"""{Warframe.MARKET_API.value["api"]}/items/{item_id}/orders"""
+                    headers = {"accept": "application/json"}
+                    if "excalibur" in item_id:
+                        continue
+                    response = await client.get(path, headers=headers,follow_redirects=True)
+
+                    if response.status_code == 200:
+                        return{
+                            "url":item_id,
+                            "orders": response.json()["payload"]["orders"]
+                        }
+                
+                except (httpx.HTTPStatusError, httpx.ReadTimeout, httpx.PoolTimeout) as e:
+                    wait_time = 2 ** attempt + random.uniform(0, 1)
+                    await asyncio.sleep(wait_time)
+
+        return None # Return None if all retries fail
+    
+    SEMAPHORE = asyncio.Semaphore(3)  # Reduce concurrency to ease API load
+    async with httpx.AsyncClient(timeout=10) as client:  # Set a timeout
+        tasks = [fetch_item(client, item_id, SEMAPHORE=SEMAPHORE) for item_id in item_ids]
+        results = await asyncio.gather(*tasks, return_exceptions=True)  # Continue on failure
+        return [res for res in results if res is not None] # Remove failed requests
