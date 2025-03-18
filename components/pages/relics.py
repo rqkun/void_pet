@@ -1,6 +1,6 @@
 import streamlit as st
 from components import custom
-from components.cards import RelicCard
+from components.cards import Card
 from config.constants import AppIcons, AppMessages
 from utils import data_manage
 
@@ -75,9 +75,8 @@ if "relics" in st.session_state:
 
         with middle,st.spinner("",show_time=True,_cache=False):
             for item in view_relics:
-                item["name"] = item["name"].replace(" Intact","")
                 item["image"] = data_manage.get_image_url(item["uniqueName"])
-                item["html"] = RelicCard(data=item, image_url=item["image"]).generate()
+                item["html"] = Card(data=item, image_url=item["image"]).generate()
         list_col = st.columns(items_per_row)
         start_idx = 0
         custom.varzia_style()
