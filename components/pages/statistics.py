@@ -97,9 +97,9 @@ with left,st.status("Downloading data..."):
         sentinels_data = data_manage.preload_primesens_orders()
     left.write(":material/check: Finished Loading")
 
-st.markdown("""<span style="color:lime;">■</span> <b>Should buy</b>: 
+st.markdown("""<span style="color:lime;">■</span> <b>Stable</b>: 
             <span style="color:gray;">The lowest differences between lowest price and median price.</span>  
-            <span style="color:#FFD700;">■</span> <b>Should sell</b>: 
+            <span style="color:#FFD700;">■</span> <b>Underprice</b>: 
             <span style="color:gray;">The largest differences between lowest price and median price.</span>  
             <span style="color:#FF6961;">■</span> <b>Overprice</b>: 
             <span style="color:gray;">The there are cheaper sellers but they're currently offline.</span> 
