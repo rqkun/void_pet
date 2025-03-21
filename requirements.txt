@@ -6,3 +6,5 @@ httpx
 discord.py
 supabase
 streamlit-option-menu
+gspread
+oauth2client

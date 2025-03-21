@@ -19,7 +19,7 @@ def clear_session():
     data_manage.clear_cache()
 
 st.set_page_config(page_title="Void-Pet", page_icon=Image.open(AppIcons.MAIN_APP.value), layout="centered")
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.WARNING, format='%(asctime)s - %(levelname)s - %(message)s')
 custom.app_style()
 
 home_page = st.Page(AppPages.HOME.value,default=True)
@@ -43,7 +43,7 @@ except ResetBotFlag:
     bot.stop()
     clear_session()
     bots.start_bot.clear()
-    logging.info("Reset caches, sessions and bot.")
+    logging.warning("Reset caches, sessions and bot.")
     st.rerun(scope="app")
 except (requests.exceptions.HTTPError,requests.exceptions.Timeout,requests.exceptions.ConnectionError) as error:
     clear_session()

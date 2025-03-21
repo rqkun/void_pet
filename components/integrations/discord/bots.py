@@ -32,7 +32,7 @@ class DiscordBot:
         @self.bot.event
         async def on_ready():
             await self.bot.tree.sync()
-            logging.info(f"Bot logged in as {self.bot.user}")
+            logging.warning(f"Bot logged in as {self.bot.user}")
             activity = discord.Game(name="Warframe",platform="PC",start=datetime.now())
             await self.bot.change_presence(status=discord.Status.online, activity=activity)
             logging.info("Bot presence set to playing 'Warframe'")
@@ -79,7 +79,7 @@ class DiscordBot:
             self.thread = None
             self.loop = None
             self.bot = None
-            logging.info(f"Bot stopped")
+            logging.warning(f"Bot stopped")
             
 
     async def send_message(self, channel_id, message):

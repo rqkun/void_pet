@@ -1,14 +1,20 @@
 from datetime import datetime, timezone
 from hashlib import sha256
 from itertools import chain
+import logging
 import re
+from statistics import median
 from typing import Dict, List, Literal, Optional, Tuple, Union
 
 import urllib
 
+from numpy import average
+import pandas as pd
+
 
 from config.classes.parameters import WarframeStatusSearchParams, RivenSearchParams
-from config.constants import AppMessages, Warframe
+from config.constants import AppIcons, AppMessages, Warframe
+from utils import tools
 
 def market_filter(
         data,
@@ -130,6 +136,46 @@ def get_min_status_plat(data, status):
 
     return filtered_sorted_orders if filtered_sorted_orders else None
 
+def sort_open_close(data):
+    """
+    Filter and find the lowest platinum price for an item.
+
+    Args:
+        data (list): List of Warframe.market orders.
+        status (str or list): Online status or list of statuses (e.g., "ingame", "online", "offline").
+
+    Returns:
+        dict or None: The lowest price order object, or None if no valid orders are found.
+    """
+    # Ensure status is a list of valid statuses
+    df = pd.DataFrame(data)
+
+    # Convert last_seen to datetime
+    # df["last_seen"] = pd.to_datetime(df["user"].apply(lambda x: x["last_seen"]),format="%Y-%m-%dT%H:%M:%S.%f%z")
+    df["creation_date"] = pd.to_datetime(df["creation_date"],format="%Y-%m-%dT%H:%M:%S.%f%z")
+    df["last_update"] = pd.to_datetime(df["last_update"],format="%Y-%m-%dT%H:%M:%S.%f%z")
+    
+    # Get today's date in UTC
+    today = datetime.now(timezone.utc).date()
+
+    # Filter only today's data & status = ingame
+    filtered_df = df[((df["creation_date"].dt.date == today) | (df["last_update"].dt.date == today)) & (df["visible"]==True) & (df["order_type"]=="sell")]
+
+    # Sort by last_seen (earliest to latest)
+    sorted_df = filtered_df.sort_values(by=["last_update","platinum"], ascending=[True,False])
+    
+    open = sorted_df.iloc[0]["platinum"] if not sorted_df.empty else None
+    # Get last element
+    close = sorted_df.iloc[-1]["platinum"] if not sorted_df.empty else None
+    
+    prices_df = filtered_df.sort_values(by="platinum", ascending=True)
+
+    minp = prices_df.iloc[0]["platinum"]
+    maxp = prices_df.iloc[-1]["platinum"]
+    
+    return open, close, minp, maxp
+    # Status priority for sorting (lower value means higher priority)
+    
 
 
 def remove_wf_color_codes(string) -> str:
@@ -269,3 +315,149 @@ def encode_identifier(identifier, is_unique=False):
         identifier = re.sub(r'\s*\(.*?\)', '', identifier)
 
     return urllib.parse.quote(identifier,safe="&")
+
+
+def prep_dataframe(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Processes data and returns a styled DataFrame in Streamlit, 
+    highlighting the row(s) where (Median - Min) is the lowest and non-negative in green,
+    and rows where (Median - Min) is negative in red.
+    """
+    if df.empty:
+        logging.warning("No data available to display.")
+        return df
+    
+    base_url = Warframe.MARKET_API.value["url"]
+    icon = AppIcons.EXTERNAL.value
+    # df = df.drop(columns=["Open","Close"])
+    formatted_names = df["Name"].str.replace(" ", "_").str.lower() + "_set"
+    df["Link"] = f"{base_url}" + formatted_names
+    df.set_index("Link", inplace=True)
+    # df.set_index("Name", inplace=True)
+    df["Diff"] = df["Median"] - df["Min"]
+
+    min_diff_value = df[df["Diff"] >= 0]["Diff"].min() if not df[df["Diff"] >= 0].empty else None
+    max_diff_value = df[df["Diff"] >= 0]["Diff"].max() if not df[df["Diff"] >= 0].empty else None
+    highlight_gold = df[df["Diff"] == max_diff_value].index.tolist() if max_diff_value is not None else []
+    highlight_lime = df[df["Diff"] == min_diff_value].index.tolist() if min_diff_value is not None else []
+    highlight_red = df[df["Diff"] < 0].index.tolist()
+
+    def highlight_row(row:pd.Series):
+        if row.name in highlight_lime:
+            return ['color: lime; font-weight: bold;'] * len(row)
+        elif row.name in highlight_red:
+            return ['color: #FF6961; font-weight: bold;'] * len(row)
+        elif row.name in highlight_gold:
+            return ['color: #FFD700; font-weight: bold;'] * len(row)
+        return [''] * len(row)
+
+
+
+    df = df.drop(columns=["Diff"])
+
+    try:
+        styled_df = df.style.apply(highlight_row, axis=1)
+    except Exception as e:
+        logging.warning(f"Error applying row styling: {e}")
+        styled_df = df
+
+    return styled_df
+
+
+def calculate_price_stats(orders):
+    """Calculate min, median, and max prices from a list of orders."""
+    if not orders:
+        return 0, 0, 0, 0, 0, 0
+
+    open_price, close_price, min_price, max_price = sort_open_close(orders)
+    prices = [order["platinum"] for order in orders]
+
+    return min_price,\
+            median(prices),\
+            average(prices),\
+            max_price,\
+            open_price,\
+            close_price,
+
+
+def process_item_data(items:list)->list:
+    """Process a list of items into a DataFrame-ready format."""
+    processed_data = []
+
+    for item in items:
+        min_plat, median_plat, avg_plat, max_plat,open_price,close_price = calculate_price_stats(item["orders"])
+        processed_data.append({
+            "Image": f"""{Warframe.MARKET_API.value["static"]}{item["img_link"]}""",
+            "Name": item["url"].replace("_", " ").replace(" set", "").title(),
+            "Count": len(item["orders"]),
+            "Average": int(avg_plat),
+            "Median": int(median_plat),
+            "Min": int(min_plat),
+            "Max": int(max_plat),
+            "Open": int(open_price),
+            "Close": int(close_price),
+        })
+
+    return processed_data
+
+
+def convert_index(name: str):
+    """Generate an index using Name and current GMT date."""
+    name = f"""{name.replace(" ", "-")}-{datetime.now(timezone.utc).strftime("%d-%m-%Y-UTC")}"""
+    return name
+
+
+def insert(df: pd.DataFrame, sheet: pd.DataFrame):
+    """Insert or update data in the sheet, ensuring timestamps are in GMT."""
+    if len(sheet) ==0 or list(sheet.columns) != Warframe.COLUMN_DEF.value:
+        sheet= pd.DataFrame(columns=Warframe.COLUMN_DEF.value)
+    sheet.set_index("Id", inplace=True)
+
+    current_time = datetime.now(timezone.utc).strftime("%d/%m/%Y - %H:%M:%S UTC")
+    for _, item in df.iterrows():
+        index_name = convert_index(item["Name"])
+
+        sheet.loc[index_name] = [
+            item["Name"],
+            int(item["Count"]),
+            int(item["Average"]),
+            int(item["Median"]),
+            int(item["Min"]),
+            int(item["Max"]),
+            sheet.at[index_name, "Open"] if index_name in sheet.index else int(item["Open"]),
+            int(item["Close"]),
+            current_time
+        ]
+
+    return sheet
+
+
+def format_time_difference(td, original_time):
+    """
+    Format a timedelta into days, hours, minutes format
+    If more than a week has passed, return the original UTC time
+    """
+    # Check if more than a week (7 days) has passed
+    if td.days > 7:
+        # Return the original UTC time formatted nicely
+        return f"{original_time}"
+    
+    # Extract days
+    days = td.days
+    
+    # Extract hours and minutes from seconds
+    seconds = td.seconds
+    hours = seconds // 3600
+    minutes = (seconds % 3600) // 60
+    
+    # Build the formatted string
+    if days > 0:
+        return f"{days} days, {hours} hours, {minutes} minutes ago"
+    elif hours > 0:
+        return f"{hours} hours, {minutes} minutes ago"
+    else:
+        return f"{minutes} minutes ago"
+
+
+def extract_item_name(url:str) -> str:
+    return url.split("/")[-1].replace("_", " ").title()

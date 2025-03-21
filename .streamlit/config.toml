@@ -6,11 +6,5 @@ runOnSave = true
 enableStaticServing = true
 [ui]
 hideTopBar = true
-[logger]
-
-# Level of logging for Streamlit's internal logger: "error", "warning",
-# "info", or "debug".
-# Default: "info"
-level = "info"
 [client]
 showErrorDetails = "full"

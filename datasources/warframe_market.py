@@ -1,5 +1,4 @@
 import asyncio
-import logging
 import random
 import httpx
 import requests
@@ -76,20 +75,31 @@ def rivens_auction(params:RivenSearchParams):
 async def items_async(item_ids):
     """Fetch multiple items concurrently with error handling."""
     
-    async def fetch_item(client, item_id, retries=3, SEMAPHORE=None):
+    async def fetch_item(client, item_id:str, retries=3, SEMAPHORE=None):
         """Fetch item asynchronously with retries and concurrency limit."""
         async with SEMAPHORE:
             for attempt in range(retries):
                 try:
-                    path = f"""{Warframe.MARKET_API.value["api"]}/items/{item_id}/orders"""
+                    path = f"""{Warframe.MARKET_API.value["api"]}/items/{item_id.replace("&", "and")}/orders?include=item"""
                     headers = {"accept": "application/json"}
                     if "excalibur" in item_id:
                         continue
                     response = await client.get(path, headers=headers,follow_redirects=True)
-
                     if response.status_code == 200:
+                        list_included:list = []
+                        img_link = ""
+                        if "include" in response.json():
+                            if "item" in response.json()["include"]:
+                                list_included:list = response.json()["include"]["item"].get("items_in_set",[])
+                                for item in list_included:
+                                    if item.get("set_root",False):
+                                        img_link = item["en"].get("icon","")
+                                        break
+                                        
+                        
                         return{
-                            "url":item_id,
+                            "url": item_id,
+                            "img_link": img_link,
                             "orders": response.json()["payload"]["orders"]
                         }
                 
