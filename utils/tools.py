@@ -173,7 +173,10 @@ def sort_open_close(data):
     minp = prices_df.iloc[0]["platinum"]
     maxp = prices_df.iloc[-1]["platinum"]
     
-    return open, close, minp, maxp
+    median_ = median(prices_df["platinum"])
+    avg = average(prices_df["platinum"])
+    
+    return open, close, minp, maxp, median_, avg
     # Status priority for sorting (lower value means higher priority)
     
 
@@ -369,15 +372,7 @@ def calculate_price_stats(orders):
     if not orders:
         return 0, 0, 0, 0, 0, 0
 
-    open_price, close_price, min_price, max_price = sort_open_close(orders)
-    prices = [order["platinum"] for order in orders]
-
-    return min_price,\
-            median(prices),\
-            average(prices),\
-            max_price,\
-            open_price,\
-            close_price,
+    return sort_open_close(orders)
 
 
 def process_item_data(items:list)->list:
@@ -385,7 +380,7 @@ def process_item_data(items:list)->list:
     processed_data = []
 
     for item in items:
-        min_plat, median_plat, avg_plat, max_plat,open_price,close_price = calculate_price_stats(item["orders"])
+        open_price,close_price,min_plat, max_plat, median_plat, avg_plat = calculate_price_stats(item["orders"])
         processed_data.append({
             "Image": f"""{Warframe.MARKET_API.value["static"]}{item["img_link"]}""",
             "Name": item["url"].replace("_", " ").replace(" set", "").title(),
