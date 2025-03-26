@@ -81,7 +81,7 @@ async def items_async(item_ids):
             for attempt in range(retries):
                 try:
                     path = f"""{Warframe.MARKET_API.value["api"]}/items/{item_id.replace("&", "and")}/orders?include=item"""
-                    headers = {"accept": "application/json"}
+                    headers = {"accept": "application/json",'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
                     if "excalibur" in item_id:
                         continue
                     response = await client.get(path, headers=headers,follow_redirects=True)
