@@ -9,7 +9,7 @@ from config.constants import Warframe
 from datasources import google_sheet
 from utils import data_manage
 from utils import tools
-from utils.tools import prep_dataframe,insert,process_item_data
+from utils.tools import prep_dataframe
 from streamlit import session_state as SESSIONS
 import plotly.graph_objects as go
 custom.sideNav(6)
@@ -31,8 +31,7 @@ client = google_sheet.get_instance()
 to_year = datetime.today().year
 
 
-col1,col2,col3 = st.columns([4,1,1],vertical_alignment="center")
-sync_btn = col2.button("Sync",icon=":material/cloud: ",use_container_width=True,type="primary")
+col1,_,col3 = st.columns([4,1,1],vertical_alignment="center")
 reload_btn = col3.button("Reload",icon=":material/refresh:",use_container_width=True,type="secondary")
 status_bar = col1.empty()
 if 'statistic_data' not in SESSIONS:
@@ -42,46 +41,38 @@ if 'statistic_data' not in SESSIONS:
         "sentinel_data":{},
     }
     
-with status_bar,st.spinner("Fetching warframe orders...",show_time=True):
-    frame_orders_list = data_manage.preload_primeframes_orders()
-    frame_orders_df= pd.DataFrame(process_item_data(frame_orders_list))
-
 with status_bar,st.spinner("Gathering warframe history...",show_time=True):
     frames_worksheet = process_history(client,"prime_frames")
+    format_df, length = prep_dataframe(frames_worksheet)
     SESSIONS.statistic_data["frame_data"] = {
         "name": "prime_frames",
-        "dataframe": frame_orders_df,
         "latest_sync": frames_worksheet["Changed"].iloc[-1],
-        "formated": prep_dataframe(frame_orders_df),
-        "history": insert(df=frame_orders_df,sheet=frames_worksheet),
+        "formated": format_df,
+        "history": frames_worksheet,
+        "length": length
         
     }
 
-with status_bar, st.spinner("Fetching weapon orders...",show_time=True):
-    weapon_orders_list = data_manage.preload_primeweaps_orders()
-    weapon_orders_df= pd.DataFrame(process_item_data(weapon_orders_list))
 with status_bar,st.spinner("Gathering weapon history...",show_time=True):
     weapons_worksheet = process_history(client,"prime_weapons")
+    format_df, length = prep_dataframe(weapons_worksheet)
     SESSIONS.statistic_data["weapon_data"] = {
         "name": "prime_weapons",
-        "dataframe": weapon_orders_df,
         "latest_sync": weapons_worksheet["Changed"].iloc[-1],
-        "formated": prep_dataframe(weapon_orders_df),
-        "history": insert(df=weapon_orders_df,sheet=weapons_worksheet)
+        "formated": format_df,
+        "history": weapons_worksheet,
+        "length": length
     }
-
-with status_bar,st.spinner("Fetching sentinel orders...",show_time=True):
-    sentinel_orders_list = data_manage.preload_primesens_orders()
-    sentinel_orders_df= pd.DataFrame(process_item_data(sentinel_orders_list))
 
 with status_bar,st.spinner("Gathering sentinel history...",show_time=True):
     sentinels_worksheet = process_history(client,"prime_sentinels")
+    format_df, length = prep_dataframe(sentinels_worksheet)
     SESSIONS.statistic_data["sentinel_data"] = {
         "name": "prime_sentinels",
-        "dataframe": sentinel_orders_df,
         "latest_sync": sentinels_worksheet["Changed"].iloc[-1],
-        "formated": prep_dataframe(sentinel_orders_df),
-        "history": insert(df=sentinel_orders_df,sheet=sentinels_worksheet)
+        "formated": format_df,
+        "history": sentinels_worksheet,
+        "length": length
     }
 
 with status_bar,st.spinner("Combining histories",show_time=True):
@@ -97,7 +88,7 @@ with status_bar:
         parsed_time = datetime.strptime(time_data + " +0000", "%d/%m/%Y - %H:%M:%S UTC %z")
         time_diff = datetime.now(timezone.utc) - parsed_time
         formatted_time_diff = tools.format_time_difference(time_diff, time_data)
-    st.markdown(f""":material/check_circle: **Last Sync:** *:gray[{formatted_time_diff}]*.""")
+    st.markdown(f""":material/check_circle: **Last Fetch:** *:gray[{formatted_time_diff}]*.""")
 
 st.markdown(f"""<span style="color:lime;">■</span> <b>Stable</b>: 
             <span style="color:gray;">The lowest differences between lowest price and median price.</span>  
@@ -173,21 +164,23 @@ column_config ={
 tab1.dataframe(SESSIONS.statistic_data["frame_data"].get("formated",pd.DataFrame(columns=Warframe.COLUMN_DEF.value)),
                use_container_width=True,
                column_order=["Image","Name", "Count", "Median", "Average", "Min", "Max"],
-               height= max(35 * len(SESSIONS.statistic_data["frame_data"].get("dataframe",pd.DataFrame(columns=Warframe.COLUMN_DEF.value))) + math.ceil(35*1.05), 35*3),
+               height= max(35 * SESSIONS.statistic_data["frame_data"].get("length",0) + math.ceil(35*1.05), 35*3),
                column_config=column_config
                )
+
+
 
 tab2.dataframe(SESSIONS.statistic_data["weapon_data"].get("formated",pd.DataFrame(columns=Warframe.COLUMN_DEF.value)),
                use_container_width=True,
                column_order=["Image","Name", "Count", "Median", "Average", "Min", "Max"],
-               height= max(35 * len(SESSIONS.statistic_data["weapon_data"].get("dataframe",pd.DataFrame(columns=Warframe.COLUMN_DEF.value))) + math.ceil(35*1.05), 35*3),
+               height= max(35 * SESSIONS.statistic_data["weapon_data"].get("length",0) + math.ceil(35*1.05), 35*3),
                column_config=column_config
                )
 
 tab3.dataframe(SESSIONS.statistic_data["sentinel_data"].get("formated",pd.DataFrame(columns=Warframe.COLUMN_DEF.value)),
                use_container_width=True,
                column_order=["Image","Name", "Count", "Median", "Average", "Min", "Max"],
-               height= max(35 * len(SESSIONS.statistic_data["sentinel_data"].get("dataframe",pd.DataFrame(columns=Warframe.COLUMN_DEF.value))) + math.ceil(35*1.05), 35*3),
+               height= max(35 * SESSIONS.statistic_data["sentinel_data"].get("length",0) + math.ceil(35*1.05), 35*3),
                column_config=column_config
                )
 
@@ -310,31 +303,4 @@ if reload_btn:
         if 'statistic_data' in SESSIONS:
             del SESSIONS.statistic_data
         data_manage.clear_primecaches()
-    st.rerun()
-if sync_btn:
-    with st.spinner("",show_time=True):
-        if 'statistic_data' in SESSIONS:
-            with status_bar, st.spinner("Synchronizing warframe data...",show_time=True):
-                client.update(SESSIONS.statistic_data["frame_data"].get("name","prime_frames"),
-                            SESSIONS.statistic_data["frame_data"].get("history",
-                                                                        pd.DataFrame(columns=Warframe.COLUMN_DEF.value)
-                                                                    ).reset_index()
-                            ,f"{to_year}")
-
-            with status_bar, st.spinner("Synchronizing weapons data...",show_time=True):
-                client.update(SESSIONS.statistic_data["weapon_data"].get("name","prime_weapons"),
-                        SESSIONS.statistic_data["weapon_data"].get("history",
-                                                                    pd.DataFrame(columns=Warframe.COLUMN_DEF.value)
-                                                                ).reset_index()
-                        ,f"{to_year}")
-
-            with status_bar, st.spinner("Synchronizing sentinels data...",show_time=True):
-                client.update(SESSIONS.statistic_data["sentinel_data"].get("name","prime_sentinels"),
-                        SESSIONS.statistic_data["sentinel_data"].get("history",
-                                                                    pd.DataFrame(columns=Warframe.COLUMN_DEF.value)
-                                                                    ).reset_index(),
-                        f"{to_year}")
-
-            del SESSIONS.statistic_data
-            process_history.clear()
     st.rerun()

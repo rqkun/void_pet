@@ -319,24 +319,60 @@ def encode_identifier(identifier, is_unique=False):
 
     return urllib.parse.quote(identifier,safe="&")
 
-
-def prep_dataframe(df: pd.DataFrame) -> pd.DataFrame:
+def prep_dataframe(og_df: pd.DataFrame) -> pd.DataFrame:
     """
     Processes data and returns a styled DataFrame in Streamlit, 
     highlighting the row(s) where (Median - Min) is the lowest and non-negative in green,
     and rows where (Median - Min) is negative in red.
+    Only includes data from the latest date available.
     """
-    if df.empty:
+    if og_df.empty:
         logging.warning("No data available to display.")
-        return df
+        return og_df,0
+    df = og_df.copy()
+    latest_date = None
+    
+    if 'Id' in df.columns:
+        try:
+
+            date_pattern = r'.*-(\d{2}-\d{2}-\d{4})-UTC'
+            df['extracted_date'] = df['Id'].str.extract(date_pattern)
+            df['date_obj'] = pd.to_datetime(df['extracted_date'], format='%d-%m-%Y')
+            latest_date = df['date_obj'].max()
+            df = df[df['date_obj'] == latest_date]
+            df = df.drop(columns=['extracted_date', 'date_obj'])
+            
+        except Exception as e:
+            logging.warning(f"Error extracting dates from Id: {e}")
+    
+    elif 'Changed' in df.columns:
+        try:
+            df['date_obj'] = pd.to_datetime(df['Changed'].str.split(' - ').str[0], format='%d/%m/%Y')
+            latest_date = df['date_obj'].max()
+            df = df[df['date_obj'] == latest_date]
+            df = df.drop(columns=['date_obj'])
+        except Exception as e:
+            logging.warning(f"Error extracting dates from Changed column: {e}")
+    
+    if df.empty:
+        logging.warning("No data available after filtering for latest date.")
+        return df,0
+    
+    logging.info(f"Filtered data to latest date: {latest_date.strftime('%Y-%m-%d') if latest_date else 'Unknown'}")
     
     base_url = Warframe.MARKET_API.value["url"]
     icon = AppIcons.EXTERNAL.value
-    # df = df.drop(columns=["Open","Close"])
+    
     formatted_names = df["Name"].str.replace(" ", "_").str.lower() + "_set"
     df["Link"] = f"{base_url}" + formatted_names
+    
+    if df["Link"].duplicated().any():
+        logging.warning("Duplicate links found. Using most recent data.")
+        if "Changed" in df.columns:
+            df = df.sort_values("Changed", ascending=False)
+        df = df.drop_duplicates(subset=["Link"], keep="first")
+    
     df.set_index("Link", inplace=True)
-    # df.set_index("Name", inplace=True)
     df["Diff"] = df["Median"] - df["Min"]
 
     min_diff_value = df[df["Diff"] >= 0]["Diff"].min() if not df[df["Diff"] >= 0].empty else None
@@ -354,17 +390,17 @@ def prep_dataframe(df: pd.DataFrame) -> pd.DataFrame:
             return ['color: #FFD700; font-weight: bold;'] * len(row)
         return [''] * len(row)
 
-
-
-    df = df.drop(columns=["Diff"])
-
+    df = df.drop(columns=["Diff","Id","Changed"])
+    length = len(df)
     try:
         styled_df = df.style.apply(highlight_row, axis=1)
     except Exception as e:
         logging.warning(f"Error applying row styling: {e}")
         styled_df = df
 
-    return styled_df
+    return styled_df,length
+
+
 
 
 def calculate_price_stats(orders):
