@@ -73,18 +73,44 @@ def rivens_auction(params:RivenSearchParams):
     return obj if obj else None
 
 async def items_async(item_ids):
-    """Fetch multiple items concurrently with error handling."""
+    """Fetch multiple items concurrently with error handling and rate limiting."""
     
-    async def fetch_item(client, item_id:str, retries=3, SEMAPHORE=None):
-        """Fetch item asynchronously with retries and concurrency limit."""
+    class RateLimiter:
+        def __init__(self, rate=2):
+            self.rate = rate
+            self.tokens = rate
+            self.last_refill = time.time()
+            self.lock = asyncio.Lock()
+            
+        async def acquire(self):
+            async with self.lock:
+                now = time.time()
+                time_passed = now - self.last_refill
+                
+                new_tokens = time_passed * self.rate
+                self.tokens = min(self.rate, self.tokens + new_tokens)
+                self.last_refill = now
+                
+                if self.tokens < 1:
+                    wait_time = (1 - self.tokens) / self.rate
+                    await asyncio.sleep(wait_time)
+                    self.tokens = 0
+                    self.last_refill = time.time()
+                else:
+                    self.tokens -= 1
+    
+    async def fetch_item(client, item_id:str, retries=3, SEMAPHORE=None, rate_limiter=None):
+        """Fetch item asynchronously with retries, concurrency limit and rate limiting."""
         async with SEMAPHORE:
             for attempt in range(retries):
                 try:
+                    await rate_limiter.acquire()
+                    
                     path = f"""{Warframe.MARKET_API.value["api"]}/items/{item_id.replace("&", "and")}/orders?include=item"""
                     headers = {"accept": "application/json",'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
                     if "excalibur" in item_id:
                         continue
-                    response = await client.get(path, headers=headers,follow_redirects=True)
+                    response = await client.get(path, headers=headers, follow_redirects=True)
                     if response.status_code == 200:
                         list_included:list = []
                         img_link = ""
@@ -95,7 +121,6 @@ async def items_async(item_ids):
                                     if item.get("set_root",False):
                                         img_link = item["en"].get("icon","")
                                         break
-                                        
                         
                         return{
                             "url": item_id,
@@ -107,10 +132,14 @@ async def items_async(item_ids):
                     wait_time = 2 ** attempt + random.uniform(0, 1)
                     await asyncio.sleep(wait_time)
 
-        return None # Return None if all retries fail
+        return None 
     
-    SEMAPHORE = asyncio.Semaphore(3)  # Reduce concurrency to ease API load
-    async with httpx.AsyncClient(timeout=10) as client:  # Set a timeout
-        tasks = [fetch_item(client, item_id, SEMAPHORE=SEMAPHORE) for item_id in item_ids]
-        results = await asyncio.gather(*tasks, return_exceptions=True)  # Continue on failure
-        return [res for res in results if res is not None] # Remove failed requests
+    import time
+    
+    SEMAPHORE = asyncio.Semaphore(3)  
+    rate_limiter = RateLimiter(rate=2)
+    
+    async with httpx.AsyncClient(timeout=10) as client:
+        tasks = [fetch_item(client, item_id, SEMAPHORE=SEMAPHORE, rate_limiter=rate_limiter) for item_id in item_ids]
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+        return [res for res in results if res is not None and not isinstance(res, Exception)]
